@@ -4,14 +4,14 @@ import java.time.LocalDate;
 
 public abstract class NhanVien {
 
+
     private String MaNV;
-    private String Hoten;
+    private String HoTen;
     private LocalDate NgayThangNamSinh;
     private String SDT;
     private String MaPhongBan;
     private LocalDate NgayVaoLam;
 
-    
     
     public String getMaNV() {
         return MaNV;
@@ -21,12 +21,12 @@ public abstract class NhanVien {
         this.MaNV = MaNV;
     }
 
-    public String getHoten() {
-        return Hoten;
+    public String getHoTen() {
+        return HoTen;
     }
 
-    public void setHoten(String Hoten) {
-        this.Hoten = Hoten;
+    public void setHoTen(String HoTen) {
+        this.HoTen = HoTen;
     }
 
     public LocalDate getNgayThangNamSinh() {
