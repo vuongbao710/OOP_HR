@@ -12,7 +12,7 @@ public class DanhSachPhongBan {
     public DanhSachPhongBan() {
         this.dspb = new ArrayList<>();
     }
-    
+    /*
     public void DocFile(){
         try(BufferedReader br = new BufferedReader(new FileReader("PhongBan.txt"))){
             String line;
@@ -31,13 +31,19 @@ public class DanhSachPhongBan {
         }
         
     }
-    
-    public PhongBan TimTheoMa (String MaPhong){
-        for(PhongBan pb : dspb){
-            if(pb.getMaPhong().equals(MaPhong))return pb;
-        }
-        return null;
+    */
+    public void ThemPhongBan (PhongBan pb){
+        this.dspb.add(pb);
     }
+    
+    public void TaoSanDanhSachPhongBan(){
+        PhongBan HR = new PhongBan("P001","Phong Nhan Su","QL001","Nguyen Trung B");
+        PhongBan CSKH = new PhongBan("P002","Phong CSKH","QL002","Nguyen Van C");
+        ThemPhongBan(HR);
+        ThemPhongBan(CSKH);
+    }
+    
+
 
     public ArrayList<PhongBan> getDspb() {
         return dspb;

@@ -52,12 +52,6 @@ public class PhongBan {
         }
     }
     
-    public void SkipQuanLy(String MaNV){
-        for(int i=0;i<dsnvpb.size();i++){
-            if(dsnvpb.get(i).getMaNV().equals(MaNV))continue;
-            System.out.println(dsnvpb.get(i));
-        }
-    }
     
     public String getMaPhong() {
         return MaPhong;
@@ -93,6 +87,11 @@ public class PhongBan {
 
     public ArrayList<NhanVien> getDsnvpb() {
         return dsnvpb;
+    }
+    
+    //@override
+    public String toString(){
+        return "Ma phong: " + MaPhong + "| Ten phong :" + TenPhongBan + "| Ma truong phong :" + MaTruongPhong + "| Ten truong phong :" + TenTruongPhong;
     }
     
     

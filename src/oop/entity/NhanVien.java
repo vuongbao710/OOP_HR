@@ -1,16 +1,19 @@
 
 package oop.entity;
 import java.time.LocalDate;
+import java.util.Scanner;
 
 public abstract class NhanVien {
 
 
-    private String MaNV;
-    private String HoTen;
-    private LocalDate NgayThangNamSinh;
-    private String SDT;
-    private String MaPhongBan;
-    private LocalDate NgayVaoLam;
+    protected String MaNV;
+    protected String HoTen;
+    protected String SDT;
+    protected String MaPhongBan;
+    protected LocalDate BirthDate;
+    protected LocalDate NgayVaoLam;
+    protected String ChucVu;
+    protected long LuongCoBan;
 
     
     public String getMaNV() {
@@ -27,14 +30,6 @@ public abstract class NhanVien {
 
     public void setHoTen(String HoTen) {
         this.HoTen = HoTen;
-    }
-
-    public LocalDate getNgayThangNamSinh() {
-        return NgayThangNamSinh;
-    }
-
-    public void setNgayThangNamSinh(LocalDate NgayThangNamSinh) {
-        this.NgayThangNamSinh = NgayThangNamSinh;
     }
 
     public String getSDT() {
@@ -56,6 +51,14 @@ public abstract class NhanVien {
         this.MaPhongBan = MaPhongBan;
     }
 
+    public LocalDate getBirthDate() {
+        return BirthDate;
+    }
+
+    public void setBirthDate(LocalDate BirthDate) {
+        this.BirthDate = BirthDate;
+    }
+
     public LocalDate getNgayVaoLam() {
         return NgayVaoLam;
     }
@@ -63,7 +66,29 @@ public abstract class NhanVien {
     public void setNgayVaoLam(LocalDate NgayVaoLam) {
         this.NgayVaoLam = NgayVaoLam;
     }
+
+    public long getLuongCoBan() {
+        return LuongCoBan;
+    }
+
+    public void setLuongCoBan(long LuongCoBan) {
+        this.LuongCoBan = LuongCoBan;
+    }
     
     
-    
+
+    public String getChucVu(){
+        return ChucVu;
+    }
+    public void setChucVu(String Loai){
+        if(Loai.equals("NhanVienCapDuoi")||Loai.equals("QuanLy")){
+            this.ChucVu=Loai;
+        }
+        else{
+            System.out.println("Loi loai nhan vien");
+        }
+    }
+    public String toString(){
+        return "Ma nhan vien :" + MaNV + "| Ho ten :" + HoTen + "| SDT :" + SDT + "| Ma phong ban :" + MaPhongBan;
+    }
 }

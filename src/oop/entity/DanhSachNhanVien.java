@@ -19,6 +19,7 @@ public class DanhSachNhanVien {
         this.dsql=new ArrayList<>();
         this.dspb=dspb;
     }
+    /*
     public void DocFile(){
         
         try(BufferedReader br = new BufferedReader(new FileReader("NhanVien.txt"))){
@@ -71,6 +72,98 @@ public class DanhSachNhanVien {
             System.out.println("Loi truy xuat du lieu danh sach nhan vien");
         }
     }
+    */
+    /*
+    public void ThemNhanVien(NhanVien nv){
+        this.dsnv.add(nv);
+    }
+    
+    public void ThemNhanVienCapDuoi(NhanVienCapDuoi nvcd){
+        this.dsnvcd.add(nvcd);
+    }
+    public void ThemQuanLy(QuanLy ql){
+        this.dsql.add(ql);
+    } */       
+    public boolean KiemTraTonTai (String MaNV){
+        for(NhanVien nv : this.dsnv){
+            if(nv.getMaNV().equalsIgnoreCase(MaNV)){
+                return true;
+            }
+        }
+        return false;
+    }
+     
+    public void TongHopVaoDanhSach(NhanVien nv){
+        if(KiemTraTonTai(nv.getMaNV())==false){
+            this.dsnv.add(nv);
+        }
+        else if(KiemTraTonTai(nv.getMaNV())==true){
+            System.out.println("NV " + nv.getMaNV() + " da ton tai trong danh sach");
+            return;
+        }
+        
+        if(nv.getChucVu().equals("NhanVienCapDuoi")){
+            NhanVienCapDuoi nvcd = (NhanVienCapDuoi) nv;
+            this.dsnvcd.add(nvcd);
+        }
+        else if(nv.getChucVu().equals("QuanLy")){
+            QuanLy ql = (QuanLy) nv;
+            this.dsql.add(ql);
+        }
+        
+        //=======================phan loai nhan vien theo phong ban
+        boolean flag = false;
+        for(PhongBan pb : dspb.getDspb()){
+            if(nv.getMaPhongBan().equals(pb.getMaPhong())){
+                pb.ThemNhanVien(nv);
+                flag=true;
+            }
+        }
+        if(flag==false){
+            System.out.println("loi du lieu ma phong ban");
+            return;
+            
+        }
+    }
+    
+    public void XuatDanhSach(){
+        System.out.println("========= Danh sach nhan vien ==========");
+        for(NhanVien nv : dsnv){
+            System.out.println(nv);
+        }
+        System.out.println("========= Danh sach nhan vien cap duoi ==========");
+        for(NhanVienCapDuoi nvcd : dsnvcd){
+            System.out.println(nvcd);
+        }
+        System.out.println("========= Danh sach quan ly ==========");
+        for(QuanLy ql : dsql){
+            System.out.println(ql);
+        }
+        System.out.println("========= Danh sach phong ban ==========");
+        for(PhongBan pb : dspb.getDspb()){
+            System.out.println(pb);
+        }
+        System.out.println("========= Danh sach nhan vien theo phong ban ==========");
+        for(PhongBan pb : dspb.getDspb()){
+            System.out.println("=== "+ pb.getTenPhongBan()+ " ===");
+            for(NhanVien nv : pb.getDsnvpb()){
+                System.out.println(nv);
+            }
+        }
+        
+    }
+    
+    public void TaoSanDanhSach(){
+        NhanVien nv1 = new NhanVienCapDuoi("NV001","Nguyen Van A","0373731913","P001",LocalDate.of(2000, 9, 30),LocalDate.of(2026, 9, 30),"QL001");
+        NhanVien nv2 = new QuanLy("Ql001","Nguyen Trung B","0373731914","P001",LocalDate.of(2002, 6, 30),LocalDate.of(2026, 9, 30));
+        NhanVien nv3 = new QuanLy("QL002","Nguyen Van C","0373731915","P002",LocalDate.of(2001, 8, 30),LocalDate.of(2026, 9, 30));
+        TongHopVaoDanhSach(nv1);
+        TongHopVaoDanhSach(nv2);
+        TongHopVaoDanhSach(nv3);
+        TongHopVaoDanhSach(nv1);
+        
+    }
+    
     
     
     public ArrayList<NhanVienCapDuoi> getDsnvcd(){
