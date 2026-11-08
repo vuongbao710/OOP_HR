@@ -1,27 +1,22 @@
 
-package oop.entity;
+package oop.entity.Object;
 import java.util.ArrayList;
-
 public class PhongBan {
     private String MaPhong;
     private String TenPhongBan;
     private String MaTruongPhong;
-    private String TenTruongPhong;
     
     private ArrayList<NhanVien> dsnvpb;
 
     public PhongBan(){
         this.MaPhong=null;
         this.MaTruongPhong=null;
-        this.TenPhongBan=null;
-        this.TenTruongPhong=null;
     }
     
-    public PhongBan(String MaPhong, String TenPhongBan, String MaTruongPhong, String TenTruongPhong) {
+    public PhongBan(String MaPhong, String TenPhongBan, String MaTruongPhong) {
         this.MaPhong = MaPhong;
         this.TenPhongBan = TenPhongBan;
         this.MaTruongPhong = MaTruongPhong;
-        this.TenTruongPhong = TenTruongPhong;
         this.dsnvpb= new ArrayList<>();
     }
     
@@ -77,13 +72,6 @@ public class PhongBan {
         this.MaTruongPhong = MaTruongPhong;
     }
 
-    public String getTenTruongPhong() {
-        return TenTruongPhong;
-    }
-
-    public void setTenTruongPhong(String TenTruongPhong) {
-        this.TenTruongPhong = TenTruongPhong;
-    }
 
     public ArrayList<NhanVien> getDsnvpb() {
         return dsnvpb;
@@ -91,7 +79,7 @@ public class PhongBan {
     
     //@override
     public String toString(){
-        return "Ma phong: " + MaPhong + "| Ten phong :" + TenPhongBan + "| Ma truong phong :" + MaTruongPhong + "| Ten truong phong :" + TenTruongPhong;
+        return "Ma phong: " + MaPhong + "| Ten phong :" + TenPhongBan + "| Ma truong phong :" + MaTruongPhong ;
     }
     
     
