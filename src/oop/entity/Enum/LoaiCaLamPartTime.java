@@ -2,9 +2,9 @@
 package oop.entity.Enum;
 import java.time.LocalTime;
 public enum LoaiCaLamPartTime {
-    SANG("ca sáng",LocalTime.of(8, 0),LocalTime.of(12, 0)),
-    CHIEU("ca chiều",LocalTime.of(13, 0),LocalTime.of(17, 0)),
-    TOI("ca tối",LocalTime.of(18, 0),LocalTime.of(22, 0));
+    SANG("Sáng",LocalTime.of(8, 0),LocalTime.of(12, 0)),
+    CHIEU("Chiều",LocalTime.of(13, 0),LocalTime.of(17, 0)),
+    TOI("Tối",LocalTime.of(18, 0),LocalTime.of(22, 0));
     
     private String MoTa;
     private LocalTime GioVao;

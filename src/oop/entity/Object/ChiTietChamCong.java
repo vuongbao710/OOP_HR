@@ -6,7 +6,7 @@ import java.time.Duration;
 import oop.entity.Enum.LoaiTrangThaiChamCong;
 public class ChiTietChamCong {
     private String MaChiTietChamCong;
-    private LoaiTrangThaiChamCong TrangThai;
+    private LoaiTrangThaiChamCong TrangThai = LoaiTrangThaiChamCong.KHONG_CHAM_CONG;
     private LocalDate Date;
     private String MaNVduocChamCong;
     private LocalTime GioVao;
@@ -15,6 +15,7 @@ public class ChiTietChamCong {
     private LocalTime GioRaCuaNV;
     private boolean KiemTraCheckIn;
     private boolean KiemTraCheckOut;
+    private boolean isDangKyOT = false;
 
     public ChiTietChamCong(String MaChiTietChamCong, LoaiTrangThaiChamCong TrangThai, LocalDate Date, String MaNVduocChamCong, LocalTime GioVao, LocalTime GioRa, LocalTime GioVaoCuaNV, LocalTime GioRaCuaNV) {
         this.MaChiTietChamCong = MaChiTietChamCong;
@@ -50,6 +51,16 @@ public class ChiTietChamCong {
         this.KiemTraCheckIn=false;
         this.KiemTraCheckOut=false;
     }
+
+    public ChiTietChamCong(String MaChiTietChamCong, LocalDate Date, String MaNVduocChamCong) {
+        this.MaChiTietChamCong = MaChiTietChamCong;
+        this.Date = Date;
+        this.MaNVduocChamCong = MaNVduocChamCong;
+        
+        this.KiemTraCheckIn=false;
+        this.KiemTraCheckOut=false;
+    }
+
     
 
     public String getMaChiTietChamCong() {
@@ -133,6 +144,15 @@ public class ChiTietChamCong {
         this.KiemTraCheckOut = KiemTraCheckOut;
     }
 
+    public boolean isIsDangKyOT() {
+        return isDangKyOT;
+    }
+
+    public void setIsDangKyOT(boolean isDangKyOT) {
+        this.isDangKyOT = isDangKyOT;
+    }
+    
+
     @Override
     public String toString() {
         return "ChiTietChamCong{" + "MaChiTietChamCong=" +
@@ -143,28 +163,31 @@ public class ChiTietChamCong {
     }
     
     
-    public boolean isGioLam(LocalTime time){
-        return time.isAfter(GioVao)&& time.isBefore(GioRa);
+    public boolean isGioLam(LocalTime time, String CaLam){
+        if(CaLam.equalsIgnoreCase("Tối")){
+            return !time.isBefore(GioVao.minusMinutes(30)) || !time.isAfter(GioRa.plusMinutes(30));
+        }
+        return !time.isBefore(GioVao.minusMinutes(30)) && !time.isAfter(GioRa.plusMinutes(30));
+        //return time.isAfter(GioVao)&& time.isBefore(GioRa);      sai
     }
    
 
     public long checkGioVao(LocalTime time){
         long SoPhutTre;
-        if(time.isAfter(GioVao.plusMinutes(15))){
+        if(time.isAfter(GioVao.plusMinutes(5))){
             setTrangThai(LoaiTrangThaiChamCong.DI_TRE);
             Duration tgian = Duration.between(time, GioVao.plusMinutes(15));
             SoPhutTre = tgian.toMinutes();
             return SoPhutTre;
         }
         else{
-            setTrangThai(LoaiTrangThaiChamCong.DUNG_GIO);
             return 0;
         }
     }
     
     public long checkGioRa(LocalTime time){
         long SoPhutVeSom;
-        if(time.isBefore(GioRa.minusMinutes(15))){
+        if(time.isBefore(GioRa.minusMinutes(5))){
             setTrangThai(LoaiTrangThaiChamCong.VE_SOM);
             Duration tgian = Duration.between(time, GioRa);
             SoPhutVeSom = tgian.toMinutes();
@@ -176,7 +199,8 @@ public class ChiTietChamCong {
     }
     
     public void checkChamCong(LocalTime time, LocalDate date, NhanVien nv){
-        if(!isGioLam(time)){
+        String CaLam = nv.getCaLam();
+        if(!isGioLam(time, CaLam)){
             System.out.println("Không thể chấm công, hiện đang ngoài ca làm việc của bạn");
             return;
         }
@@ -188,27 +212,30 @@ public class ChiTietChamCong {
                 String MaQD = nv.getDsktkl().taoMa();
                 String MaNV = nv.getMaNV();
                 KyLuat kl = new KyLuat("đi làm trễ", MaQD, date, MaNV);
-                double TienTacDong = kl.tinhTacDongLuong(SoPhutTre, nv);
+                kl.setSoPhutPhatChamCong(SoPhutTre);
+                double TienTacDong = kl.tinhTacDongLuong(nv);
                 kl.setSoTienTacDong(TienTacDong);
                 nv.getDsktkl().them(kl);
                 
                 int SoLanViPham = nv.getSoLanViPhamChamCong();
                 nv.setSoLanViPhamChamCong(SoLanViPham+1);
                 String MaThongBao = nv.getDsThongBao().taoMa();
-                ThongBao tb = new ThongBao(MaThongBao, "HETHONG", date, time, GioVaoCuaNV
+                ThongBao tb = new ThongBao(MaThongBao, "HETHONG", date, time, "Giờ vào của bạn :" + GioVaoCuaNV
                         + "trễ hơn so với giờ ca làm việc của bạn là " + GioVao + " ,chúng tôi cảnh cáo bạn lần thứ " + SoLanViPham+1);
                 nv.getDsThongBao().them(tb);
             }
         }
-        else{
+        else if(this.KiemTraCheckOut==false){
             long SoPhutTanSom = checkGioRa(time);
             setGioRaCuaNV(time);
             this.KiemTraCheckOut=true;
+            setTrangThai(LoaiTrangThaiChamCong.DUNG_GIO);
             if(SoPhutTanSom!=0){
                 String MaQD = nv.getDsktkl().taoMa();
                 String MaNV = nv.getMaNV();
                 KyLuat kl = new KyLuat("tan làm sớm", MaQD, date, MaNV);
-                double TienTacDong = kl.tinhTacDongLuong(SoPhutTanSom, nv);
+                kl.setSoPhutPhatChamCong(SoPhutTanSom);
+                double TienTacDong = kl.tinhTacDongLuong(nv);
                 kl.setSoTienTacDong(TienTacDong);
                 nv.getDsktkl().them(kl);
                 
@@ -221,6 +248,11 @@ public class ChiTietChamCong {
             }
         }
         
+    }
+    
+    public void LamOT(){
+        this.GioRa = GioRa.plusHours(2);
+        this.isDangKyOT = true;
     }
     
     

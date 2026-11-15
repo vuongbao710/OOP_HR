@@ -1,6 +1,8 @@
 
 package oop.entity.Object;
 import java.time.LocalDate;
+import oop.entity.DanhSach.DanhSachDotTuyenDung;
+import oop.entity.DanhSach.DanhSachKhoaDaoTao;
 public class UngVien {
     private String MaUngVien;
     private String CCCD;
@@ -12,16 +14,16 @@ public class UngVien {
     private DotTuyenDung Dot;
     private KhoaDaoTao Khoa;
     private KetQuaDaoTao kq;
-    public UngVien(String MaUngVien, String CCCD, String HoTen, String SDT, LocalDate NgayThangNamSinh, String MaDotTuyenDung, String ViTriUngTuyen) {
-        this.MaUngVien = MaUngVien;
+    public UngVien(String CCCD, String HoTen, String SDT, LocalDate NgayThangNamSinh, String MaDotTuyenDung, String ViTriUngTuyen, String MaKhoaDaoTao) {
+        
         this.CCCD = CCCD;
         this.HoTen = HoTen;
         this.SDT = SDT;
         this.NgayThangNamSinh = NgayThangNamSinh;
         this.MaDotTuyenDung = MaDotTuyenDung;
         this.ViTriUngTuyen = ViTriUngTuyen;
-        this.Dot = new DotTuyenDung();
-        this.Khoa= new KhoaDaoTao();
+        this.Dot = DanhSachDotTuyenDung.timKiem(MaDotTuyenDung);
+        this.Khoa= DanhSachKhoaDaoTao.timKiem(MaKhoaDaoTao);
         this.kq=new KetQuaDaoTao();
     }
     public String getMaUngVien() {
@@ -78,6 +80,30 @@ public class UngVien {
 
     public void setViTriUngTuyen(String ViTriUngTuyen) {
         this.ViTriUngTuyen = ViTriUngTuyen;
+    }
+
+    public DotTuyenDung getDot() {
+        return Dot;
+    }
+
+    public void setDot(DotTuyenDung Dot) {
+        this.Dot = Dot;
+    }
+
+    public KhoaDaoTao getKhoa() {
+        return Khoa;
+    }
+
+    public void setKhoa(KhoaDaoTao Khoa) {
+        this.Khoa = Khoa;
+    }
+
+    public KetQuaDaoTao getKq() {
+        return kq;
+    }
+
+    public void setKq(KetQuaDaoTao kq) {
+        this.kq = kq;
     }
 
     @Override

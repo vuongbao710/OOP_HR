@@ -26,12 +26,21 @@ public class DanhSachBangChamCong implements DanhSach<BangChamCong>{
     }
     public BangChamCong timKiem(String MaBCC){
         for(BangChamCong bcc : dsbcc){
-            if(bcc.getMaChamCong().equals(MaBCC)){
+            if(bcc.getMaBangChamCong().equals(MaBCC)){
                 return bcc;
             }
         }
         return null;
     }
+    public BangChamCong timKiem(int thang, int nam){
+        for(BangChamCong bcc : dsbcc){
+            if(bcc.getThang()==thang && bcc.getNam()==nam){
+                return bcc;
+            }
+        }
+        return null;
+    }
+    
     public void xuat(){
         for(BangChamCong bcc : dsbcc){
             System.out.println(bcc);

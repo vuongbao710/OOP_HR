@@ -4,7 +4,6 @@ package oop.entity.Enum;
 public enum LoaiKyLuat {
     DI_LAM_TRE ("đi làm trễ"),
     TAN_LAM_SOM ("tan làm sớm"),
-    VI_PHAM_QUY_DINH ("vi phạm quy định"),
     NGHI_KHONG_PHEP ("nghỉ không phép");
     
      private String MoTa;

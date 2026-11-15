@@ -14,6 +14,8 @@ public class ThongBao {
     private String Message;
     private TrangThaiDocThongBao TrangThai;
     private LoaiRequest Request;
+    private LocalDate NgayDangKy; //chỉ có tác dụng vs làm OT
+    private LocalDate NgayHetHan;
 
     public ThongBao(String MaThongBao,String MaNguoiGui, LocalDate date, LocalTime time, String Message) {
         this.MaThongBao = MaThongBao;
@@ -22,6 +24,7 @@ public class ThongBao {
         this.time = time;
         this.Message = Message;
         this.TrangThai = TrangThaiDocThongBao.CHUA_DOC;
+        this.Request = LoaiRequest.THONG_BAO;
     }
 
     public String getMaThongBao() {
@@ -78,7 +81,30 @@ public class ThongBao {
 
     public void setRequest(LoaiRequest Request) {
         this.Request = Request;
+        if(this.Request != LoaiRequest.THONG_BAO){
+            setNgayHetHan(date.plusDays(1));
+        
+        }
     }
+
+    public LocalDate getNgayHetHan() {
+        return NgayHetHan;
+    }
+
+    public void setNgayHetHan(LocalDate NgayHetHan) {
+        this.NgayHetHan = NgayHetHan;
+    }
+    
+    
+
+    public LocalDate getNgayDangKy() {
+        return NgayDangKy;
+    }
+
+    public void setNgayDangKy(LocalDate NgayDangKy) {
+        this.NgayDangKy = NgayDangKy;
+    }
+    
 
     @Override
     public String toString() {
@@ -102,12 +128,18 @@ public class ThongBao {
                 + MaThongBao + " bỏi hệ thống "  
                 + " được gửi vào ngày " + date + " " + time + " với bằng chứng " + Message;
         }
-        else{
+        if(Request.equals(LoaiRequest.XEM_XET_TANG_LUONG)){
             return "Bạn nhận được thông báo đề nghị tăng lương có mã " 
                 + MaThongBao + "từ người gửi có mã nhân viên " + MaNguoiGui 
-               + " được gửi vào ngày " + date + " " + time + " với lý do: " + Message;
+               + " được gửi vào ngày " + date + " " + time + " " + Message;
         
         }
+        if(Request.equals(LoaiRequest.THONG_BAO)){
+            return "Bạn nhận được thông báo có mã " 
+                + MaThongBao + " từ " + MaNguoiGui 
+               + " được gửi vào ngày " + date + " " + time + " có nội dung là " + Message;
+        }
+        return "phạm vi ngoài" + Request.getMoTa();
     }
     
     

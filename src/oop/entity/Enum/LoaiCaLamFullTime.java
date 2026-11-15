@@ -2,9 +2,9 @@
 package oop.entity.Enum;
 import java.time.LocalTime;
 public enum LoaiCaLamFullTime {
-    SANG("ca sáng",LocalTime.of(6, 0),LocalTime.of(14, 0)),
-    CHIEU("ca chiều",LocalTime.of(14, 0),LocalTime.of(22, 0)),
-    TOI("ca tối",LocalTime.of(22, 0),LocalTime.of(6, 0));
+    SANG("Sáng",LocalTime.of(6, 0),LocalTime.of(14, 0)),
+    CHIEU("Chiều",LocalTime.of(14, 0),LocalTime.of(22, 0)),
+    TOI("Tối",LocalTime.of(22, 0),LocalTime.of(6, 0));
     
     private String MoTa;
     private LocalTime GioVao;

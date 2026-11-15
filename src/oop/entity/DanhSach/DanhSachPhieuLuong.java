@@ -6,7 +6,7 @@ import oop.entity.Object.PhieuLuong;
 
 public class DanhSachPhieuLuong implements DanhSach<PhieuLuong>{
     private ArrayList<PhieuLuong> dspl;
-    private static int dem=0;
+    private int dem=0;
 
     public DanhSachPhieuLuong() {
         this.dspl = new ArrayList<>();
@@ -38,7 +38,7 @@ public class DanhSachPhieuLuong implements DanhSach<PhieuLuong>{
             System.out.println(pl);
         }
     }
-    public static String taoMa(){
+    public String taoMa(){
         dem++;
         return String.format("PL%03d", dem);
     }

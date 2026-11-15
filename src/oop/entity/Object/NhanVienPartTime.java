@@ -8,11 +8,9 @@ import oop.entity.Enum.LoaiCaLamPartTime;
 public class NhanVienPartTime extends NhanVien{
     private LoaiCaLamPartTime Ca;
     private final int SO_GIO_CONG=4;
-    private final double LUONG_MOT_GIO=25000;
 
-    public NhanVienPartTime(String MaNV, String CCCD, String HoTen, String SDT, String MaQuanLyPhuTrach, String MaPhongBan, LocalDate BirthDate, LocalDate NgayVaoLam, String ChucVu,String HinhThucDiLam, String CaLam) {
-        super(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, MaPhongBan, BirthDate, NgayVaoLam, ChucVu, HinhThucDiLam, CaLam);
-        this.HinhThucDiLam="part-time";
+    public NhanVienPartTime(String MaNV, String CCCD, String HoTen, String SDT, String MaQuanLyPhuTrach, String MaPhongBan, LocalDate BirthDate, String ChucVu, String CaLam) {
+        super(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, MaPhongBan, BirthDate, ChucVu, CaLam);
         this.Ca=LoaiCaLamPartTime.NhanDien(CaLam);
     }
 
@@ -20,9 +18,17 @@ public class NhanVienPartTime extends NhanVien{
     }
     
        public double TinhLuongThucTe(){
-           return bcc.TongSoNgayCong()*SO_GIO_CONG*LUONG_MOT_GIO;
-       }
+        double LuongMotGio = super.getLuongCoSo();
+        double TienTacDongKhenPhat = super.getDsktkl().getTienTacDong(super.getBcc().getNgayBatDauBang(), super.getBcc().getNgayKetThucBang(), this);
+        double LuongMotThang = TinhTienLamOT() + LuongMotGio*SO_GIO_CONG*super.getBcc().getSoNgayCong()+ super.getPhuCap() + TienTacDongKhenPhat;
+        double LuongChiuThue = LuongMotThang - 0.105*LuongMotThang; //trừ bảo hiểm
+        double ThueTNCN = TinhThue(LuongChiuThue);
+        return LuongChiuThue - ThueTNCN;
+    }
 
+    public double TinhLuongMotPhut() {
+    return super.getLuongCoSo() / 60;
+    }
 
     public int getSO_GIO_CONG() {
         return SO_GIO_CONG;
@@ -33,9 +39,6 @@ public class NhanVienPartTime extends NhanVien{
         return super.toString();
     }
 
-    public double getLUONG_MOT_GIO() {
-        return LUONG_MOT_GIO;
-    }
      
     
     public LoaiCaLamPartTime getCa() {
@@ -56,6 +59,7 @@ public class NhanVienPartTime extends NhanVien{
     public LocalTime getGioRaCa(){
         return Ca.getGioRa();
     }
+
     }
        
        

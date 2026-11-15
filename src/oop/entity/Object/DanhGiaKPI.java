@@ -12,13 +12,9 @@ public class DanhGiaKPI{
     private String MaNVDanhGia;
     private String MaNVNhanDanhGia;
 
-    public DanhGiaKPI(String MaDanhGia, int DiemKPI, String XepLoai, int Thang, int Nam, String MaNVDanhGia, String MaNVNhanDanhGia) {
+    public DanhGiaKPI(String MaDanhGia, int DiemKPI, int Thang, int Nam, String MaNVDanhGia, String MaNVNhanDanhGia) {
         this.MaDanhGia = MaDanhGia;
-        if(DiemKPI<0 && DiemKPI>100){
-            System.out.println(MaDanhGia + " khong hop le");
-            return;
-        }
-        else{this.DiemKPI = DiemKPI;}
+        this.DiemKPI = DiemKPI;
         this.XepLoai = PhanXepLoai();
         this.Thang = Thang;
         this.Nam = Nam;

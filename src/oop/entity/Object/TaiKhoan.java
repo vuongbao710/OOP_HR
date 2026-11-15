@@ -131,8 +131,8 @@ public class TaiKhoan {
         return false;
     }
     
-    public NhanVien timKiemNhanVien(DanhSachNhanVien dsnv){
-        for(NhanVien nv : dsnv.getDsnv()){
+    public NhanVien timKiemNhanVien(){
+        for(NhanVien nv : DanhSachNhanVien.getDsnv()){
             if(nv.getMaNV().equalsIgnoreCase(this.MaNV)){
                 return nv;
             }

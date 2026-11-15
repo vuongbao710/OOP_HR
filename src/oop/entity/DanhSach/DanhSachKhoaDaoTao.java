@@ -2,32 +2,28 @@
 package oop.entity.DanhSach;
 
 import java.util.ArrayList;
-import oop.entity.Interface.DanhSach;
 import oop.entity.Object.KhoaDaoTao;
 
-public class DanhSachKhoaDaoTao implements DanhSach<KhoaDaoTao>{
-    private ArrayList<KhoaDaoTao> dskdt;
+public class DanhSachKhoaDaoTao {
+    private static ArrayList<KhoaDaoTao> dskdt = new ArrayList<>();
     private static int dem=0;
 
-    public DanhSachKhoaDaoTao() {
-        this.dskdt = new ArrayList<>();
-    }
 
-    public ArrayList<KhoaDaoTao> getDskdt() {
+    public static ArrayList<KhoaDaoTao> getDskdt() {
         return dskdt;
     }
 
-    public void setDskdt(ArrayList<KhoaDaoTao> dskdt) {
-        this.dskdt = dskdt;
+    public static void setDskdt(ArrayList<KhoaDaoTao> ds) {
+        dskdt = ds;
     }
     
-    public void them(KhoaDaoTao kdt){
-        this.dskdt.add(kdt);
+    public static void them(KhoaDaoTao kdt){
+        dskdt.add(kdt);
     }
-    public void xoa(KhoaDaoTao kdt){
-        this.dskdt.remove(kdt);
+    public static void xoa(KhoaDaoTao kdt){
+        dskdt.remove(kdt);
     }
-    public KhoaDaoTao timKiem(String MaKhoaDaoTao){
+    public static KhoaDaoTao timKiem(String MaKhoaDaoTao){
         for(KhoaDaoTao kdt : dskdt){
             if(kdt.getMaKhoaHoc().equals(MaKhoaDaoTao)){
                 return kdt;
@@ -35,7 +31,11 @@ public class DanhSachKhoaDaoTao implements DanhSach<KhoaDaoTao>{
         }
         return null;
     }
-    public void xuat(){
+    public static void xuat(){
+        if(dskdt==null){
+            System.out.println("danh sách khoá đào tạo rỗng");
+            return;
+        }
         for(KhoaDaoTao kdt : dskdt){
             System.out.println(kdt);
         }

@@ -17,29 +17,43 @@ public class OOP {
         
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
         System.setErr(new PrintStream(System.err, true, StandardCharsets.UTF_8));
-        DanhSachNhanVien dsnv = TaoDuLieuMau.TaoDanhSachNhanVien();
-        DanhSachPhongBan dspb = TaoDuLieuMau.TaoDanhSachPhongBan();
-        DanhSachTaiKhoan dstk = TaoDuLieuMau.TaoDanhSachTaiKhoan(dsnv);
-        Scanner sc = new Scanner(System.in);
         
+        
+        DanhSachPhongBan dspb = TaoDuLieuMau.TaoDanhSachPhongBan();
+        
+        DanhSachHopDong dsHopDong = TaoDuLieuMau.TaoDanhSachHopDong();
+        dsHopDong.xuat();
+        
+        TaoDuLieuMau.TaoDanhSachNhanVien(dsHopDong);
+        TaoDuLieuMau.TaoDanhSachTaiKhoan();
+        DanhSachNhanVien.xuat();
+        Scanner sc = new Scanner(System.in);
         while(true){
         int choice=-1;
-        TaiKhoan tk = ThaoTac.DangNhap(sc, dstk);
+        TaiKhoan tk = ThaoTac.DangNhap(sc);
             
         while(choice!=0){
-        NhanVien nv = tk.timKiemNhanVien(dsnv);
+        NhanVien nv = tk.timKiemNhanVien();
         DanhSachThongBao dsThongBao = nv.getDsThongBao();
         String MaNV = nv.getMaNV();
         
-        ThaoTac.checkInbox(dsThongBao);
+        //ThaoTac.checkInbox(dsThongBao);
         
-        /*ThaoTac.ChamCong(LocalTime.now(),LocalDate.now(),nv);
-        nv.getBcc().xuat();
-        nv.getDsktkl().xuat();*/
+        //ThaoTac.ChamCong(LocalTime.now(),LocalDate.now(),nv);      reason
+        //nv.getBcc().xuat();
+        //nv.getDsktkl().xuat();
         
-        
+        /*
         ThaoTac.XinNghiPhep(LocalDate.now(), LocalTime.now(), nv, sc, dsnv);
-        nv.getDsDon().xuat();
+        nv.getDsDon().xuat();*/
+        
+        ThaoTac.checkInbox(MaNV, sc, LocalDate.now(), LocalTime.now(), dsThongBao);
+        if(MaNV.equalsIgnoreCase("NV003")){
+        ThaoTac.KiemTraVanHanhLuongNhanSu(LocalDate.now(), LocalTime.now(), MaNV, LocalDate.of(2026, 12, 6));
+        nv.getDspl().xuat();
+        System.out.println("SoNgayCong=" + nv.getDsbcc().timKiem(11, 2026).getSoNgayCong());
+        nv.getBcc().xuat();
+        }
         System.out.println("muốn đăng xuất chưa");
         choice = sc.nextInt();
         sc.nextLine();

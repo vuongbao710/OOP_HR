@@ -1,0 +1,10 @@
+HD001,NV001,2025-01-15,2025-02-01,2027-02-01,Nhân viên kinh doanh,8500000,50000,1000000,THU_VIEC,DANG_CO_HIEU_LUC,Hợp đồng thử việc đang có hiệu lực
+HD002,NV002,2025-03-10,2025-03-15,2028-03-15,Chuyên viên phát triển đối tác,12000000,0,1500000,CHINH_THUC_NGAN_HAN,DANG_CO_HIEU_LUC,Hợp đồng ngắn hạn có hiệu lực đến tương lai
+HD003,NV003,2023-01-01,2023-01-01,2030-01-01,Chuyên viên phân tích doanh số,18000000,0,2000000,CHINH_THUC_DAI_HAN,DANG_CO_HIEU_LUC,Hợp đồng dài hạn đang có hiệu lực tốt
+HD004,NV004,2024-06-01,2024-06-01,2027-06-01,Nhân viên kiểm tra chất lượng,10000000,0,1200000,CHINH_THUC_NGAN_HAN,DANG_CO_HIEU_LUC,Hợp đồng ngắn hạn ổn định
+HD005,NV005,2024-09-01,2024-09-01,2029-09-01,Nhân viên điều phối vận chuyển,9000000,0,800000,CHINH_THUC_DAI_HAN,DANG_CO_HIEU_LUC,Đang trong quá trình công tác lâu dài
+HD006,NV006,2025-10-01,2025-10-01,2027-04-01,Công nhân thời vụ (Part-time),0,45000,500000,PART_TIME,DANG_CO_HIEU_LUC,Nhân viên thời vụ làm việc theo giờ
+HD007,NV007,2024-05-20,2024-06-01,2030-06-01,Chuyên viên tuyển dụng,25000000,0,3000000,CHINH_THUC_DAI_HAN,DANG_CO_HIEU_LUC,Hợp đồng chính thức dài hạn cấp chuyên viên
+HD008,NV008,2025-02-14,2025-03-01,2027-03-01,Nhân viên tổng đài,11000000,0,1000000,THU_VIEC,CHO_DUYET,Hợp đồng thử việc đang chờ duyệt
+HD009,NV009,2024-07-15,2024-08-01,2028-08-01,Chuyên viên digital marketing,15000000,0,1800000,CHINH_THUC_NGAN_HAN,DANG_CO_HIEU_LUC,Hợp đồng ngắn hạn kéo dài đến tương lai
+HD010,NV010,2025-11-15,2025-12-01,2027-12-01,Nhân viên nhập liệu kế toán (Part-time),0,40000,600000,PART_TIME,CHO_DUYET,Đang chờ ban giám đốc phê duyệt hợp đồng part-time mới

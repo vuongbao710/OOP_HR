@@ -1,7 +1,9 @@
 
 package oop.entity.DanhSach;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import oop.entity.Enum.TrangThaiDocThongBao;
 import oop.entity.Interface.DanhSach;
 import oop.entity.Object.ThongBao;
 
@@ -53,6 +55,16 @@ public class DanhSachThongBao implements DanhSach<ThongBao>{
 
     public void setDem(int dem) {
         this.dem = dem;
+    }
+    
+    public ArrayList timKiemChuaGiaiQuyet(LocalDate date){
+        ArrayList<ThongBao> temp = new ArrayList<>();
+        for(ThongBao tb : dsThongBao){
+            if(tb.getNgayHetHan().equals(date) && !(tb.getTrangThai().equals(TrangThaiDocThongBao.DA_GIAI_QUYET))){
+                temp.add(tb);
+            }
+        }
+        return temp;
     }
     
 }

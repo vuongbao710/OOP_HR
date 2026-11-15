@@ -1,10 +1,12 @@
 
 package oop.entity.DanhSach;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import oop.entity.Interface.DanhSach;
 import oop.entity.Object.KhenThuong;
 import oop.entity.Object.KhenThuongKyLuat;
 import oop.entity.Object.KyLuat;
+import oop.entity.Object.NhanVien;
 
 public class DanhSachKhenThuongKyLuat implements DanhSach<KhenThuongKyLuat>{
     private ArrayList<KhenThuongKyLuat> dsktkl;
@@ -72,5 +74,26 @@ public class DanhSachKhenThuongKyLuat implements DanhSach<KhenThuongKyLuat>{
     public String taoMa(){
         dem++;
         return String.format("QD%03d", dem);
+    }
+    
+    public KhenThuongKyLuat timKiem(LocalDate date){
+        for(KhenThuongKyLuat k : dsktkl){
+            if(k.getNgayBanHanh().equals(date)){
+                return k;
+            }
+        }
+        return null;
+    }
+    
+    public double getTienTacDong(LocalDate NgayBatDau, LocalDate NgayKetThuc, NhanVien nv){
+        double Tien=0;
+        for(LocalDate date = NgayBatDau ; !date.isAfter(NgayKetThuc) ; date = date.plusDays(1)){
+            KhenThuongKyLuat k = timKiem(date);
+            if(k!=null){
+            Tien = Tien + k.tinhTacDongLuong(nv);}
+            else{
+            }
+        }
+        return Tien;
     }
 }

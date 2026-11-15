@@ -2,7 +2,6 @@
 package oop.entity.Enum;
 
 public enum LoaiKhenThuong {
-    THUONG_THAM_NIEN ("thưởng thâm niên"),
     THUONG_SANG_KIEN ("thưởng sáng kiến"),
     THUONG_TET ("thưởng tết");
     

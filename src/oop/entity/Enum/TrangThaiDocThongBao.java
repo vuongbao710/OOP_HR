@@ -1,6 +1,7 @@
 
 package oop.entity.Enum;
 public enum TrangThaiDocThongBao {
+    DA_GIAI_QUYET("đã giải quyết"),
     CHUA_DOC("chưa đọc"),
     DA_DOC("đã đọc"),;
     

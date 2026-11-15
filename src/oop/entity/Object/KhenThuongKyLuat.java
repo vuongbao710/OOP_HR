@@ -1,6 +1,5 @@
 
 package oop.entity.Object;
-import oop.entity.DanhSach.DanhSachNhanVien;
 import java.time.LocalDate;
 public abstract class KhenThuongKyLuat {
     protected String MaQD;
@@ -33,13 +32,8 @@ public abstract class KhenThuongKyLuat {
     
     
     
-    public abstract double tinhTacDongLuong(String MaNV);
+    public abstract double tinhTacDongLuong(NhanVien nv);
     
-    public NhanVien truyXuatNhanVien (String MaNV){ //////////
-        DanhSachNhanVien temp = new DanhSachNhanVien();
-        NhanVien nv = temp.timKiem(MaNV);
-        return nv;
-    }
 
     public String getMaQD() {
         return MaQD;

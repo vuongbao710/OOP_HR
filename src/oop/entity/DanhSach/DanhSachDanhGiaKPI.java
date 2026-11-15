@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import oop.entity.Interface.DanhSach;
 public class DanhSachDanhGiaKPI implements DanhSach<DanhGiaKPI>{
     private ArrayList<DanhGiaKPI> dskpi;
-    private static int dem=0;
+    private int dem=0;
 
     public DanhSachDanhGiaKPI() {
         this.dskpi = new ArrayList<>();
@@ -38,7 +38,7 @@ public class DanhSachDanhGiaKPI implements DanhSach<DanhGiaKPI>{
             System.out.println(kpi);
         }
     }
-    public static String taoMa(){
+    public String taoMa(){
         dem++;
         return String.format("KPI%03d", dem);
     }

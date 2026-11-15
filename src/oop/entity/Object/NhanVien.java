@@ -7,37 +7,41 @@ import oop.entity.DanhSach.DanhSachPhieuLuong;
 import java.time.LocalDate;
 import oop.entity.DanhSach.DanhSachDonXinPhep;
 import oop.entity.DanhSach.DanhSachThongBao;
+import oop.entity.Enum.LOAI_HOP_DONG;
 import oop.entity.Enum.LoaiChucVu;
 import oop.entity.Enum.LoaiVaiTro;
 
 public abstract class NhanVien {
 
 
-    protected String MaNV;
-    protected String CCCD;
-    protected String HoTen;
-    protected String SDT;
-    protected String MaPhongBan;
-    protected String MaQuanLyPhuTrach;
-    protected LocalDate BirthDate;
-    protected LocalDate NgayVaoLam;
-    protected LoaiChucVu ChucVu;
-    protected String CaLam;
-    protected BangChamCong bcc;
-    protected DanhSachBangChamCong dsbcc;
-    protected DanhSachKhenThuongKyLuat dsktkl;
-    protected DanhSachPhieuLuong dspl;
-    protected DanhSachDonXinPhep dsDon;
-    protected DanhSachThongBao dsThongBao;
-    protected TaiKhoan TaiKhoan;
+    private String MaNV;
+    private String CCCD;
+    private String HoTen;
+    private String SDT;
+    private String MaPhongBan;
+    private String MaQuanLyPhuTrach;
+    private LocalDate BirthDate;
+    private LocalDate NgayVaoLam;
+    private LoaiChucVu ChucVu;
+    private String CaLam;
+    private BangChamCong bcc;
+    private DanhSachBangChamCong dsbcc;
+    private DanhSachKhenThuongKyLuat dsktkl;
+    private DanhSachPhieuLuong dspl;
+    private DanhSachDonXinPhep dsDon;
+    private DanhSachThongBao dsThongBao;
+    private TaiKhoan TaiKhoan;
     
-    protected LocalDate NgayXetNangLuong;
-    protected LocalDate NgayTraLuongDinhKy;
-    protected String HinhThucDiLam;
-    
-    protected int SoLanViPhamChamCong = 0;
-    protected int SoLanViPhamNghiKhongPhep = 0;
-    protected int SoLanViPhamQuyDinh = 0;
+    private LocalDate NgayXetNangLuong;
+    private LocalDate NgayTraLuongDinhKy;
+    private String HinhThucDiLam;
+    private HopDong HopDong; /////
+    private double LuongCoSo;
+    private double PhuCap;
+    private int SoLanNghiPhepNam =12;
+    private int SoLanViPhamChamCong = 0;
+    private int SoLanViPhamNghiKhongPhep = 0;
+    private int SoLanViPhamQuyDinh = 0;
 
     public NhanVien() {
         this.bcc = new BangChamCong();
@@ -49,7 +53,8 @@ public abstract class NhanVien {
     }
     
 
-    public NhanVien(String MaNV,String CCCD, String HoTen, String SDT,String MaQuanLyPhuTrach, String MaPhongBan, LocalDate BirthDate, LocalDate NgayVaoLam, String ChucVu, String HinhThucDiLam, String CaLam) {
+    public NhanVien(String MaNV,String CCCD, String HoTen, String SDT,String MaQuanLyPhuTrach
+            , String MaPhongBan, LocalDate BirthDate,String ChucVu, String CaLam) {
         this.MaNV = MaNV;
         this.CCCD=CCCD;
         this.HoTen = HoTen;
@@ -57,21 +62,17 @@ public abstract class NhanVien {
         this.MaQuanLyPhuTrach=MaQuanLyPhuTrach;
         this.MaPhongBan = MaPhongBan;
         this.BirthDate = BirthDate;
-        this.NgayVaoLam = NgayVaoLam;
         this.ChucVu=LoaiChucVu.NhanDien(ChucVu);
         this.CaLam=CaLam;
-        this.bcc = new BangChamCong(MaNV, NgayTraLuongDinhKy.getMonthValue(), NgayTraLuongDinhKy.getYear());
         this.dsbcc = new DanhSachBangChamCong();
         this.dsktkl = new DanhSachKhenThuongKyLuat();
         this.dspl = new DanhSachPhieuLuong();
+        this.dsThongBao = new DanhSachThongBao();
+        setNgayTraLuongDinhKy(LocalDate.now());  //MocThoiGianBatDau
         
-        NgayTraLuongDinhKy = LocalDate.of(NgayVaoLam.getYear(), NgayVaoLam.getMonthValue(), 5);
-        if(NgayTraLuongDinhKy.isBefore(NgayVaoLam)){
-            NgayTraLuongDinhKy.plusMonths(1);
-        }
-        this.NgayXetNangLuong = NgayVaoLam.plusYears(1);
-        
-        this.HinhThucDiLam=HinhThucDiLam;
+        LocalDate KyTruoc = NgayTraLuongDinhKy.minusMonths(1);
+        this.bcc = new BangChamCong(MaNV, KyTruoc.getMonthValue(), KyTruoc.getYear());
+        this.HopDong = new HopDong();
     }
     
     
@@ -101,6 +102,66 @@ public abstract class NhanVien {
     }
     
     public abstract double TinhLuongThucTe();
+    
+    public abstract double TinhLuongMotPhut();
+    
+     public double TinhTienLamOT(){
+        double LuongTangCaMotGio = TinhLuongMotPhut()*60*1.5;
+        return LuongTangCaMotGio*bcc.getSoGioLamOT();
+    }
+     
+     public double TinhThue(double LuongChiuThue){
+        double ThueTNCN;
+        double Moc1=5000000;double Thue1=0.05;
+        double Moc2=10000000;double Thue2=0.1;
+        double Moc3=18000000;double Thue3=0.15;
+        double Moc4=32000000;double Thue4=0.2;
+        double Moc5=52000000;double Thue5=0.25;
+        double Moc6=80000000;double Thue6=0.3;
+        double Thue7=0.35;
+            if(LuongChiuThue<Moc1){
+                return LuongChiuThue*Thue1;
+            }
+            else{
+            ThueTNCN=Moc1*Thue1;
+                if(LuongChiuThue<Moc2){
+                    return ThueTNCN+(LuongChiuThue-Moc1)*Thue2;
+                    }
+                    else{
+                    ThueTNCN = ThueTNCN + (Moc2-Moc1)*Thue2;
+                        if(LuongChiuThue<Moc3){
+                        return ThueTNCN+(LuongChiuThue-Moc2)*Thue3;
+                        }
+                        
+                        else{
+                    ThueTNCN = ThueTNCN + (Moc3-Moc2)*Thue3;
+                            if(LuongChiuThue<Moc4){
+                            return ThueTNCN+(LuongChiuThue-Moc3)*Thue4;
+                                }
+                    else{
+                    ThueTNCN = ThueTNCN + (Moc4-Moc3)*Thue4;
+                    if(LuongChiuThue<Moc5){
+                            return ThueTNCN+(LuongChiuThue-Moc4)*Thue5;
+                    }
+                    
+                    else{
+                    ThueTNCN = ThueTNCN + (Moc5-Moc4)*Thue5;
+                        if(LuongChiuThue<Moc6){
+                        return ThueTNCN+(LuongChiuThue-Moc5)*Thue6;
+                    }
+                    
+                    else{
+                        ThueTNCN=ThueTNCN + (Moc6-Moc5)*Thue6;
+                        return ThueTNCN+(LuongChiuThue - 80000000)*Thue7;
+                    }
+                    }
+                        }
+                    }
+            }
+        }
+        
+    
+    }
 
     public String getMaQuanLyPhuTrach() {
         return MaQuanLyPhuTrach;
@@ -131,7 +192,7 @@ public abstract class NhanVien {
         return NgayVaoLam;
     }
 
-    public void setNgayVaoLam(LocalDate NgayVaoLam) {
+    private void setNgayVaoLam(LocalDate NgayVaoLam) {
         this.NgayVaoLam = NgayVaoLam;
     }
 
@@ -187,8 +248,11 @@ public abstract class NhanVien {
         return NgayTraLuongDinhKy;
     }
 
-    public void setNgayTraLuongDinhKy(LocalDate NgayTraLuongDinhKy) {
-        this.NgayTraLuongDinhKy = NgayTraLuongDinhKy;
+    public void setNgayTraLuongDinhKy(LocalDate dateNow) {
+        this.NgayTraLuongDinhKy = LocalDate.of(dateNow.getYear() , dateNow.getMonthValue() , 6);  ///hết ngày 5 mới xét
+        if(!NgayTraLuongDinhKy.isAfter(dateNow)){
+            this.NgayTraLuongDinhKy = this.NgayTraLuongDinhKy.plusMonths(1);
+        }
     }
 
     public String getCCCD() {
@@ -254,21 +318,68 @@ public abstract class NhanVien {
     public void setSoLanViPhamQuyDinh(int SoLanViPhamQuyDinh) {
         this.SoLanViPhamQuyDinh = SoLanViPhamQuyDinh;
     }
-    
+
+    public LocalDate getNgayXetNangLuong() {
+        return NgayXetNangLuong;
+    }
+
+    public void setNgayXetNangLuong(LocalDate NgayXetNangLuong) {
+        this.NgayXetNangLuong = NgayXetNangLuong;
+    }
+
+    public HopDong getHopDong() {
+        return HopDong;
+    }
+
+    public void setHopDong(HopDong HopDong) {
+        this.HopDong = HopDong;
+        setLuongCoSo(HopDong.getMucLuongCoSo());
+        if(HopDong.getLoaiHopDong().equals(LOAI_HOP_DONG.PART_TIME)){
+            setHinhThucDiLam("Part-time");
+        }
+        else{
+            setHinhThucDiLam("Full-time");
+        }
+        setNgayVaoLam(HopDong.getNgayBatDauHopDong());
+        setNgayXetNangLuong(this.NgayVaoLam.plusYears(1));
+        setPhuCap(HopDong.getPhuCap());
+    }
+
+    public double getLuongCoSo() {
+        return LuongCoSo;
+    }
+
+    private void setLuongCoSo(double LuongCoSo) {
+        this.LuongCoSo = LuongCoSo;
+    }
+
+    public double getPhuCap() {
+        return PhuCap;
+    }
+
+    private void setPhuCap(double PhuCap) {
+        this.PhuCap = PhuCap;
+    }
     
 
     @Override
     public String toString() {
-        return "NhanVien{" + "MaNV=" 
-                + MaNV + ", CCCD=" + CCCD + ", HoTen=" 
-                + HoTen + ", SDT=" + SDT + ", MaPhongBan=" 
-                + MaPhongBan + ", MaQuanLyPhuTrach=" + MaQuanLyPhuTrach 
-                + ", BirthDate=" + BirthDate + ", NgayVaoLam=" + NgayVaoLam 
-                + ", ChucVu=" + ChucVu + ", dsktkl=" + dsktkl + ", HinhThucDiLam=" + HinhThucDiLam + '}';
+        return "NhanVien{" + "MaNV=" + MaNV + ", CCCD=" + CCCD + ", HoTen=" + HoTen + ", SDT=" 
+                + SDT + ", MaPhongBan=" + MaPhongBan + ", MaQuanLyPhuTrach=" + MaQuanLyPhuTrach 
+                + ", BirthDate=" + BirthDate + ", NgayVaoLam=" + NgayVaoLam + ", ChucVu=" + ChucVu 
+                + ", CaLam=" + CaLam + ", NgayXetNangLuong=" + NgayXetNangLuong + ", NgayTraLuongDinhKy=" +
+                NgayTraLuongDinhKy + ", HinhThucDiLam=" + HinhThucDiLam + ", HopDong=" + HopDong + ", LuongCoSo=" 
+                + LuongCoSo + '}';
+    }
+
+    public int getSoLanNghiPhepNam() {
+        return SoLanNghiPhepNam;
+    }
+
+    public void setSoLanNghiPhepNam(int SoLanNghiPhepNam) {
+        this.SoLanNghiPhepNam = SoLanNghiPhepNam;
     }
     
-    
-
 
     public boolean ToiNgayTongKetDinhKy(LocalDate NgayKiemTra){
         if(NgayKiemTra.isEqual(NgayTraLuongDinhKy)){
@@ -276,6 +387,14 @@ public abstract class NhanVien {
         }
         return false;
     }
+    
+    public boolean ToiNgayXetNangLuong(LocalDate NgayKiemTra){
+        if(NgayKiemTra.isEqual(this.NgayXetNangLuong)){
+            return true;
+        }
+        return false;
+    }
+    
     
    public void ThemChiTietChamCong(ChiTietChamCong cc){
         this.bcc.them(cc);
@@ -287,7 +406,9 @@ public abstract class NhanVien {
    
    public PhieuLuong TaoPhieuLuong(int thang, int nam){
        double LuongThucTe = TinhLuongThucTe();
-       PhieuLuong pl = new PhieuLuong(LuongThucTe, thang, nam, this.MaNV);
+       double TienLamOT = TinhTienLamOT();
+       double TienKhenPhat = dsktkl.getTienTacDong(bcc.getNgayBatDauBang(), bcc.getNgayKetThucBang(), this);
+       PhieuLuong pl = new PhieuLuong(LuongThucTe,LuongCoSo,PhuCap,TienLamOT,TienKhenPhat, thang, nam, this.MaNV);
        return pl;
    }
    
@@ -298,19 +419,17 @@ public abstract class NhanVien {
        this.dsktkl.them(ktkl);
    }
     
-    public void VanHanh(LocalDate NgayKiemTra, ChiTietChamCong cc){
-        ThemChiTietChamCong(cc);
-        if(ToiNgayTongKetDinhKy(NgayKiemTra)==false){
-            return;
-        }
-        else{
-            ThemBangChamCong();
-            PhieuLuong pl = TaoPhieuLuong( NgayKiemTra.getMonthValue() , NgayKiemTra.getYear());
-            ThemPhieuLuong(pl);
-            this.bcc = new BangChamCong(MaNV, NgayKiemTra.getMonthValue(), NgayKiemTra.getYear());
-            NgayTraLuongDinhKy.plusMonths(1);
-        }
+    public void ResetQuyTrinhChamCong(LocalDate NgayKiemTra){
+    ThemBangChamCong(); 
+    LocalDate KyTruoc = NgayKiemTra.minusMonths(1);
+    PhieuLuong pl = TaoPhieuLuong(KyTruoc.getMonthValue(), KyTruoc.getYear());
+    pl.setMaPhieu(dspl.taoMa());
+    ThemPhieuLuong(pl);
+    this.bcc = new BangChamCong(MaNV, NgayKiemTra.getMonthValue(), NgayKiemTra.getYear());
+
+    this.NgayTraLuongDinhKy = NgayTraLuongDinhKy.plusMonths(1);
     }
+
     
     
     public String XacDinhVaiTro(){
