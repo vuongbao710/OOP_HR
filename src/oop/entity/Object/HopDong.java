@@ -11,6 +11,7 @@ public class HopDong {
     private LocalDate NgayKy;
     private LocalDate NgayBatDauHopDong;
     private LocalDate NgayHetHan;
+    private ViTri loaiViTri;
     private String ViTriLamViec;
     private double LuongCoBan;
     private double LuongTheoGio;
@@ -35,6 +36,15 @@ public class HopDong {
         this.LoaiHopDong = LoaiHopDong;
         this.TrangThaiHopDong = TrangThaiHopDong;
         this.GhiChu = GhiChu;
+        this.loaiViTri = ViTri.NhanDien(ViTriLamViec);
+    }
+
+    public ViTri getLoaiViTri() {
+        return loaiViTri;
+    }
+
+    public void setLoaiViTri(ViTri loaiViTri) {
+        this.loaiViTri = loaiViTri;
     }
 
     

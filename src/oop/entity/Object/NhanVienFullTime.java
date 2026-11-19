@@ -23,9 +23,9 @@ public class NhanVienFullTime extends NhanVien {
     }
 
     public double TinhLuongThucTe(){
-        double LuongMotGio = getLuongMotGio();
+        double LuongMotGio = TinhLuongMotGio();
         double TienTacDongKhenPhat = super.getDsktkl().getTienTacDong(super.getBcc().getNgayBatDauBang(), super.getBcc().getNgayKetThucBang(), this);
-        double LuongMotThang = TinhTienLamOT() + LuongMotGio*SO_GIO_CONG*super.getBcc().getSoNgayCong()+ super.getPhuCap()+ TienTacDongKhenPhat;
+        double LuongMotThang = TinhTienLamOT() + TinhLuongMotNgay()*super.getBcc().getSoNgayCong()+ super.getPhuCap()+ TienTacDongKhenPhat;
         double LuongChiuThue = LuongMotThang - 0.105*LuongMotThang; //trừ bảo hiểm
         double ThueTNCN = TinhThue(LuongChiuThue);
         return LuongChiuThue - ThueTNCN;
@@ -51,11 +51,15 @@ public class NhanVienFullTime extends NhanVien {
         return SO_NGAY_CONG_CHUAN;
     }
     
-    public double getLuongMotGio(){
+    public double TinhLuongMotGio(){
         return (super.getLuongCoSo()/SO_NGAY_CONG_CHUAN)/SO_GIO_CONG;
     }
     public double TinhLuongMotPhut(){
-        return getLuongMotGio()/60;
+        return TinhLuongMotGio()/60;
+    }
+    
+    public double TinhLuongMotNgay(){
+        return TinhLuongMotGio()*SO_GIO_CONG;
     }
 
     public int getSO_GIO_CONG() {

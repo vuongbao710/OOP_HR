@@ -43,6 +43,15 @@ public class DanhSachDonXinPhep implements DanhSach<DonXinPhep> {
         return null;
     }
     
+    public boolean coTrongNgayNghiPhepKhong(LocalDate date){
+         for(DonXinPhep don : dsDon){
+             if(!date.isBefore(don.getNgayBatDau()) && !date.isAfter(don.getNgayKetThuc())){
+                 return true;
+             }
+         }
+         return false;
+    }
+    
     public void xuat(){
         for(DonXinPhep Don : dsDon){
             System.out.println(Don);

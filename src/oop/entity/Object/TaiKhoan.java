@@ -18,24 +18,25 @@ public class TaiKhoan {
     private TrangThaiHoatDong TrangThai;
     private int SoLanSaiMatKhau=5;
 
-    public TaiKhoan(String TenDangNhap, String MatKhau, String Role, String MaNV) {
+    public TaiKhoan(String TenDangNhap, String MatKhau, LoaiVaiTro Role, String MaNV) {
         this.TenDangNhap = TenDangNhap;
         this.MatKhau = MatKhau;
-        this.Role = LoaiVaiTro.NhanDien(Role);
+        this.Role = Role;
         this.MaNV = MaNV;
+        this.TrangThai = TrangThaiHoatDong.HOAT_DONG;
+    }
+
+    public TaiKhoan(String MaTaiKhoan, String TenDangNhap, String MatKhau, LoaiVaiTro Role) {
+        this.MaTaiKhoan = MaTaiKhoan;
+        this.TenDangNhap = TenDangNhap;
+        this.MatKhau = MatKhau;
+        this.Role = Role;
         this.TrangThai = TrangThaiHoatDong.HOAT_DONG;
     }
 
     
 
-    public TaiKhoan(String MaTaiKhoan, String TenDangNhap, String MatKhau, String Role, String MaNV) {
-        this.MaTaiKhoan = MaTaiKhoan;
-        this.TenDangNhap = TenDangNhap;
-        this.MatKhau = MatKhau;
-        this.Role = LoaiVaiTro.NhanDien(Role);
-        this.MaNV = MaNV;
-        this.TrangThai = TrangThaiHoatDong.HOAT_DONG;
-    }
+
 
     public String getMaTaiKhoan() {
         return MaTaiKhoan;

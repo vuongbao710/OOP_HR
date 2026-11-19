@@ -2,9 +2,10 @@
 package oop.entity.Enum;
 
 public enum LoaiKyLuat {
-    DI_LAM_TRE ("đi làm trễ"),
-    TAN_LAM_SOM ("tan làm sớm"),
-    NGHI_KHONG_PHEP ("nghỉ không phép");
+    KHIEN_TRACH("khiển trách"),
+    KEO_DAI_THOI_HAN_NANG_LUONG("kéo dài thời hạn nâng lương"),
+    CACH_CHUC("cách chức"),
+    SA_THAI("sa thải");
     
      private String MoTa;
 

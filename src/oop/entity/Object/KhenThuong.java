@@ -8,21 +8,16 @@ import java.time.LocalDate;
 public class KhenThuong extends KhenThuongKyLuat {
     private LoaiKhenThuong Type;
 
-    public KhenThuong(LoaiKhenThuong Type, String MaQD, LocalDate NgayBanHanh, double SoTienTacDong, String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh) {
-        super(MaQD, NgayBanHanh, SoTienTacDong, MaNhanVienRaQuyetDinh, MaNhanVienNhanQuyetDinh);
+    public KhenThuong(LoaiKhenThuong Type, LocalDate NgayBanHanh, double SoTienTacDong, String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh, String LoaiQuyetDinh) {
+        super(NgayBanHanh, MaNhanVienRaQuyetDinh, MaNhanVienNhanQuyetDinh);
+        super.LoaiQuyetDinh = "Khen thưởng";
         this.Type = Type;
-        this.LoaiQuyetDinh="Khen Thuong";
     }
 
-    public KhenThuong(LoaiKhenThuong Type, String MaQD, LocalDate NgayBanHanh, String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh) {
-        super(MaQD, NgayBanHanh, MaNhanVienRaQuyetDinh, MaNhanVienNhanQuyetDinh);
-        this.Type = Type;
-        this.LoaiQuyetDinh="Khen Thuong";
-    }
-    
+ 
     
     public double tinhTacDongLuong(NhanVien nv){ //MaNV la MaNV nhan qd
-        return 0;    
+        return SoTienTacDong;    
     }
 
     public LoaiKhenThuong getLoaiKhenThuong() {

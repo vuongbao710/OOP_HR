@@ -4,34 +4,17 @@ import java.time.LocalDate;
 public abstract class KhenThuongKyLuat {
     protected String MaQD;
     protected LocalDate NgayBanHanh;
-    protected double SoTienTacDong;
+    protected double SoTienTacDong = 0;
     protected String MaNhanVienRaQuyetDinh;
     protected String MaNhanVienNhanQuyetDinh;
     protected String LoaiQuyetDinh;
 
-    public KhenThuongKyLuat(String MaQD, LocalDate NgayBanHanh, double SoTienTacDong, String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh) {
-        this.MaQD = MaQD;
-        this.NgayBanHanh = NgayBanHanh;
-        this.SoTienTacDong = SoTienTacDong;
-        this.MaNhanVienRaQuyetDinh = MaNhanVienRaQuyetDinh;
-        this.MaNhanVienNhanQuyetDinh = MaNhanVienNhanQuyetDinh;
-    }
+        public KhenThuongKyLuat(LocalDate NgayBanHanh, String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh) {
+            this.NgayBanHanh = NgayBanHanh;
+            this.MaNhanVienRaQuyetDinh = MaNhanVienRaQuyetDinh;
+            this.MaNhanVienNhanQuyetDinh = MaNhanVienNhanQuyetDinh;
+        }
 
-    public KhenThuongKyLuat(String MaQD, LocalDate NgayBanHanh,String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh) {
-        this.MaQD = MaQD;
-        this.NgayBanHanh = NgayBanHanh;
-        this.MaNhanVienRaQuyetDinh = MaNhanVienRaQuyetDinh;
-        this.MaNhanVienNhanQuyetDinh = MaNhanVienNhanQuyetDinh;
-    }
-
-    public KhenThuongKyLuat(String MaQD, LocalDate NgayBanHanh, String MaNhanVienNhanQuyetDinh) {
-        this.MaQD = MaQD;
-        this.NgayBanHanh = NgayBanHanh;
-        this.MaNhanVienNhanQuyetDinh = MaNhanVienNhanQuyetDinh;
-    }
-    
-    
-    
     public abstract double tinhTacDongLuong(NhanVien nv);
     
 

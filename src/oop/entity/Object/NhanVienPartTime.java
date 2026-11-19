@@ -29,7 +29,11 @@ public class NhanVienPartTime extends NhanVien{
     public double TinhLuongMotPhut() {
     return super.getLuongCoSo() / 60;
     }
-
+    
+    public double TinhLuongMotGio(){
+        return super.getLuongCoSo();
+    }
+    
     public int getSO_GIO_CONG() {
         return SO_GIO_CONG;
     }

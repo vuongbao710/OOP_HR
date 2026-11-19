@@ -1,5 +1,7 @@
 package oop.entity.Object;
 
+import oop.entity.Enum.LoaiVaiTro;
+
 public enum ViTri {
     // --- KINH DOANH (7 vị trí) ---
     NHAN_VIEN_KINH_DOANH("VT01", "Nhân viên kinh doanh", "Kinh doanh", true),
@@ -64,7 +66,16 @@ public enum ViTri {
     KE_TOAN_KHO("VT48", "Kế toán kho", "Kế toán", true),
     KE_TOAN_THUE("VT49", "Kế toán thuế", "Kế toán", true),
     KE_TOAN_GIA_THANH("VT50", "Kế toán giá thành", "Kế toán", true),
-    NHAN_VIEN_NHAP_LIEU_KE_TOAN("VT51", "Nhân viên nhập liệu kế toán (Part-time)", "Kế toán", false);
+    NHAN_VIEN_NHAP_LIEU_KE_TOAN("VT51", "Nhân viên nhập liệu kế toán (Part-time)", "Kế toán", false),
+    // --- QUẢN LÝ ----
+    QUAN_LY_KINH_DOANH("VT51", "Quản lý kinh doanh", "Kinh doanh", true),
+    QUAN_LY_SAN_XUAT("VT52", "Quản lý sản xuất", "Sản xuất", true),
+    QUAN_LY_LOGISTIC("VT53", "Quản lý logistic", "Logistic", true),
+    QUAN_LY_NHAN_SU("VT54", "Quản lý nhân sự", "Nhân sự", true),
+    QUAN_LY_CSKH("VT55", "Quản lý chăm sóc khách hàng", "Chăm sóc khách hàng", true),
+    QUAN_LY_MARKETING("VT56", "Quản lý marketing", "Marketing", true),
+    QUAN_LY_KE_TOAN("VT57", "Quản lý kế toán", "Kế toán", true),
+    GIAM_DOC_DIEU_HANH("VT58", "Giám đốc điều hành", "null", true);
 
     private String MaViTri;
     private String MoTa;
@@ -127,6 +138,21 @@ public enum ViTri {
             }
         }
         return null;
+    }
+    
+    public static LoaiVaiTro XacDinhQuyen(String MaViTri){
+        if(MaViTri.compareTo("VT51")>=0 && MaViTri.compareTo("VT57")<=0){
+            return LoaiVaiTro.QUAN_LY;
+        }
+        if(MaViTri.compareTo("VT24")>=0 && MaViTri.compareTo("VT30")<=0){
+            return LoaiVaiTro.HR_ADMIN;
+        }
+        if(MaViTri.compareTo("VT58") == 0){
+            return LoaiVaiTro.DIRECTOR;
+        }
+        else{
+            return LoaiVaiTro.NHAN_VIEN;
+        }
     }
 }
 

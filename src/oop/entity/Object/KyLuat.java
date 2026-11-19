@@ -3,31 +3,28 @@ package oop.entity.Object;
 
 import oop.entity.Enum.LoaiKyLuat;
 import java.time.LocalDate;
-import oop.entity.Service.ThaoTac;
+import oop.entity.Enum.LoaiViPham;
 
 public class KyLuat extends KhenThuongKyLuat{
     private LoaiKyLuat loaiKyLuat;
-    private long SoPhutPhatChamCong;
+    private LoaiViPham loaiViPham;
+    private long SoPhutPhatChamCong=0;
 
-    public KyLuat(String Loai, String MaQD, LocalDate NgayBanHanh, double SoTienTacDong, String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh) {
-        super(MaQD, NgayBanHanh, SoTienTacDong, MaNhanVienRaQuyetDinh, MaNhanVienNhanQuyetDinh);
-        this.loaiKyLuat = LoaiKyLuat.NhanDien(Loai);
-        this.LoaiQuyetDinh="Ky Luat";
+    public KyLuat(LoaiKyLuat loaiKyLuat, LoaiViPham loaiViPham, LocalDate NgayBanHanh, String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh) {
+        super(NgayBanHanh, MaNhanVienRaQuyetDinh, MaNhanVienNhanQuyetDinh);
+        super.LoaiQuyetDinh = "Kỷ luật";
+        this.loaiKyLuat = loaiKyLuat;
+        this.loaiViPham = loaiViPham;
     }
 
-    public KyLuat(String Loai, String MaQD, LocalDate NgayBanHanh,String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh) {
-        super(MaQD, NgayBanHanh, MaNhanVienRaQuyetDinh,MaNhanVienNhanQuyetDinh);
-        this.loaiKyLuat = LoaiKyLuat.NhanDien(Loai);
-        this.LoaiQuyetDinh="Ky Luat";
+    public LoaiViPham getLoaiViPham() {
+        return loaiViPham;
     }
 
-    public KyLuat(String Loai,String MaQD, LocalDate NgayBanHanh, String MaNhanVienNhanQuyetDinh) {
-        super(MaQD, NgayBanHanh, MaNhanVienNhanQuyetDinh);
-        this.loaiKyLuat = LoaiKyLuat.NhanDien(Loai);
-        this.LoaiQuyetDinh="Ky Luat";
+    public void setLoaiViPham(LoaiViPham loaiViPham) {
+        this.loaiViPham = loaiViPham;
     }
-    
-    
+
 
     public LoaiKyLuat getLoaiKyLuat() {
         return loaiKyLuat;
@@ -47,8 +44,13 @@ public class KyLuat extends KhenThuongKyLuat{
     
     
     public double tinhTacDongLuong(NhanVien nv){
-        if(this.loaiKyLuat==LoaiKyLuat.DI_LAM_TRE || loaiKyLuat==LoaiKyLuat.TAN_LAM_SOM){
-            return -1*nv.TinhLuongMotPhut()*SoPhutPhatChamCong;
+        if(this.loaiViPham==LoaiViPham.VI_PHAM_CHAM_CONG){
+            SoTienTacDong = -1*nv.TinhLuongMotPhut()*SoPhutPhatChamCong;
+            return SoTienTacDong;
+        }
+        if(this.loaiViPham==LoaiViPham.NGHI_KHONG_PHEP){
+            SoTienTacDong =  -1*nv.TinhLuongMotGio();
+            return SoTienTacDong;
         }
         return 0;
     }

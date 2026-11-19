@@ -2,9 +2,11 @@
 package oop.entity.Enum;
 
 public enum LoaiVaiTro {
-    ADMIN("Admin"),
-    QUAN_LY("QuanLy"),
-    NHAN_VIEN("NhanVien");
+    BOARD_MEMBER("Hội đồng quản trị"),
+    DIRECTOR("Giám đốc"),
+    HR_ADMIN("Admin"),
+    QUAN_LY("Quản lý"),
+    NHAN_VIEN("Nhân viên");
     
     private String MoTa;
 

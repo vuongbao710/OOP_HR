@@ -48,12 +48,9 @@ public class OOP {
         nv.getDsDon().xuat();*/
         
         ThaoTac.checkInbox(MaNV, sc, LocalDate.now(), LocalTime.now(), dsThongBao);
-        if(MaNV.equalsIgnoreCase("NV003")){
-        ThaoTac.KiemTraVanHanhLuongNhanSu(LocalDate.now(), LocalTime.now(), MaNV, LocalDate.of(2026, 12, 6));
-        nv.getDspl().xuat();
-        System.out.println("SoNgayCong=" + nv.getDsbcc().timKiem(11, 2026).getSoNgayCong());
-        nv.getBcc().xuat();
-        }
+        System.out.println("Role hien tai: " + tk.getRole());
+        ThaoTac.PhanQuyen(tk, sc);
+        
         System.out.println("muốn đăng xuất chưa");
         choice = sc.nextInt();
         sc.nextLine();

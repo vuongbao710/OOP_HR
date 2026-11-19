@@ -82,7 +82,7 @@ public class ThongBao {
     public void setRequest(LoaiRequest Request) {
         this.Request = Request;
         if(this.Request != LoaiRequest.THONG_BAO){
-            setNgayHetHan(date.plusDays(1));
+            setNgayHetHan(date.plusDays(2));
         
         }
     }
