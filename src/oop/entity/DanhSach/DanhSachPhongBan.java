@@ -52,6 +52,8 @@ public class DanhSachPhongBan {
     }
     
     public void them(PhongBan pb){
+        if(pb.getMaPhong()==null)
+        pb.setMaPhong(taoMa());
         this.DanhSachPhongBan.add(pb);
     }
     public static String taoMa(){

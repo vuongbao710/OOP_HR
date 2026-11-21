@@ -108,10 +108,9 @@ public class ThaoTac {
     if(HuyTacVu(sc)){
         return ;
     }
-        String MaDon = nv.getDsDon().taoMa();
         String MaNVNopDon = nv.getMaNV();
         String MaNVDuyetDon = nv.getMaQuanLyPhuTrach();
-        DonXinPhep don = new DonXinPhep(MaDon ,MaNVNopDon, MaNVDuyetDon, date, time);
+        DonXinPhep don = new DonXinPhep(MaNVNopDon, MaNVDuyetDon, date, time);
         LocalDate NgayBatDau;
         LocalDate NgayKetThuc;
         
@@ -170,7 +169,7 @@ public class ThaoTac {
         
         
         GuiThongBao( MaNVNopDon, MaNVDuyetDon, date, time, Message).setRequest(LoaiRequest.XIN_NGHI_PHEP);
-        
+        nv.getDsDon().them(don);
         NhatKyHoatDong.them("Nhân viên mã "+ MaNVNopDon + " nộp đơn nghỉ phép vào "+ time + " ngày " + date +
                 "cho quản lý mã " + MaNVDuyetDon);
     }
@@ -224,25 +223,34 @@ public class ThaoTac {
     }
     
     public static ThongBao GuiThongBao ( String MaNguoiGui, String MaNguoiNhan, LocalDate date, LocalTime time, String Message){
+        if(MaNguoiNhan.equalsIgnoreCase("BOSS")){
+            ThongBao tb = new ThongBao(MaNguoiGui, date, time, Message);
+            Boss.getDsThongBao().them(tb);
+            return tb;
+        }
         NhanVien nv = DanhSachNhanVien.timKiem(MaNguoiNhan);
         if(nv==null){
             return GuiThongBao("HETHONG", MaNguoiGui, date, time, "Không tìm thấy nhân viên bạn gửi thông báo");
         }
         else{
-        String MaThongBao = nv.getDsThongBao().taoMa();
-        ThongBao ThongBao = new ThongBao(MaThongBao, MaNguoiGui, date, time, Message);
+        ThongBao ThongBao = new ThongBao(MaNguoiGui, date, time, Message);
         nv.getDsThongBao().them(ThongBao);
         return ThongBao;
         }
     }
     //Thông báo làm OT
     public static ThongBao GuiThongBao (String MaNguoiGui, String MaNguoiNhan, LocalDate date, LocalTime time, String Message, LocalDate NgayDangKy){
+        if(MaNguoiNhan.equalsIgnoreCase("BOSS")){
+            ThongBao tb = new ThongBao(MaNguoiGui, date, time, Message);
+            tb.setNgayDangKy(NgayDangKy);
+            Boss.getDsThongBao().them(tb);
+            return tb;
+        }
         NhanVien nv = DanhSachNhanVien.timKiem(MaNguoiNhan);
         if(nv==null){
             return GuiThongBao("HETHONG", MaNguoiGui, date, time, "Không tìm thấy nhân viên bạn gửi thông báo");
         }
-        String MaThongBao = nv.getDsThongBao().taoMa();
-        ThongBao ThongBao = new ThongBao(MaThongBao, MaNguoiGui, date, time, Message);
+        ThongBao ThongBao = new ThongBao(MaNguoiGui, date, time, Message);
         ThongBao.setNgayDangKy(NgayDangKy);
         nv.getDsThongBao().them(ThongBao);
         return ThongBao;
@@ -528,8 +536,7 @@ public class ThaoTac {
                 double TienThuongTet = nvFull.TinhToanTienThuongTet(LocalDate.of(date.getYear()-1, 1, 1));
                 String MaNV = nvFull.getMaNV();
                 KhenThuong khen = new KhenThuong(LoaiKhenThuong.THUONG_TET, null, date, TienThuongTet, MaADMIN, MaNV);
-                String MaQD = nvFull.getDsktkl().taoMa();
-                khen.setMaQD(MaQD);
+                
                 nvFull.getDsktkl().them(khen);
                  GuiThongBao(MaADMIN, MaNV, date, time, "thưởng tết " + TienThuongTet + " vnd ").setRequest(LoaiRequest.THONG_BAO);
                  
@@ -565,8 +572,7 @@ public class ThaoTac {
             double TienThuongSangKien = sc.nextDouble();
             if(TienThuongSangKien>=100000 && TienThuongSangKien<=500000){
                 KhenThuong khen = new KhenThuong(LoaiKhenThuong.THUONG_SANG_KIEN, null, date,TienThuongSangKien , MaQuanLy, MaNV);
-                String MaQD = nv.getDsktkl().taoMa();
-                khen.setMaQD(MaQD);
+                
                 nv.getDsktkl().them(khen);
                 GuiThongBao( MaQuanLy, MaNV, date, time, "thưởng sáng kiến" + TienThuongSangKien + "vnd");
                 NhatKyHoatDong.them("Quản lý mã "+ MaQuanLy + " thưởng sáng kiến có giá trị " + TienThuongSangKien + " vào "+ time + " ngày " + date +
@@ -594,10 +600,9 @@ public class ThaoTac {
                     if(DiemKPI>=0 && DiemKPI<=100){
                     int thang = date.getMonthValue();
                     int nam = date.getYear();
-                    DanhGiaKPI kpi = new DanhGiaKPI(null, DiemKPI, thang , nam, MaQuanLy, nv.getMaNV());
+                    DanhGiaKPI kpi = new DanhGiaKPI(DiemKPI, thang , nam, MaQuanLy, nv.getMaNV());
                     NhanVienFullTime nvFull = (NhanVienFullTime) nv;
                     
-                    kpi.setMaDanhGia(nvFull.getDskpi().taoMa());
                     nvFull.getDskpi().them(kpi);
                     GuiThongBao(MaQuanLy, nv.getMaNV(), date, time, "đã có đánh giá kpi có điểm số là " + DiemKPI +" tháng "+ thang + " nam " +nam).setRequest(LoaiRequest.THONG_BAO);
                     NhatKyHoatDong.them("Quản lý mã "+ MaQuanLy + "đã có đánh giá kpi có điểm số là " + DiemKPI + time + " ngày " + date +
@@ -763,8 +768,7 @@ public class ThaoTac {
             System.out.println("Không tìm thấy vị trí");
         }
         }
-        String MaDotTuyenDung = DanhSachDotTuyenDung.taoMa();
-        DotTuyenDung dot = new DotTuyenDung(MaDotTuyenDung, SoLuong,MaNguoiTuyen, NgayBatDau, NgayKetThuc, vt);
+        DotTuyenDung dot = new DotTuyenDung(SoLuong,MaNguoiTuyen, NgayBatDau, NgayKetThuc, vt);
         return dot;
     }
     
@@ -777,7 +781,7 @@ public class ThaoTac {
         System.out.println("Nhập lý do");
         String Message = sc.nextLine().trim();
         GuiThongBao(MaQuanLy, MaADMIN, date, time, Message).setRequest(LoaiRequest.DANG_TAI_DOT_TUYEN_DUNG);
-        NhatKyHoatDong.them("Quản lý mã "+ MaQuanLy+ " gửi đề nghị tuyển dụng vào "+ time + " ngày " + date +
+        NhatKyHoatDong.them("Quản lý mã "+ MaQuanLy+ " được gửi đề nghị tuyển dụng vào "+ time + " ngày " + date +
                 "cho giám đốc mã " + MaADMIN);
     }
     
@@ -960,8 +964,8 @@ public class ThaoTac {
         if(tk.getRole()==LoaiVaiTro.DIRECTOR){
             PhanQuyen.DIRECTOR(sc, tk.timKiemNhanVien());
         }
-        if(tk.getRole()==LoaiVaiTro.BOARD_MEMBER){
-            PhanQuyen.BOARD_MEMBER(sc, tk.timKiemNhanVien());
+        if(tk.getRole()==LoaiVaiTro.BOSS){
+            PhanQuyen.BOSS(sc, tk.timKiemNhanVien());
         }
     }
     
@@ -999,10 +1003,11 @@ public class ThaoTac {
                 nv.setNgayXetNangLuong(Xet.plusMonths(6));
                 break;
             case LoaiKyLuat.CACH_CHUC:
-                //gửi thông báo cho hội đồng quản trị
+                GuiThongBao("HETHONG", nv.getMaQuanLyPhuTrach(), date, time, " cách chức nhân viên mã " 
+                        + nv.getMaNV() + " và bổ nhiệm nhân viên mới lấp đầy chỗ trống").setRequest(LoaiRequest.BO_NHIEM);
                 break;
             case LoaiKyLuat.SA_THAI:
-                //gửi cho HR
+                sdfsaf // khoá tài khoản và xuất lương chưa trả
                 break;
             default:
                 System.out.println(" Không có trong danh sách hình thức kỷ luật");
@@ -1017,7 +1022,67 @@ public class ThaoTac {
             }
         }
         return false;
-    }
+        }
+        
+        public static void BoNhiem(LocalDate date, LocalTime time, String MaNVCachChuc, String MaNVBoNhiem){
+            NhanVien nv1 = DanhSachNhanVien.timKiem(MaNVCachChuc);
+            NhanVien nv2 = DanhSachNhanVien.timKiem(MaNVBoNhiem);
+            if(nv2.getChucVu() == LoaiChucVu.NHAN_VIEN || nv1.getChucVu() == LoaiChucVu.QUAN_LY){
+                
+            nv2.setMaQuanLyPhuTrach(nv1.getMaQuanLyPhuTrach());
+            nv1.setMaQuanLyPhuTrach(nv2.getMaNV());
+            
+            
+            nv2.setChucVu(nv1.getChucVu());
+            nv1.setChucVu(LoaiChucVu.NHAN_VIEN);
+            }
+            else if(nv2.getChucVu() == LoaiChucVu.QUAN_LY && nv1.getChucVu() == LoaiChucVu.GIAM_DOC){
+                //////// đệ quy
+            }
+            
+        }
+        
+        public static String NhapMaNV(Scanner sc){
+            String input = sc.nextLine();//////////////////////
+            if(input==null){
+                System.out.println("không hợp lệ");
+                return null;
+            }
+            NhanVien nv = DanhSachNhanVien.timKiem(input);
+            if(nv==null){
+                System.out.println("Không tìm thấy nhân viên");
+                return null;
+            }
+            return input;
+        }
+        
+        public static void ChonRaNguoiThayThe(LocalDate date, LocalTime time, String MaNVCachChuc, Scanner sc, NhanVien nv){
+            DanhSachNhanVien.SortTheoThamNien();
+            System.out.println("\n0.Thoát\n1.Bổ nhiệm nội bộ\n2.Tuyển ngoài");
+            int input = sc.nextInt(); //try-catch
+            sc.nextLine();
+            if(input==0){
+                return;
+            }
+            while(input ==-1 || input<1 || input >2 ){
+                System.out.println("Không hơp lệ, nhập lại");
+                input = sc.nextInt();
+                sc.nextLine();
+            }
+            if(input == 1){
+                System.out.println("Nhập mã nhân viên bạn muốn bổ nhiệm");
+                String nhap = NhapMaNV(sc);
+                while(nhap==null){
+                    nhap = NhapMaNV(sc);
+                }
+                BoNhiem(date, time, MaNVCachChuc, nhap);
+            }
+            else{
+                if(!nv.getMaNV().equalsFoldCase("Boss"))
+                TaoDotTuyenDung();
+            }
+            
+        }
 }
     
     

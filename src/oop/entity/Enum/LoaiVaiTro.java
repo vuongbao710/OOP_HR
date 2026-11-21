@@ -2,7 +2,7 @@
 package oop.entity.Enum;
 
 public enum LoaiVaiTro {
-    BOARD_MEMBER("Hội đồng quản trị"),
+    BOSS("Chủ tịch"),
     DIRECTOR("Giám đốc"),
     HR_ADMIN("Admin"),
     QUAN_LY("Quản lý"),

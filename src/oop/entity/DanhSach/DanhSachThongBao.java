@@ -21,8 +21,8 @@ public class DanhSachThongBao implements DanhSach<ThongBao>{
         this.dsThongBao = dsThongBao;
     }
         public void them(ThongBao tb){
-        String MaThongBao = taoMa();
-        tb.setMaThongBao(MaThongBao);
+            if(tb.getMaThongBao()==null)
+        tb.setMaThongBao(taoMa());
         this.dsThongBao.add(tb);
     }
     public void xoa(ThongBao tb){

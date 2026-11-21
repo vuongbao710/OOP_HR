@@ -22,9 +22,25 @@ public class HopDong {
 
     public HopDong() {
     }
+    
+    public HopDong(String MaHD, String MaNV, LocalDate NgayKy, LocalDate NgayBatDauHopDong, LocalDate NgayHetHan, String ViTriLamViec, double LuongCoBan, double LuongTheoGio, double PhuCap, LOAI_HOP_DONG LoaiHopDong, TRANG_THAI_HOP_DONG TrangThaiHopDong, String GhiChu) {
+        this.MaHopDong = MaHD;
+        this.MaNV = MaNV;
+        this.NgayKy = NgayKy;
+        this.NgayBatDauHopDong = NgayBatDauHopDong;
+        this.NgayHetHan = NgayHetHan;
+        this.ViTriLamViec = ViTriLamViec;
+        this.LuongCoBan = LuongCoBan;
+        this.LuongTheoGio = LuongTheoGio;
+        this.PhuCap = PhuCap;
+        this.LoaiHopDong = LoaiHopDong;
+        this.TrangThaiHopDong = TrangThaiHopDong;
+        this.GhiChu = GhiChu;
+        this.loaiViTri = ViTri.NhanDien(ViTriLamViec);
+    }
 
-    public HopDong(String MaHopDong, String MaNV, LocalDate NgayKy, LocalDate NgayBatDauHopDong, LocalDate NgayHetHan, String ViTriLamViec, double LuongCoBan, double LuongTheoGio, double PhuCap, LOAI_HOP_DONG LoaiHopDong, TRANG_THAI_HOP_DONG TrangThaiHopDong, String GhiChu) {
-        this.MaHopDong = MaHopDong;
+    public HopDong(String MaNV, LocalDate NgayKy, LocalDate NgayBatDauHopDong, LocalDate NgayHetHan, String ViTriLamViec, double LuongCoBan, double LuongTheoGio, double PhuCap, LOAI_HOP_DONG LoaiHopDong, TRANG_THAI_HOP_DONG TrangThaiHopDong, String GhiChu) {
+        
         this.MaNV = MaNV;
         this.NgayKy = NgayKy;
         this.NgayBatDauHopDong = NgayBatDauHopDong;

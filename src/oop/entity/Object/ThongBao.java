@@ -17,8 +17,7 @@ public class ThongBao {
     private LocalDate NgayDangKy; //chỉ có tác dụng vs làm OT
     private LocalDate NgayHetHan;
 
-    public ThongBao(String MaThongBao,String MaNguoiGui, LocalDate date, LocalTime time, String Message) {
-        this.MaThongBao = MaThongBao;
+    public ThongBao(String MaNguoiGui, LocalDate date, LocalTime time, String Message) {
         this.MaNguoiGui = MaNguoiGui;
         this.date = date;
         this.time = time;

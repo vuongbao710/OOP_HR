@@ -21,6 +21,7 @@ public class DanhSachUngVien implements DanhSach<UngVien>{
     }
     
     public void them(UngVien uv){
+        if(uv.getMaUngVien()==null)
         uv.setMaUngVien(taoMa());
         this.dsuv.add(uv);
     }

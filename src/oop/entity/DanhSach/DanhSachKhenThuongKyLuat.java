@@ -23,6 +23,7 @@ public class DanhSachKhenThuongKyLuat implements DanhSach<KhenThuongKyLuat>{
 
     
     public void them(KhenThuongKyLuat k){
+        if(k.getMaQD()==null)
         k.setMaQD(taoMa());
         this.dsktkl.add(k);
     }

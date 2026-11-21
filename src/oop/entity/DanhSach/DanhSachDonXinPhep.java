@@ -20,6 +20,8 @@ public class DanhSachDonXinPhep implements DanhSach<DonXinPhep> {
     }
     
         public void them(DonXinPhep Don){
+        if(Don.getMaDon()==null)
+        Don.setMaDon(taoMa());
         this.dsDon.add(Don);
     }
     public void xoa(DonXinPhep Don){

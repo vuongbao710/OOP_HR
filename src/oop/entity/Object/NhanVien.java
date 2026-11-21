@@ -81,6 +81,29 @@ public abstract class NhanVien {
         this.dsDon = new DanhSachDonXinPhep();
     }
     
+    public NhanVien(String CCCD, String HoTen, String SDT,String MaQuanLyPhuTrach
+            , String MaPhongBan, LocalDate BirthDate,String ChucVu, String CaLam) {
+        this.CCCD=CCCD;
+        this.HoTen = HoTen;
+        this.SDT = SDT;
+        this.MaQuanLyPhuTrach=MaQuanLyPhuTrach;
+        this.MaPhongBan = MaPhongBan;
+        this.BirthDate = BirthDate;
+        this.ChucVu=LoaiChucVu.NhanDien(ChucVu);
+        this.CaLam=CaLam;
+        this.dsbcc = new DanhSachBangChamCong();
+        this.dsktkl = new DanhSachKhenThuongKyLuat();
+        this.dspl = new DanhSachPhieuLuong();
+        this.dsThongBao = new DanhSachThongBao();
+        this.dsViPham = new DanhSachViPham();
+        setNgayTraLuongDinhKy(HeThong.date);  //MocThoiGianBatDau
+        
+        LocalDate KyTruoc = NgayTraLuongDinhKy.minusMonths(1);
+        this.bcc = new BangChamCong(MaNV, KyTruoc.getMonthValue(), KyTruoc.getYear());
+        this.HopDong = new HopDong();
+        this.dsDon = new DanhSachDonXinPhep();
+    }
+    
     
     
     public String getMaNV() {

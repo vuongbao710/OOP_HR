@@ -18,6 +18,8 @@ public class DanhSachKhoaDaoTao {
     }
     
     public static void them(KhoaDaoTao kdt){
+        if(kdt.getMaKhoaHoc()==null)
+        kdt.setMaKhoaHoc(taoMa());
         dskdt.add(kdt);
     }
     public static void xoa(KhoaDaoTao kdt){

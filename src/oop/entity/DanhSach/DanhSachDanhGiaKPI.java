@@ -20,6 +20,8 @@ public class DanhSachDanhGiaKPI implements DanhSach<DanhGiaKPI>{
     }
     
      public void them(DanhGiaKPI kpi){
+         if(kpi.getMaDanhGia()==null)
+        kpi.setMaDanhGia(taoMa());
         this.dskpi.add(kpi);
     }
     public DanhGiaKPI timKiem(String MaDanhGiaKPI){

@@ -9,8 +9,7 @@ public class KhoaDaoTao {
     private LocalDate NgayBatDau;
     private LocalDate NgayKetThuc;
 
-    public KhoaDaoTao(String MaKhoaHoc, String TenKhoaHoc, LocalDate NgayBatDau, LocalDate NgayKetThuc) {
-        this.MaKhoaHoc = MaKhoaHoc;
+    public KhoaDaoTao(String TenKhoaHoc, LocalDate NgayBatDau, LocalDate NgayKetThuc) {
         this.TenKhoaHoc = TenKhoaHoc;
         this.NgayBatDau = NgayBatDau;
         this.NgayKetThuc = NgayKetThuc;

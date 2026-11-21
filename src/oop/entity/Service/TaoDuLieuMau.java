@@ -59,7 +59,7 @@ public class TaoDuLieuMau {
         String MaTK = "TK000";
         String TenDangNhap = MaTK;
         String MatKhau = "0918554647tuki@A";
-        LoaiVaiTro Role = LoaiVaiTro.BOARD_MEMBER;
+        LoaiVaiTro Role = LoaiVaiTro.BOSS;
         TaiKhoan tk = new TaiKhoan(MaTK, TenDangNhap, MatKhau, Role);
         return tk;
     }

@@ -179,7 +179,7 @@ public class ChiTietChamCong {
         long SoPhutTre;
         if(time.isAfter(GioVao.plusMinutes(5))){
             setTrangThai(LoaiTrangThaiChamCong.DI_TRE);
-            Duration tgian = Duration.between(time, GioVao.plusMinutes(15));
+            Duration tgian = Duration.between(time, GioVao.plusMinutes(5));
             SoPhutTre = tgian.toMinutes();
             return SoPhutTre;
         }

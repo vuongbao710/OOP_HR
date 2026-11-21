@@ -20,6 +20,8 @@ public class DanhSachPhieuLuong implements DanhSach<PhieuLuong>{
         this.dspl = dspl;
     }
     public void them(PhieuLuong pl){
+        if(pl.getMaPhieu()==null)
+        pl.setMaPhieu(taoMa());
         this.dspl.add(pl);
     }
     public PhieuLuong timKiem(String MaPhieuLuong){

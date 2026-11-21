@@ -15,8 +15,8 @@ public class DotTuyenDung {
     private ViTri ViTri;
     private DanhSachUngVien dsUV;
 
-    public DotTuyenDung(String MaDotTuyenDung, int SoLuongCanTuyen, String MaNguoiTuyen, LocalDate NgayTuyenDung, LocalDate NgayHetHan, ViTri ViTri) {
-        this.MaDotTuyenDung = MaDotTuyenDung;
+    public DotTuyenDung(int SoLuongCanTuyen, String MaNguoiTuyen, LocalDate NgayTuyenDung, LocalDate NgayHetHan, ViTri ViTri) {
+        
         this.SoLuongCanTuyen = SoLuongCanTuyen;
         this.MaNguoiTuyen = MaNguoiTuyen;
         this.NgayTuyenDung = NgayTuyenDung;

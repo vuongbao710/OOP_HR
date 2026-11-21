@@ -19,6 +19,8 @@ public class DanhSachBangChamCong implements DanhSach<BangChamCong>{
         this.dsbcc = dsbcc;
     }
     public void them(BangChamCong bcc){
+        if(bcc.getMaBangChamCong()==null)
+        bcc.setMaBangChamCong(taoMa());
         this.dsbcc.add(bcc);
     }
     public void xoa(BangChamCong bcc){

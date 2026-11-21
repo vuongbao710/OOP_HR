@@ -19,8 +19,7 @@ public class DonXinPhep {
     private LoaiNghiPhep LoaiNghi;
     private String Message;
 
-    public DonXinPhep(String MaDon, String MaNVGuiDon, String MaNVDuyetDon, LocalDate NgayNopDon,LocalTime ThoiGianNopDon) {
-        this.MaDon = MaDon;
+    public DonXinPhep(String MaNVGuiDon, String MaNVDuyetDon, LocalDate NgayNopDon,LocalTime ThoiGianNopDon) {
         this.MaNVGuiDon = MaNVGuiDon;
         this.MaNVDuyetDon = MaNVDuyetDon;
         this.NgayNopDon = NgayNopDon;

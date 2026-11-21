@@ -12,8 +12,8 @@ public class DanhGiaKPI{
     private String MaNVDanhGia;
     private String MaNVNhanDanhGia;
 
-    public DanhGiaKPI(String MaDanhGia, int DiemKPI, int Thang, int Nam, String MaNVDanhGia, String MaNVNhanDanhGia) {
-        this.MaDanhGia = MaDanhGia;
+    public DanhGiaKPI(int DiemKPI, int Thang, int Nam, String MaNVDanhGia, String MaNVNhanDanhGia) {
+        
         this.DiemKPI = DiemKPI;
         this.XepLoai = PhanXepLoai();
         this.Thang = Thang;
