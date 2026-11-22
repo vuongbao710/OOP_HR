@@ -75,11 +75,14 @@ public class PhieuLuong {
     }
 
     @Override
-    public String toString() {
-        return "PhieuLuong{" + "MaPhieu=" + MaPhieu + "\n LuongThucTe=" + String.format("%,.0fVND", LuongThucTe) + "\n LuongCoSo=" + String.format("%,.0fVND", LuongCoSo) 
-                + "\n PhuCap=" + String.format("%,.0fVND", PhuCap) + "\n TienLamOT=" + String.format("%,.0fVND", TienLamOT) + "\n TienThuongPhat=" + String.format("%,.0fVND", TienThuongPhat) + "\n Thang=" 
-                + Thang + "\n Nam=" + Nam + "\n MaNV=" + MaNV + '}';
-    }
+public String toString() {
+    return "Phiếu lương " + MaPhieu + " | " + MaNV + " | tháng " + String.format("%02d/%d", Thang, Nam)
+            + " | cơ sở " + String.format("%,.0f", LuongCoSo)
+            + " | phụ cấp " + String.format("%,.0f", PhuCap)
+            + " | OT " + String.format("%,.0f", TienLamOT)
+            + " | thưởng/phạt " + String.format("%,.0f", TienThuongPhat)
+            + " | thực nhận " + String.format("%,.0f", LuongThucTe) + " VND";
+}
     
    
 }

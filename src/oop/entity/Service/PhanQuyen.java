@@ -1,11 +1,12 @@
 package oop.entity.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import oop.entity.DanhSach.DanhSachNhanVien;
-import static oop.entity.Enum.LoaiChucVu.NHAN_VIEN;
-import static oop.entity.Enum.LoaiChucVu.QUAN_LY;
 import oop.entity.Enum.LoaiVaiTro;
 import static oop.entity.Enum.LoaiVaiTro.DIRECTOR;
 import static oop.entity.Enum.LoaiVaiTro.HR_ADMIN;
@@ -44,7 +45,6 @@ public class PhanQuyen {
             System.out.println("Tài khoản của bạn đã bị khoá, bạn đã bị đăng xuất");
         }
     }
-    // ---------- Phần dùng chung cho mọi nhân viên (chức năng 1 đến 7) ----------
     private static void InMenuChung(NhanVien nv){
         System.out.println("\n===== " + nv.getHoTen() + " (" + nv.getMaNV() + ") - " + HeThong.date + " =====");
         int chuaDoc = HomThu.DemSoLuongInbox(nv.getMaNV());
@@ -154,6 +154,7 @@ public class PhanQuyen {
         System.out.println("13. Xem danh sách nhân viên");
         System.out.println("14. Xem nhật ký hoạt động");
         System.out.println("15. Giả lập hệ thống (qua ngày)");
+        System.out.println("16. Giả lập thời gian (đổi giờ hệ thống)");
         input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 15);
             if(ChucNangChung(input, sc, nv)){
                 continue;
@@ -179,6 +180,9 @@ public class PhanQuyen {
                     break;
                 case 15:
                     GiaLapHeThong(sc);
+                    break;
+                case 16:
+                    GiaLapThoiGian(sc);
                     break;
                 default:
                     break;
@@ -244,4 +248,19 @@ public class PhanQuyen {
         VanHanh.KiemTraVanHanhLuongNhanSu(HeThong.date, HeThong.time, "HETHONG", ngayKetThuc.minusDays(1));
         HeThong.date = ngayKetThuc;
     }
+    
+    private static void GiaLapThoiGian(Scanner sc){
+    System.out.println("Giờ hệ thống hiện tại là " + HeThong.time.withNano(0) + ". Nhập giờ mới (HH:mm), nhập 'thoát' để hủy");
+    while(true){
+        String input = sc.nextLine().trim();
+        if(input.equalsIgnoreCase("thoát")) return;
+        try{
+            HeThong.time = LocalTime.parse(input, DateTimeFormatter.ofPattern("H:mm"));
+            System.out.println("Đã đổi giờ hệ thống thành " + HeThong.time + " ngày " + HeThong.date);
+            return;
+        }catch(DateTimeParseException e){
+            System.out.println("Giờ không hợp lệ, nhập lại theo dạng HH:mm (ví dụ 08:30)");
+        }
+    }
+}
 }

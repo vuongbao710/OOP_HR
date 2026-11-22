@@ -173,10 +173,10 @@ public class HomThu {
           System.out.println("Nhập sai định dạng, vui lòng nhập lại");                                                  /////try - catch
         }
         else{
-            ThongBao tb = temp.get(input);
+            ThongBao tb = temp.get(input-1);
             String MaNVGuiRequest = tb.getMaNguoiGui();
             XuLyRequest.XuLy(MaNVCheckInbox, MaNVGuiRequest, tb, sc, LocalDate.now(), LocalTime.now());
-            temp.remove(input);
+            temp.remove(input-1);
         }
         }
     }

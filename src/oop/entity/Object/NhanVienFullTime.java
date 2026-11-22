@@ -111,7 +111,9 @@ public class NhanVienFullTime extends NhanVien {
         double luongCoSo = super.getLuongCoSo();
         while(thang!=13){
             BangChamCong bcc = super.getDsbcc().timKiem(thang, nam);
-            SoNgayChamCong = SoNgayChamCong + bcc.getSoNgayCong();
+            if(bcc != null){
+                SoNgayChamCong = SoNgayChamCong + bcc.getSoNgayCong();
+                }
             thang = thang+1;
             
         }

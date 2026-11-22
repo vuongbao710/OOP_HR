@@ -431,14 +431,13 @@ public abstract class NhanVien {
     
 
     @Override
-    public String toString() {
-        return "NhanVien{" + "MaNV=" + MaNV + ", CCCD=" + CCCD + ", HoTen=" + HoTen + ", SDT=" 
-                + SDT + ", MaPhongBan=" + MaPhongBan + ", MaQuanLyPhuTrach=" + MaQuanLyPhuTrach 
-                + ", BirthDate=" + BirthDate + ", NgayVaoLam=" + NgayVaoLam + ", ChucVu=" + ChucVu 
-                + ", CaLam=" + CaLam + ", NgayXetNangLuong=" + NgayXetNangLuong + ", NgayTraLuongDinhKy=" +
-                NgayTraLuongDinhKy + ", HinhThucDiLam=" + HinhThucDiLam + ", HopDong=" + HopDong + ", LuongCoSo=" 
-                + LuongCoSo + '}';
-    }
+public String toString() {
+    String PhongBan = (MaPhongBan == null || MaPhongBan.equals("null")) ? "Ban giám đốc" : MaPhongBan;
+    return MaNV + " | " + HoTen + " | " + SDT + " | " + PhongBan
+            + " | " + (ChucVu == null ? "" : ChucVu.getMoTa())
+            + " | " + HinhThucDiLam + " | ca " + CaLam
+            + " | lương " + String.format("%,.0f", LuongCoSo) + " VND";
+}
 
     public int getSoNgayNghiPhepNam() {
         return SoNgayNghiPhepNam;
