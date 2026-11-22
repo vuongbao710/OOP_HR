@@ -165,8 +165,7 @@ public class HopDong {
     @Override
     public String toString() {
         return "HopDong{" + "MaHopDong=" + MaHopDong + ", MaNV=" + MaNV + ", NgayKy=" + NgayKy + ", NgayBatDauHopDong=" 
-                + NgayBatDauHopDong + ", NgayHetHan=" + NgayHetHan + ", ViTriLamViec=" + ViTriLamViec + ", LuongCoBan=" 
-                + LuongCoBan + ", LuongTheoGio=" + LuongTheoGio + ", PhuCap=" + PhuCap + ", LoaiHopDong=" + LoaiHopDong 
+                + NgayBatDauHopDong + ", NgayHetHan=" + NgayHetHan + ", ViTriLamViec=" + ViTriLamViec + ", LuongCoBan=" + String.format("%,.0fVND", LuongCoBan) + ", LuongTheoGio=" + String.format("%,.0fVND", LuongTheoGio) + ", PhuCap=" + String.format("%,.0fVND", PhuCap) + ", LoaiHopDong=" + LoaiHopDong 
                 + ", TrangThaiHopDong=" + TrangThaiHopDong + ", GhiChu=" + GhiChu + '}';
     }
     

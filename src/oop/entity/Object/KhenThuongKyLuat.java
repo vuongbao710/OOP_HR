@@ -68,7 +68,7 @@ public abstract class KhenThuongKyLuat {
 
     @Override
     public String toString() {
-        return "KhenThuongKyLuat{" + "MaQD=" + MaQD + ", NgayBanHanh=" + NgayBanHanh + ", SoTienTacDong=" + SoTienTacDong + ", MaNhanVienRaQuyetDinh=" + MaNhanVienRaQuyetDinh + ", MaNhanVienNhanQuyetDinh=" + MaNhanVienNhanQuyetDinh + ", LoaiQuyetDinh=" + LoaiQuyetDinh + '}';
+        return "KhenThuongKyLuat{" + "MaQD=" + MaQD + ", NgayBanHanh=" + NgayBanHanh + ", SoTienTacDong=" + String.format("%,.0fVND", SoTienTacDong) + ", MaNhanVienRaQuyetDinh=" + MaNhanVienRaQuyetDinh + ", MaNhanVienNhanQuyetDinh=" + MaNhanVienNhanQuyetDinh + ", LoaiQuyetDinh=" + LoaiQuyetDinh + '}';
     }
     
     
