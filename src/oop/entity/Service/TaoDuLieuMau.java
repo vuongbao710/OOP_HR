@@ -39,7 +39,7 @@ public class TaoDuLieuMau {
                 KiemTraLoi.KiemTraDinhDangSDT(SDT);
                 LocalDate BirthDate = KiemTraLoi.KiemTraNgay(parts[5], "yyyy-MM-dd");
 
-                if(!ThaoTac.KiemTraMaViTriTonTai(MaViTri)){
+                if(!KiemTraLoi.KiemTraMaViTriTonTai(MaViTri)){
                     throw new Exception("Mã vị trí " + MaViTri + " không tồn tại");
                 }
                 HopDong HD = DanhSachHopDong.timKiemTheoMaNV(MaNV);

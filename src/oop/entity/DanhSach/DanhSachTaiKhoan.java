@@ -2,7 +2,6 @@
 package oop.entity.DanhSach;
 
 import java.util.ArrayList;
-import oop.entity.Object.NhanVien;
 import oop.entity.Object.TaiKhoan;
 
 public class DanhSachTaiKhoan {

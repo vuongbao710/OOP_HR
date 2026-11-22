@@ -7,9 +7,10 @@ import java.util.Scanner;
 import oop.entity.DanhSach.*;
 import oop.entity.Object.*;
 import oop.entity.Service.TaoDuLieuMau;
-import oop.entity.Service.ThaoTac;
 import oop.entity.Enum.*;
 import oop.entity.Service.HeThong;
+import oop.entity.Service.HomThu;
+import oop.entity.Service.PhanQuyen;
 public class OOP {
 
     public static void main(String[] args) {
@@ -29,9 +30,9 @@ public class OOP {
             break;
         }
         String ma = (tk.getRole() == LoaiVaiTro.BOSS) ? Boss.MA : tk.getMaNV();
-        ThaoTac.checkInbox(ma, sc, HeThong.date, HeThong.time, ThaoTac.LayHomThu(ma));
+        HomThu.checkInbox(ma, sc, HeThong.date, HeThong.time, HomThu.LayHomThu(ma));
 
-        ThaoTac.PhanQuyen(tk, sc);
+        PhanQuyen.ChayTheoVaiTro(tk, sc);
         System.out.println("Đã đăng xuất");
     }
 }

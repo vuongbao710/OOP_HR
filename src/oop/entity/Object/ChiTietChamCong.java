@@ -6,7 +6,7 @@ import java.time.Duration;
 import oop.entity.Enum.LoaiKyLuat;
 import oop.entity.Enum.LoaiTrangThaiChamCong;
 import oop.entity.Enum.LoaiViPham;
-import oop.entity.Service.ThaoTac;
+import oop.entity.Service.NhanSu;
 public class ChiTietChamCong {
     private String MaChiTietChamCong;
     private LoaiTrangThaiChamCong TrangThai = LoaiTrangThaiChamCong.KHONG_CHAM_CONG;
@@ -213,6 +213,7 @@ public class ChiTietChamCong {
     public KyLuat taoKyLuatChamCong(LocalDate date, NhanVien nv ){
         String MaNV = nv.getMaNV();
                 LoaiViPham vp = LoaiViPham.VI_PHAM_CHAM_CONG;
+                nv.getDsViPham().them(new ViPham(vp, date));
                 LoaiKyLuat k = nv.getDsViPham().HoanChinhKyLuat(vp, date, nv);
                 KyLuat kl = new KyLuat(k, vp, date, "HETHONG" , MaNV);
         return kl;        
@@ -240,7 +241,7 @@ public class ChiTietChamCong {
                 kl.setSoTienTacDong(TienTacDong);
                 nv.getDsktkl().them(kl);
                 
-                ThaoTac.XuLyKyLuat(kl.getLoaiKyLuat(), kl.getLoaiViPham(), date, time, nv);
+                NhanSu.XuLyKyLuat(kl.getLoaiKyLuat(), kl.getLoaiViPham(), date, time, nv);
             }
         }
         else if(this.KiemTraCheckOut==false){
@@ -248,7 +249,8 @@ public class ChiTietChamCong {
             setGioRaCuaNV(time);
             tinhGioOT();
             this.KiemTraCheckOut=true;
-            setTrangThai(LoaiTrangThaiChamCong.DUNG_GIO);
+            if(SoPhutTanSom == 0 && this.TrangThai != LoaiTrangThaiChamCong.DI_TRE){
+            setTrangThai(LoaiTrangThaiChamCong.DUNG_GIO);}
             if(SoPhutTanSom!=0){
                 KyLuat kl = taoKyLuatChamCong(date, nv);
                 
@@ -257,7 +259,7 @@ public class ChiTietChamCong {
                 kl.setSoTienTacDong(TienTacDong);
                 nv.getDsktkl().them(kl);
                 
-                ThaoTac.XuLyKyLuat(kl.getLoaiKyLuat(), kl.getLoaiViPham(), date, time, nv);
+                NhanSu.XuLyKyLuat(kl.getLoaiKyLuat(), kl.getLoaiViPham(), date, time, nv);
             }
         }
         

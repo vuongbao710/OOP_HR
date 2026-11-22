@@ -163,7 +163,7 @@ public class TaiKhoan {
         }
         TaiKhoan tk = null;
         for(TaiKhoan t : DanhSachTaiKhoan.getDstk()){
-            if(t.getTenDangNhap().equalsIgnoreCase(ten)){
+            if(t.getTenDangNhap().equals(ten)){
                 tk = t;
                 break;
             }

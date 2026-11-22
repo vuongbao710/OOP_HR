@@ -100,7 +100,7 @@ public class NhatKyHoatDong {
                 break;
             case 3:
                 while(true){
-                dateTimKiem = ThaoTac.isValidDate(sc.nextLine(), "dd/MM/yyyy");
+                dateTimKiem = KiemTraLoi.isValidDate(sc.nextLine(), "dd/MM/yyyy");
                 if(dateTimKiem!=null){
                     break;
                 }
