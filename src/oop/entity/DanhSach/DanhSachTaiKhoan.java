@@ -18,10 +18,6 @@ public class DanhSachTaiKhoan {
     }
     
     public static void them(TaiKhoan tk){
-        if(tk.getMaTaiKhoan().equalsFoldCase("NV000")){
-            dstk.add(tk);
-            return;
-        }
         if(tk.getMaTaiKhoan()==null)
         tk.setMaTaiKhoan(taoMa());
         dstk.add(tk);

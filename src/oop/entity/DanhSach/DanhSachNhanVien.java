@@ -4,9 +4,11 @@ import java.text.Collator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Locale;
+import oop.entity.Enum.LoaiChucVu;
 import oop.entity.Object.NhanVien;
 import oop.entity.Object.TaiKhoan;
 import oop.entity.Object.TaiKhoan.TrangThaiHoatDong;
+import oop.entity.Object.ViTri;
 
 public class DanhSachNhanVien{
     private static ArrayList <NhanVien>dsnv = new ArrayList<>();
@@ -210,6 +212,17 @@ public class DanhSachNhanVien{
         }
         xuat(temp);
     }
+    
+        public static NhanVien TimQuanLyTheoViTri(ViTri vt) {
+    for (NhanVien n : DanhSachNhanVien.getDsnv()) {
+        if (n.getChucVu() == LoaiChucVu.QUAN_LY
+                && n.getMaPhongBan() != null
+                && n.getMaPhongBan().equalsIgnoreCase(vt.getPhongBan())) {
+            return n;
+        }
+    }
+    return null;
+}
     
 }
     

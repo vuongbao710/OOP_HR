@@ -10,6 +10,7 @@ import oop.entity.DanhSach.DanhSachThongBao;
 import oop.entity.DanhSach.DanhSachViPham;
 import oop.entity.Enum.LOAI_HOP_DONG;
 import oop.entity.Enum.LoaiChucVu;
+import oop.entity.Enum.TRANG_THAI_HOP_DONG;
 import oop.entity.Service.HeThong;
 
 public abstract class NhanVien {
@@ -58,15 +59,13 @@ public abstract class NhanVien {
     
 
     public NhanVien(String MaNV,String CCCD, String HoTen, String SDT,String MaQuanLyPhuTrach
-            , String MaPhongBan, LocalDate BirthDate,String ChucVu, String CaLam) {
+            , LocalDate BirthDate, String CaLam) {
         this.MaNV = MaNV;
         this.CCCD=CCCD;
         this.HoTen = HoTen;
         this.SDT = SDT;
         this.MaQuanLyPhuTrach=MaQuanLyPhuTrach;
-        this.MaPhongBan = MaPhongBan;
         this.BirthDate = BirthDate;
-        this.ChucVu=LoaiChucVu.NhanDien(ChucVu);
         this.CaLam=CaLam;
         this.dsbcc = new DanhSachBangChamCong();
         this.dsktkl = new DanhSachKhenThuongKyLuat();
@@ -79,17 +78,16 @@ public abstract class NhanVien {
         this.bcc = new BangChamCong(MaNV, KyTruoc.getMonthValue(), KyTruoc.getYear());
         this.HopDong = new HopDong();
         this.dsDon = new DanhSachDonXinPhep();
+
     }
     
     public NhanVien(String CCCD, String HoTen, String SDT,String MaQuanLyPhuTrach
-            , String MaPhongBan, LocalDate BirthDate,String ChucVu, String CaLam) {
+            , LocalDate BirthDate, String CaLam) {
         this.CCCD=CCCD;
         this.HoTen = HoTen;
         this.SDT = SDT;
         this.MaQuanLyPhuTrach=MaQuanLyPhuTrach;
-        this.MaPhongBan = MaPhongBan;
         this.BirthDate = BirthDate;
-        this.ChucVu=LoaiChucVu.NhanDien(ChucVu);
         this.CaLam=CaLam;
         this.dsbcc = new DanhSachBangChamCong();
         this.dsktkl = new DanhSachKhenThuongKyLuat();
@@ -102,6 +100,7 @@ public abstract class NhanVien {
         this.bcc = new BangChamCong(MaNV, KyTruoc.getMonthValue(), KyTruoc.getYear());
         this.HopDong = new HopDong();
         this.dsDon = new DanhSachDonXinPhep();
+
     }
     
     
@@ -308,7 +307,7 @@ public abstract class NhanVien {
         return ChucVu;
     }
 
-    public void setChucVu(LoaiChucVu ChucVu) {
+    private void setChucVu(LoaiChucVu ChucVu) {
         this.ChucVu = ChucVu;
     }
 
@@ -324,7 +323,7 @@ public abstract class NhanVien {
         return TaiKhoan;
     }
 
-    public void setTaiKhoan(TaiKhoan TaiKhoan) {
+    private void setTaiKhoan(TaiKhoan TaiKhoan) {
         this.TaiKhoan = TaiKhoan;
     }
 
@@ -351,6 +350,8 @@ public abstract class NhanVien {
 
     public void setHopDong(HopDong HopDong) {
         this.HopDong = HopDong;
+        if(this.NgayVaoLam == null) setNgayVaoLam(HopDong.getNgayBatDauHopDong());
+if(this.NgayXetNangLuong == null) setNgayXetNangLuong(this.NgayVaoLam.plusYears(1));
         setLuongCoSo(HopDong.getMucLuongCoSo());
         if(HopDong.getLoaiHopDong().equals(LOAI_HOP_DONG.PART_TIME)){
             setHinhThucDiLam("Part-time");
@@ -362,6 +363,11 @@ public abstract class NhanVien {
         setNgayXetNangLuong(this.NgayVaoLam.plusYears(1));
         setPhuCap(HopDong.getPhuCap());
         setMaViTri(HopDong.getLoaiViTri().getMaViTri());
+        setChucVu(ViTri.XacDinhChucVu(MaViTri));
+        TaiKhoan tk = getTaiKhoan();
+        tk.setRole(ViTri.XacDinhQuyen(MaViTri));
+        setTaiKhoan(tk);
+        setMaPhongBan(HopDong.getLoaiViTri().getPhongBan()); 
     }
 
     public double getLuongCoSo() {
@@ -416,12 +422,9 @@ public abstract class NhanVien {
         return false;
     }
     
-    public boolean ToiNgayXetNangLuong(LocalDate NgayKiemTra){
-        if(NgayKiemTra.isEqual(this.NgayXetNangLuong)){
-            return true;
-        }
-        return false;
-    }
+public boolean ToiNgayXetNangLuong(LocalDate NgayKiemTra){
+    return this.NgayXetNangLuong != null && NgayKiemTra.isEqual(this.NgayXetNangLuong);
+}
     
     
    public void ThemChiTietChamCong(ChiTietChamCong cc){
@@ -457,5 +460,9 @@ public abstract class NhanVien {
 
     this.NgayTraLuongDinhKy = NgayTraLuongDinhKy.plusMonths(1);
     }
+    
+    public boolean isDaNghiViec(){
+    return HopDong != null && HopDong.getTrangThaiHopDong() == TRANG_THAI_HOP_DONG.DA_HUY;
+}
  
 }

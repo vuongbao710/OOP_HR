@@ -13,6 +13,32 @@ import oop.entity.Enum.*;
 import oop.entity.Object.*;
 
 public class ThaoTac {
+    private static boolean daHuyTacVu = false;
+    
+    // Đọc số nguyên trong [min, max], nhập sai thì hỏi lại (thay cho nextInt)
+private static int NhapSoNguyen(Scanner sc, String thongBao, int min, int max){
+    while(true){
+        System.out.println(thongBao);
+        try{
+            int v = Integer.parseInt(sc.nextLine().trim());
+            if(v >= min && v <= max) return v;
+        }catch(NumberFormatException e){ }
+        System.out.println("Vui lòng nhập số từ " + min + " đến " + max);
+    }
+}
+
+public static ThongBao GuiYeuCau(String gui, String nhan, LocalDate date, LocalTime time,
+                                 String msg, LoaiRequest loai, String maLienQuan){
+    boolean tonTai = nhan != null && (nhan.equalsIgnoreCase("BOSS") || DanhSachNhanVien.timKiem(nhan) != null);
+    if(!tonTai){
+        System.out.println("Không tìm thấy người nhận request: " + nhan);
+        return null;
+    }
+    ThongBao tb = GuiThongBao(gui, nhan, date, time, msg);
+    tb.setMaLienQuan(maLienQuan);
+    tb.setRequest(loai);
+    return tb;
+}
 //=====================================đăng nhập====================
     public static TaiKhoan DangNhap(Scanner sc){
         
@@ -136,6 +162,9 @@ public class ThaoTac {
                 else{
                     System.out.println("Ngày nghỉ phép phải sau ngày hiện tại");
                 }
+                if(!NgayKetThuc.isBefore(NgayBatDau)){ break; }
+                else{ System.out.println("Ngày kết thúc không được trước ngày bắt đầu"); }
+                
             }
         }
         System.out.println("lý do xin nghỉ phép của bạn là ?");
@@ -272,90 +301,96 @@ public class ThaoTac {
     }
     
     
-    public static void DuyetDonXinPhep(String MaNguoiDuyetDon, String MaNguoiGuiDon, ThongBao ThongBao, Scanner sc){
-        
-    if(HuyTacVu(sc)){
+    public static void DuyetDonXinPhep(String MaNguoiDuyetDon, String MaNguoiGuiDon, ThongBao tb, Scanner sc){
+        if(HuyTacVu(sc)) return;
+        NhanVien nv = DanhSachNhanVien.timKiem(MaNguoiGuiDon);
+        if(nv == null){
+        System.out.println("Không tìm thấy nhân viên");
         return;
     }
-        NhanVien nv = DanhSachNhanVien.timKiem(MaNguoiGuiDon);
-        if(nv==null){
-            System.out.println("Không tìm thấy nhân viên");
-            return;
-        }
-        LocalDate date = ThongBao.getDate();
-        LocalTime time  = ThongBao.getTime();
-        DonXinPhep don = nv.getDsDon().timKiem(date,time);
-        LocalDate NgayBatDau = don.getNgayBatDau();
-        LocalDate NgayKetThuc = don.getNgayKetThuc();
-        System.out.println(don);
-        while(true){
-            System.out.println("bạn có duyệt đơn của nhân viên không ? \n0. Không duyệt\n1. Duyệt");
-            int input = sc.nextInt();
-            sc.nextLine();
-            if(input==0 || input==1){
-                if(input==0){
-                    System.out.println("Nhập lý do không duyệt đơn cho nhân viên của bạn biết: ");
-                    String Message = sc.nextLine().trim();
-                    don.setTrangThai(LoaiTrangThaiCuaDon.KHONG_DUYET);
-                    GuiThongBao( MaNguoiDuyetDon, MaNguoiGuiDon, date, time, Message);
-                    NhatKyHoatDong.them("Nhân viên mã "+ MaNguoiDuyetDon + " không duyệt đơn nghỉ phép vào "+ time + " ngày " + date +
-                "cho nhân viên mã " + MaNguoiGuiDon);
-                }
-                else{
-                    don.setTrangThai(LoaiTrangThaiCuaDon.DUYET);
-                    if(don.getLoaiNghi() == LoaiNghiPhep.NGHI_PHEP_NAM){
-                        int khoangTgian = TinhNgay(NgayBatDau , NgayKetThuc);
-                        int SoNgayNghi = nv.getSoNgayNghiPhepNam();
-                        nv.setSoNgayNghiPhepNam(SoNgayNghi - khoangTgian);
-                        LapDayChamCongNhieuNgay(NgayBatDau , NgayKetThuc);
-                    }
-                    else{
-                        LapDayNghiPhep(NgayBatDau , NgayKetThuc, nv);
-                    }
-                    nv.getDsDon().them(don);
-                    GuiThongBao( MaNguoiDuyetDon, MaNguoiGuiDon, date, time, "đã duyệt đơn nghỉ phép có mã "+don.getMaDon());
-                    NhatKyHoatDong.them("Nhân viên mã "+ MaNguoiDuyetDon + " duyệt đơn nghỉ phép vào "+ time + " ngày " + date +
-                "cho nhân viên mã " + MaNguoiGuiDon);
-                }
-                break;
-            }
-            else{
-                System.out.println("Không hợp lệ, vui lòng nhập lại");
-            }
-        }
+        LocalDate date = tb.getDate();
+        LocalTime time = tb.getTime();
+        DonXinPhep don = nv.getDsDon().timKiem(date, time);
+        if(don == null){
+        System.out.println("Không tìm thấy đơn xin nghỉ phép tương ứng");
+        return;
     }
+        LocalDate ngayBatDau = don.getNgayBatDau();
+        LocalDate ngayKetThuc = don.getNgayKetThuc();
+        int khoangTgian = TinhNgay(ngayBatDau, ngayKetThuc);
+        System.out.println(don);
+
+        int chon = NhapSoNguyen(sc, "bạn có duyệt đơn của nhân viên không ? \n0. Không duyệt\n1. Duyệt", 0, 1);
+        LocalDate homNay = HeThong.date;
+        LocalTime bayGio = LocalTime.now();
+
+    // Ngày phép có thể đã bị dùng bởi đơn khác từ lúc nộp đơn
+        boolean khongDuPhep = chon == 1 && don.getLoaiNghi() == LoaiNghiPhep.NGHI_PHEP_NAM
+            && nv.getSoNgayNghiPhepNam() < khoangTgian;
+        if(chon == 0 || khongDuPhep){
+        String lyDo;
+        if(khongDuPhep){
+            lyDo = "bạn không còn đủ ngày nghỉ phép năm";
+            System.out.println("Nhân viên không còn đủ ngày phép năm, đơn sẽ bị từ chối");
+        }else{
+            System.out.println("Nhập lý do không duyệt đơn cho nhân viên của bạn biết: ");
+            lyDo = sc.nextLine().trim();
+        }
+        don.setTrangThai(LoaiTrangThaiCuaDon.KHONG_DUYET);
+        GuiThongBao(MaNguoiDuyetDon, MaNguoiGuiDon, homNay, bayGio, "Đơn nghỉ phép của bạn không được duyệt vì: " + lyDo);
+        NhatKyHoatDong.them("Nhân viên mã " + MaNguoiDuyetDon + " không duyệt đơn nghỉ phép vào " + bayGio + " ngày " + homNay
+                + " cho nhân viên mã " + MaNguoiGuiDon);
+        return;
+    }
+
+        don.setTrangThai(LoaiTrangThaiCuaDon.DUYET);
+        if(don.getLoaiNghi() == LoaiNghiPhep.NGHI_PHEP_NAM){
+        nv.setSoNgayNghiPhepNam(nv.getSoNgayNghiPhepNam() - khoangTgian);
+        // chỉ lập chấm công cho đúng nhân viên này (code cũ lập cho cả công ty)
+        for(LocalDate d = ngayBatDau; !d.isAfter(ngayKetThuc); d = d.plusDays(1)){
+            LapDayChamCong(nv, d);
+        }
+        }   else{
+        LapDayNghiPhep(ngayBatDau, ngayKetThuc, nv);
+    }
+    // đơn đã nằm trong dsDon từ lúc nộp, không them() lần hai
+        GuiThongBao(MaNguoiDuyetDon, MaNguoiGuiDon, homNay, bayGio, "đã duyệt đơn nghỉ phép có mã " + don.getMaDon());
+        NhatKyHoatDong.them("Nhân viên mã " + MaNguoiDuyetDon + " duyệt đơn nghỉ phép vào " + bayGio + " ngày " + homNay
+            + " cho nhân viên mã " + MaNguoiGuiDon);
+}
+
     
     public static void LapDayNghiPhep(LocalDate NgayBatDau , LocalDate NgayKetThuc, NhanVien nv){
         for(LocalDate date = NgayBatDau ;!date.isAfter(NgayKetThuc) ; date = date.plusDays(1)){
             ChiTietChamCong cc = nv.getBcc().timKiem(date);
+            if(cc == null){
+            cc = new ChiTietChamCong(nv.getBcc().taoMa(), date, nv.getMaNV());
+            nv.getBcc().them(cc);
+        }
             cc.setTrangThai(LoaiTrangThaiChamCong.NGHI_PHEP);
         }
     }
     //////////////////////////////////////////
-    public static void checkInbox(String MaNVCheckInbox, Scanner sc, LocalDate date, LocalTime time,DanhSachThongBao dsThongBao){
-        if(DemSoLuongInbox(MaNVCheckInbox)==0){
-            return;
-        }
-        System.out.println("Hòm thư của bạn có " + DemSoLuongInbox(MaNVCheckInbox) +" thông báo");
-        if(CoDocKhong(sc)==false){
-            return;
-        }
-        for(ThongBao tb : dsThongBao.getDsThongBao()){
-            if(tb.getTrangThai().equals(TrangThaiDocThongBao.CHUA_DOC)){
-                System.out.println(tb);
-                String MaNguoiGuiDon = tb.getMaNguoiGui();
-                if(!tb.getRequest().equals(LoaiRequest.THONG_BAO)){
-                    if(CoGiaiQuyetKhong(sc)){
-                        XuLyRequest(MaNVCheckInbox,MaNguoiGuiDon,tb,sc, date, time);
-                        tb.setTrangThai(TrangThaiDocThongBao.DA_GIAI_QUYET);
-                        continue;
-                    }
-                }
-                tb.setTrangThai(TrangThaiDocThongBao.DA_DOC);
-                System.out.println();
+public static void checkInbox(String MaNVCheckInbox, Scanner sc, LocalDate date, LocalTime time, DanhSachThongBao dsThongBao){
+    int soLuong = DemSoLuongInbox(MaNVCheckInbox);
+    if(soLuong == 0) return;
+    System.out.println("Hòm thư của bạn có " + soLuong + " thông báo");
+    if(!CoDocKhong(sc)) return;
+
+    // duyệt trên bản sao vì lúc xử lý có thể phát sinh thông báo mới
+    for(ThongBao tb : new ArrayList<>(dsThongBao.getDsThongBao())){
+        if(tb.getTrangThai() != TrangThaiDocThongBao.CHUA_DOC) continue;
+        System.out.println(tb);
+        if(tb.getRequest() != LoaiRequest.THONG_BAO && CoGiaiQuyetKhong(sc)){
+            if(XuLyRequest(MaNVCheckInbox, tb.getMaNguoiGui(), tb, sc, date, time)){
+                tb.setTrangThai(TrangThaiDocThongBao.DA_GIAI_QUYET);
+                continue;
             }
         }
+        tb.setTrangThai(TrangThaiDocThongBao.DA_DOC);
+        System.out.println();
     }
+}
     
     public static int DemSoLuongInbox(String MaNVCheckInbox){
         NhanVien nv = DanhSachNhanVien.timKiem(MaNVCheckInbox);
@@ -410,21 +445,50 @@ public class ThaoTac {
     }
     
     
-    public static void XuLyRequest(String MaNguoiNhanRequest, String MaNguoiGuiRequest, ThongBao ThongBao, Scanner sc, LocalDate date, LocalTime time){
-        if(ThongBao.getRequest().equals(LoaiRequest.XIN_NGHI_PHEP)){
-            DuyetDonXinPhep(MaNguoiNhanRequest,MaNguoiGuiRequest,ThongBao, sc);
+public static boolean XuLyRequest(String MaNguoiNhan, String MaNguoiGui, ThongBao tb, Scanner sc, LocalDate date, LocalTime time){
+    daHuyTacVu = false;
+    switch(tb.getRequest()){
+        case XIN_NGHI_PHEP:
+            DuyetDonXinPhep(MaNguoiNhan, MaNguoiGui, tb, sc);
+            break;
+        case DANH_GIA_KPI:
+            DanhGiaKPINhanVienPhuTrach(sc, date, time, MaNguoiNhan);
+            break;
+        case XEM_XET_TANG_LUONG:
+            // MaNguoiGui ở đây là admin, nhân viên cần xét lương nằm trong MaLienQuan
+            XemXetTangLuong(sc, tb.getMaLienQuan(), MaNguoiNhan, date, time);
+            break;
+        case DANG_KY_LAM_OT:
+            DuyetLamOT(sc, MaNguoiNhan, MaNguoiGui, date, time, tb.getNgayDangKy());
+            break;
+        case DANG_TAI_DOT_TUYEN_DUNG:
+            DuyetDotTuyenDung(sc, MaNguoiNhan, MaNguoiGui, date, time, tb.getMaLienQuan());
+            break;
+        case BO_NHIEM: {
+            NhanVien nguoiNhan = DanhSachNhanVien.timKiem(MaNguoiNhan);
+            if(nguoiNhan == null || tb.getMaLienQuan() == null){
+                System.out.println("Request bổ nhiệm thiếu thông tin người bị cách chức");
+                break;
+            }
+            ChonRaNguoiThayThe(date, time, tb.getMaLienQuan(), sc, nguoiNhan);
+            break;
         }
-        if(ThongBao.getRequest().equals(LoaiRequest.DANH_GIA_KPI)){
-            DanhGiaKPINhanVienPhuTrach(sc,date, time,MaNguoiNhanRequest);
-        }
-        if(ThongBao.getRequest().equals(LoaiRequest.XEM_XET_TANG_LUONG)){
-            XemXetTangLuong(sc, MaNguoiGuiRequest, MaNguoiNhanRequest, date, time);
-        }
-        if(ThongBao.getRequest().equals(LoaiRequest.DANG_KY_LAM_OT)){
-            DuyetLamOT(sc, MaNguoiNhanRequest, MaNguoiGuiRequest, date, time, ThongBao.getNgayDangKy());
-        }
-        
+        case CHAM_DIEM_DAO_TAO:
+            do{
+                ChamDiemUngVien(sc, MaNguoiNhan, date, time);
+            }while(!daHuyTacVu && NhapSoNguyen(sc, "Chấm điểm ứng viên khác không?\n0.Không\n1.Có", 0, 1) == 1);
+            break;
+        case KHIEN_TRACH_CHAM_CONG:
+            break; // chỉ cần xác nhận đã xem
+        case GIA_HAN_HOP_DONG:
+            DuyetGiaHanHopDong(sc, MaNguoiNhan, tb.getMaLienQuan(), date, time);
+            break;
+        default:
+            System.out.println("Loại request " + tb.getRequest().getMoTa() + " chưa có chức năng xử lý");
+            return false;
     }
+    return !daHuyTacVu;
+}
     
     public static ArrayList<ThongBao> DanhSachRequestChuaGiaiQuyet(String MaNV){
         ArrayList<ThongBao> temp = new ArrayList<>();
@@ -435,6 +499,8 @@ public class ThaoTac {
         }
         else{
             for(ThongBao tb : nv.getDsThongBao().getDsThongBao()){
+                if(tb.getRequest() != LoaiRequest.THONG_BAO
+                && (tb.getTrangThai() != TrangThaiDocThongBao.DA_GIAI_QUYET)&& (tb.getTrangThai()!= TrangThaiDocThongBao.HET_HAN))
                 temp.add(tb);
             }
             return temp;
@@ -490,102 +556,124 @@ public class ThaoTac {
         
     }
     
-    public static void LapDayChamCongNhieuNgay(LocalDate NgayBatDau, LocalDate NgayKetThuc){
-        for(NhanVien nv : DanhSachNhanVien.getDsnv()){
-            for(LocalDate NgayChamCong = NgayBatDau; !NgayChamCong.isAfter(NgayKetThuc);NgayChamCong = NgayChamCong.plusDays(1)){
-            
-            LapDayChamCong(nv, NgayChamCong);
-            }
-            }
-        }
+
     
     //////////admin
     
     public static void KiemTraToiNgay(NhanVien nv, LocalDate date, LocalTime time, String MaADMIN){
-        ArrayList<ThongBao> temp = nv.getDsThongBao().timKiemChuaGiaiQuyet(date);
-        if(!temp.isEmpty()){
-            for(int i = 0; i< temp.size();i++){
-                System.out.println("có request bạn chưa giải quyết có mã " + temp.get(i).getMaThongBao() 
-                        + " loại request là: " + temp.get(i).getRequest() +" đã tới hạn");
-            }
-        }
+        if(nv.isDaNghiViec()) return;
+        String maQL = nv.getMaQuanLyPhuTrach();
+        
+    // 1. Request sắp hết hạn (ngày mai) thì nhắc, tới hạn thì chuyển HET_HAN
+        for(ThongBao tb : nv.getDsThongBao().timKiemChuaGiaiQuyet(date)){
+        GuiThongBao(MaADMIN, nv.getMaNV(), date, time, "Request mã " + tb.getMaThongBao()
+                + " (" + tb.getRequest().getMoTa() + ") sẽ hết hạn vào ngày mai, vui lòng giải quyết");
+    }
         nv.getDsThongBao().chuyenQuaTrangThaiHetHan(date);
+
+    // 2. Hợp đồng hết hạn
+        HopDong hd = nv.getHopDong();
+        if(hd != null && hd.getNgayHetHan() != null && date.isAfter(hd.getNgayHetHan())
+        && hd.getTrangThaiHopDong() == TRANG_THAI_HOP_DONG.DANG_CO_HIEU_LUC){
+        hd.setTrangThaiHopDong(TRANG_THAI_HOP_DONG.HET_HAN);
+        GuiThongBao(MaADMIN, nv.getMaNV(), date, time, "Hợp đồng " + hd.getMaHopDong() + " của bạn đã hết hạn, đang chờ quản lý quyết định gia hạn");
+        if(maQL != null){
+        GuiYeuCau(MaADMIN, maQL, date, time,
+                "Hợp đồng " + hd.getMaHopDong() + " của nhân viên " + nv.getMaNV() + " đã hết hạn, cần gia hạn hoặc từ chối gia hạn",
+                LoaiRequest.GIA_HAN_HOP_DONG, nv.getMaNV());
+    }
+}
+
+    // 3. Tổng kết kỳ lương
         if(nv.ToiNgayTongKetDinhKy(date)){
-            nv.ResetQuyTrinhChamCong(date);
-            GuiThongBao( MaADMIN, nv.getMaNV(), date, time, "Đã reset bảng chấm công, chuyển qua tính theo tháng mới");
+        nv.ResetQuyTrinhChamCong(date);
+        GuiThongBao(MaADMIN, nv.getMaNV(), date, time, "Đã reset bảng chấm công, chuyển qua tính theo tháng mới");
+    }
 
-        }
-        if(NgayNghiepVu.kiemTraToiNgay(date)!=null)
-        if(NgayNghiepVu.kiemTraToiNgay(date).equalsIgnoreCase("ngày kết thúc quý")){
-            for(NhanVien NV : DanhSachNhanVien.getDsnv()){
-                if(NV.getChucVu().equals(LoaiChucVu.QUAN_LY)){
-                    GuiThongBao(MaADMIN, NV.getMaNV(), date, time, "Đã đến thời hạn chấm KPI của nhân viên bạn phụ trách" ).setRequest(LoaiRequest.DANH_GIA_KPI);
-                }
-            }
+    // 4. Tới ngày xét nâng lương: gửi request cho quản lý, kèm mã nhân viên
+        if(nv.ToiNgayXetNangLuong(date) && maQL != null && DangTrongHopDong(nv, date)){
+        GuiYeuCau(MaADMIN, maQL, date, time, "Tới ngày xét nâng lương của nhân viên có mã " + nv.getMaNV(),
+                LoaiRequest.XEM_XET_TANG_LUONG, nv.getMaNV());
+    }
 
+    // 5. Đầu năm: reset phép năm, thưởng tết cho full-time
+        if(date.getMonthValue() == 1 && date.getDayOfMonth() == 1){
+        nv.setSoNgayNghiPhepNam(12);
+        if(nv.getHinhThucDiLam() != null && nv.getHinhThucDiLam().equalsIgnoreCase("Full-time")
+                && DangTrongHopDong(nv, date)){
+            NhanVienFullTime nvFull = (NhanVienFullTime) nv;
+            double TienThuongTet = nvFull.TinhToanTienThuongTet(LocalDate.of(date.getYear() - 1, 1, 1));
+            KhenThuong khen = new KhenThuong(LoaiKhenThuong.THUONG_TET, null, date, TienThuongTet, MaADMIN, nv.getMaNV());
+            nvFull.getDsktkl().them(khen);
+            GuiThongBao(MaADMIN, nv.getMaNV(), date, time, "thưởng tết " + TienThuongTet + " vnd ").setRequest(LoaiRequest.THONG_BAO);
         }
-        if(nv.ToiNgayXetNangLuong(date)){
-            String MaQuanLyPhuTrach = nv.getMaQuanLyPhuTrach(); //MaNguoiGui là admin
-            String MaNVKiemTra = nv.getMaNV();
-            GuiThongBao( MaADMIN, MaQuanLyPhuTrach, date, time, "Tới ngày xét nâng lương của nhân viên có mã " 
-                    + MaNVKiemTra).setRequest(LoaiRequest.XEM_XET_TANG_LUONG);
-        }
-        if(date.isEqual(LocalDate.of(date.getYear(), 1, 1))){
-            if(nv.getHinhThucDiLam().equalsIgnoreCase("Full-time")){
-                NhanVienFullTime nvFull = (NhanVienFullTime) nv;
-                double TienThuongTet = nvFull.TinhToanTienThuongTet(LocalDate.of(date.getYear()-1, 1, 1));
-                String MaNV = nvFull.getMaNV();
-                KhenThuong khen = new KhenThuong(LoaiKhenThuong.THUONG_TET, null, date, TienThuongTet, MaADMIN, MaNV);
-                
-                nvFull.getDsktkl().them(khen);
-                 GuiThongBao(MaADMIN, MaNV, date, time, "thưởng tết " + TienThuongTet + " vnd ").setRequest(LoaiRequest.THONG_BAO);
-                 
+    }
+}
+    
+    public static void KiemTraToiNgayHeThong(LocalDate date, LocalTime time, String MaADMIN){
+    // Cuối quý: yêu cầu mỗi quản lý chấm KPI
+    if("ngày kết thúc quý".equalsIgnoreCase(NgayNghiepVu.kiemTraToiNgay(date))){
+        for(NhanVien NV : DanhSachNhanVien.getDsnv()){
+            if(NV.getChucVu() == LoaiChucVu.QUAN_LY && !NV.isDaNghiViec()){
+                GuiYeuCau(MaADMIN, NV.getMaNV(), date, time,
+                        "Đã đến thời hạn chấm KPI của nhân viên bạn phụ trách", LoaiRequest.DANH_GIA_KPI, null);
             }
         }
     }
+    // Đợt tuyển dụng quá hạn thì tự đóng
+    for(DotTuyenDung dot : new ArrayList<>(DanhSachDotTuyenDung.getDsDot())){
+        if(dot.getTrangThai() == TRANG_THAI_DOT.DANG_TUYEN_DUNG && date.isAfter(dot.getNgayHetHan())){
+            dot.setTrangThai(TRANG_THAI_DOT.KET_THUC); // ⚠ 2
+            GuiThongBao(MaADMIN, dot.getMaNguoiTuyen(), date, time,
+                    "Đợt tuyển dụng " + dot.getMaDotTuyenDung() + " đã quá hạn và được đóng tự động");
+        }
+    }
+    // Khóa đào tạo kết thúc hôm qua thì báo người phụ trách chấm điểm
+    for(KhoaDaoTao khoa : DanhSachKhoaDaoTao.getDskdt()){ // ⚠ 3
+        if(khoa.getNgayKetThuc() != null && date.isEqual(khoa.getNgayKetThuc().plusDays(1))){
+            GuiYeuCau(MaADMIN, khoa.getMaNVDaoTao(), date, time,
+                    "Khóa đào tạo " + khoa.getMaKhoaHoc() + " đã kết thúc, vui lòng chấm điểm ứng viên",
+                    LoaiRequest.CHAM_DIEM_DAO_TAO, khoa.getMaKhoaHoc());
+        }
+    }
+}
     
     public static void KiemTraVanHanhLuongNhanSu(LocalDate date, LocalTime time, String MaADMIN, LocalDate NgayKetThuc){
-        for(NhanVien nv : DanhSachNhanVien.getDsnv()){
-            for(LocalDate NgayChamCong = date; NgayChamCong.isBefore(NgayKetThuc.plusDays(1));NgayChamCong = NgayChamCong.plusDays(1)){
-            KiemTraToiNgay( nv, NgayChamCong,time, MaADMIN);
-            LapDayChamCong(nv, NgayChamCong);
-            }
-            }
+    for(LocalDate d = date; !d.isAfter(NgayKetThuc); d = d.plusDays(1)){
+        KiemTraToiNgayHeThong(d, time, MaADMIN);
+        for(NhanVien nv : new ArrayList<>(DanhSachNhanVien.getDsnv())){
+            KiemTraToiNgay(nv, d, time, MaADMIN);
+            if(!nv.isDaNghiViec() && DangTrongHopDong(nv, d)){
+                LapDayChamCong(nv, d);
+}
         }
+    }
+}
     
     
     
     //quản lý
     
-    public static void ThuongSangKien( Scanner sc, LocalDate date,LocalTime time, String MaQuanLy){
-        
-    if(HuyTacVu(sc)){
-        return;
-    }
+    public static void ThuongSangKien(Scanner sc, LocalDate date, LocalTime time, String MaQuanLy){
+        if(HuyTacVu(sc)) return;
+        NhanVien nv;
         while(true){
         System.out.println("Nhân viên bạn muốn thưởng sáng kiến có mã nhân viên là :");
-        String MaNV = sc.nextLine().trim();
-        NhanVien nv = DanhSachNhanVien.timKiem(MaNV);
-        if(nv!=null){
-            while(true){
-            System.out.println("Số tiền thưởng sáng kiến là ?\n Tối thiểu 100.000vnd - Tối đa 500.000vnd");
-            double TienThuongSangKien = sc.nextDouble();
-            if(TienThuongSangKien>=100000 && TienThuongSangKien<=500000){
-                KhenThuong khen = new KhenThuong(LoaiKhenThuong.THUONG_SANG_KIEN, null, date,TienThuongSangKien , MaQuanLy, MaNV);
-                
-                nv.getDsktkl().them(khen);
-                GuiThongBao( MaQuanLy, MaNV, date, time, "thưởng sáng kiến" + TienThuongSangKien + "vnd");
-                NhatKyHoatDong.them("Quản lý mã "+ MaQuanLy + " thưởng sáng kiến có giá trị " + TienThuongSangKien + " vào "+ time + " ngày " + date +
-                "cho nhân viên mã " + MaNV);
-                break;
-            }
-            }
-            break;
-            
-        }
-        System.out.println("Khong hop le, khong tim thay nhan vien tuong ung");
-        }
+        nv = DanhSachNhanVien.timKiem(sc.nextLine().trim());
+        if(nv != null) break;
+        System.out.println("Không tìm thấy nhân viên tương ứng");
     }
+        double tien;
+        while(true){
+        tien = NhapSo(sc, "Số tiền thưởng sáng kiến là ?\n Tối thiểu 100.000vnd - Tối đa 500.000vnd");
+        if(tien >= 100000 && tien <= 500000) break;
+        System.out.println("Số tiền phải trong khoảng 100.000 đến 500.000 vnd");
+    }
+        nv.getDsktkl().them(new KhenThuong(LoaiKhenThuong.THUONG_SANG_KIEN, null, date, tien, MaQuanLy, nv.getMaNV()));
+        GuiThongBao(MaQuanLy, nv.getMaNV(), date, time, "thưởng sáng kiến " + tien + " vnd");
+        NhatKyHoatDong.them("Quản lý mã " + MaQuanLy + " thưởng sáng kiến có giá trị " + tien + " vào " + time
+            + " ngày " + date + " cho nhân viên mã " + nv.getMaNV());
+}
     
     public static void DanhGiaKPI(Scanner sc, LocalDate date, LocalTime time, String MaQuanLy, String MaNV){
         
@@ -616,15 +704,16 @@ public class ThaoTac {
     }
     
     public static void DanhGiaKPINhanVienPhuTrach(Scanner sc, LocalDate date, LocalTime time, String MaNVDanhGia){
-        ArrayList<NhanVien> temp = DanhSachNhanVien.timKiemTheoMaQuanLyPhuTrach(MaNVDanhGia);
-        if(temp == null){
-            System.out.println("Danh sách nhân viên cấp dưới trống");
-            return;
-        }
-        for(NhanVien nv : DanhSachNhanVien.timKiemTheoMaQuanLyPhuTrachVaFullTime(MaNVDanhGia)){
-            DanhGiaKPI(sc, date, time, MaNVDanhGia, nv.getMaNV());
-        }
+    ArrayList<NhanVien> ds = DanhSachNhanVien.timKiemTheoMaQuanLyPhuTrachVaFullTime(MaNVDanhGia);
+    if(ds.isEmpty()){ // code cũ kiểm tra == null nên không bao giờ chạy
+        System.out.println("Danh sách nhân viên full-time cấp dưới trống");
+        return;
     }
+    for(NhanVien nv : ds){
+        DanhGiaKPI(sc, date, time, MaNVDanhGia, nv.getMaNV());
+        if(daHuyTacVu) return;
+    }
+}
     
 
     public static boolean KiemTraIsFullTime(NhanVien nv){
@@ -649,49 +738,37 @@ public class ThaoTac {
     if(HuyTacVu(sc)){
         return;
     }
+        NhanVien nv = DanhSachNhanVien.timKiem(MaNV);
+    if(nv == null){
+        System.out.println("Không tìm thấy nhân viên cần xét lương");
+        return;
+    }
+    System.out.println(nv);
+    int chon = NhapSoNguyen(sc, "Đồng ý tăng lương cho nhân viên mã " + MaNV + " không?\n0.Không\n1.Có", 0, 1);
+    if(chon == 1){
+        boolean full = KiemTraIsFullTime(nv);
+        double hienTai = nv.getLuongCoSo();
+        double moi;
         while(true){
-            NhanVien nv = DanhSachNhanVien.timKiem(MaNV);
-            System.out.println(nv);
-            System.out.println("Đồng ý tăng lương cho nhân viên mã " + nv.getMaNV() + " không?\n0.không\n1.có");
-            int input = sc.nextInt();
-            sc.nextLine();
-            if(input==0 || input ==1){
-                if(input==1){
-                    if(KiemTraIsFullTime(nv)){
-                        double LuongCoBan = DownCastingNhanVienFullTime(nv).getLuongCoSo();
-                        System.out.println( " Hiện tại lương cơ bản của nhân viên là" + LuongCoBan + "bạn muốn nâng lương cơ bản lên thành bao nhiêu?");
-                        double LuongCoBanMoi = sc.nextDouble();
-                        sc.nextLine();
-                        
-                        HopDong hd = nv.getHopDong();
-                        hd.setMucLuongCoSo(LuongCoBanMoi);
-                        nv.setHopDong(hd);
-                        
-                    }
-                    else{
-                        double LuongMotGio = DownCastingNhanVienPartTime(nv).getLuongCoSo();
-                        System.out.println( "Hiện tại lương một giờ của nhân viên là" + LuongMotGio +"bạn muốn nâng lương một giờ công cơ bản lên thành bao nhiêu?");
-                        double LuongMotGioMoi = sc.nextDouble();
-                        sc.nextLine();
-                        
-                        HopDong hd = nv.getHopDong();
-                        hd.setMucLuongCoSo(LuongMotGioMoi);
-                        nv.setHopDong(hd);
-                    }
-                    GuiThongBao(MaQuanLyPhuTrach, MaNV, date, time, "Quản lý đã đồng ý nâng lương cho bạn").setRequest(LoaiRequest.THONG_BAO);
-                    NhatKyHoatDong.them("Quản lý mã "+ MaQuanLyPhuTrach + " nâng lương thành" + 
-                            nv.getHopDong().getMucLuongCoSo()+ " vào "+ time + " ngày " + date + "cho nhân viên mã " + MaNV);
-                }
-                else{
-                System.out.println("Nhập lý do tại sao không tăng lương cho ");
-                String Message = sc.nextLine().trim();
-                GuiThongBao( MaQuanLyPhuTrach, MaNV, date, time, "từ chối nâng lương vì " + Message).setRequest(LoaiRequest.THONG_BAO);
-                NhatKyHoatDong.them("Quản lý mã "+ MaQuanLyPhuTrach + " từ chối nâng lương vào "+ time + " ngày " + date +
-                "cho nhân viên mã " + MaNV);
-                }
-                break;
+            moi = NhapSo(sc, "Hiện tại " + (full ? "lương cơ bản" : "lương một giờ") + " là " + hienTai
+                    + ", bạn muốn nâng lên thành bao nhiêu?");
+            if(moi > hienTai) break;
+            System.out.println("Mức mới phải lớn hơn mức hiện tại");
         }
-            System.out.println("Nhập sai định dạng, vui lòng nhập lại");
+        HopDong hd = nv.getHopDong();
+        hd.setMucLuongCoSo(moi);
+        nv.setHopDong(hd);
+        nv.setNgayXetNangLuong(date.plusYears(1));
+        GuiThongBao(MaQuanLyPhuTrach, MaNV, date, time, "Quản lý đã đồng ý nâng lương cho bạn").setRequest(LoaiRequest.THONG_BAO);
+        NhatKyHoatDong.them("Quản lý mã " + MaQuanLyPhuTrach + " nâng lương thành " + moi
+                + " vào " + time + " ngày " + date + " cho nhân viên mã " + MaNV);
+    }else{
+        System.out.println("Nhập lý do tại sao không tăng lương: ");
+        String Message = sc.nextLine().trim();
+        nv.setNgayXetNangLuong(date.plusMonths(6)); 
+        GuiThongBao(MaQuanLyPhuTrach, MaNV, date, time, "từ chối nâng lương vì " + Message).setRequest(LoaiRequest.THONG_BAO);
+        NhatKyHoatDong.them("Quản lý mã " + MaQuanLyPhuTrach + " từ chối nâng lương vào " + time + " ngày " + date
+                + " cho nhân viên mã " + MaNV);
     }
 }
     
@@ -772,17 +849,18 @@ public class ThaoTac {
         return dot;
     }
     
-    public static void DangTaiTuyenDung(Scanner sc, String MaQuanLy, String MaADMIN, LocalDate date, LocalTime time){
+    public static void DangTaiTuyenDung(Scanner sc, String MaQuanLy, String MaCapTren, LocalDate date, LocalTime time){
         DotTuyenDung dot = TaoDotTuyenDung(sc,MaQuanLy);
         if(dot==null){
             return;
         }
-        DanhSachDotTuyenDung.them(dot);
+        
         System.out.println("Nhập lý do");
         String Message = sc.nextLine().trim();
-        GuiThongBao(MaQuanLy, MaADMIN, date, time, Message).setRequest(LoaiRequest.DANG_TAI_DOT_TUYEN_DUNG);
-        NhatKyHoatDong.them("Quản lý mã "+ MaQuanLy+ " được gửi đề nghị tuyển dụng vào "+ time + " ngày " + date +
-                "cho giám đốc mã " + MaADMIN);
+        DanhSachDotTuyenDung.them(dot);
+        GuiThongBao(MaQuanLy, MaCapTren, date, time, Message).setRequest(LoaiRequest.DANG_TAI_DOT_TUYEN_DUNG);
+        NhatKyHoatDong.them("Quản lý mã "+ MaQuanLy+ " gửi đề nghị tuyển dụng vào "+ time + " ngày " + date +
+                "cho giám đốc mã " + MaCapTren);
     }
     
     public static void DuyetDotTuyenDung(Scanner sc, String MaADMIN, String MaNguoiTuyen, LocalDate date, LocalTime time, String MaDotTuyenDung){
@@ -799,6 +877,7 @@ public class ThaoTac {
             if(input==0){
                 System.out.println("Nhập lý do: ");
                 String lydo = sc.nextLine().trim();
+                DanhSachDotTuyenDung.xoa(MaDotTuyenDung);
                 GuiThongBao(MaADMIN, MaNguoiTuyen, date,time, "Giám đốc của bạn đã từ chối với lý do: " +lydo );
                 NhatKyHoatDong.them("Giám đốc mã "+ MaADMIN + " từ chối duyệt làm OT vào "+ time + " ngày " + date +
                 "cho nhân viên mã " + MaNguoiTuyen);
@@ -896,6 +975,61 @@ public class ThaoTac {
         }
     }
     
+public static KhoaDaoTao TaoKhoaDaoTao(Scanner sc, String MaNguoiTao, LocalDate date, LocalTime time) {
+    if (HuyTacVu(sc)) return null;
+
+    System.out.println("Nhập tên khóa đào tạo");
+    String ten = sc.nextLine().trim();
+
+    // Vị trí tuyển dụng mà khóa này đào tạo cho
+    ViTri vt;
+    NhanVien quanLy;
+    while (true) {
+        System.out.println("Nhập mã vị trí tuyển dụng của khóa");
+        vt = ViTri.timKiem(sc.nextLine().trim());
+        if (vt == null) {
+            System.out.println("Không tìm thấy vị trí");
+            continue;
+        }
+        if (vt == ViTri.GIAM_DOC_DIEU_HANH) {
+            System.out.println("Vị trí này không thuộc phòng ban nào, không thể mở khóa đào tạo");
+            continue;
+        }
+        // Người đào tạo là quản lý của phòng ban chứa vị trí đó
+        quanLy = DanhSachNhanVien.TimQuanLyTheoViTri(vt);
+        if (quanLy == null) {
+            System.out.println("Phòng ban " + vt.getPhongBan() + " chưa có quản lý, hãy chọn vị trí khác");
+            continue;
+        }
+        break;
+    }
+    System.out.println("Người đào tạo: " + quanLy.getHoTen() + " (mã " + quanLy.getMaNV()
+            + ", phòng ban " + quanLy.getMaPhongBan() + ")");
+
+    LocalDate ngayBatDau;
+    while (true) {
+        ngayBatDau = NhapNgay(sc, "Nhập ngày bắt đầu khóa");
+        if (!ngayBatDau.isBefore(date)) break;
+        System.out.println("Ngày bắt đầu không được trước hôm nay");
+    }
+    LocalDate ngayKetThuc;
+    while (true) {
+        ngayKetThuc = NhapNgay(sc, "Nhập ngày kết thúc khóa");
+        if (ngayKetThuc.isAfter(ngayBatDau)) break;
+        System.out.println("Ngày kết thúc phải sau ngày bắt đầu");
+    }
+
+    KhoaDaoTao khoa = new KhoaDaoTao(ten, ngayBatDau, ngayKetThuc, vt, quanLy.getMaNV());
+    // ⚠ Nếu DanhSachKhoaDaoTao.them không tự sinh mã thì phải gọi khoa.setMaKhoaHoc(...) trước dòng này
+    DanhSachKhoaDaoTao.them(khoa);
+
+    NhatKyHoatDong.them("Người dùng mã " + MaNguoiTao + " tạo khóa đào tạo " + khoa.getMaKhoaHoc()
+            + " cho vị trí " + vt.getMaViTri() + ", người đào tạo là quản lý mã " + quanLy.getMaNV()
+            + " vào " + time + " ngày " + date);
+    System.out.println("Đã tạo khóa đào tạo mã " + khoa.getMaKhoaHoc());
+    return khoa;
+}
+    
     public static void ChamDiemUngVien(Scanner sc, String MaNguoiCham, LocalDate date, LocalTime time){
         
     if(HuyTacVu(sc)){
@@ -944,12 +1078,177 @@ public class ThaoTac {
         NhatKyHoatDong.them("Nhân viên mã " + MaNguoiCham + " chấm " + DiemSo + " điểm cho ứng viên " + uv.getMaUngVien() 
                 + " vào " + time + " ngày " + date + " kết quả " + kq.getKetQua().getMoTa());
     }
-/*
-    public static NhanVien ChuyenThanhNhanVien(UngVien uv){
-        NhanVien nv = new NhanVien();
-    }
     
-   */ 
+    private static LocalDate NhapNgay(Scanner sc, String thongBao) {
+    while (true) {
+        System.out.println(thongBao + " (dd/MM/yyyy)");
+        LocalDate d = isValidDate(sc.nextLine().trim(), "dd/MM/yyyy");
+        if (d != null) return d;
+        System.out.println("Ngày không hợp lệ, vui lòng nhập lại");
+    }
+}
+
+// Đọc số thực >= 0, nhập sai thì hỏi lại
+private static double NhapSo(Scanner sc, String thongBao) {
+    while (true) {
+        System.out.println(thongBao);
+        try {
+            double v = Double.parseDouble(sc.nextLine().trim());
+            if (v >= 0) return v;
+        } catch (NumberFormatException e) { }
+        System.out.println("Vui lòng nhập số hợp lệ (>= 0)");
+    }
+}
+
+// Nhập ca làm, lặp đến khi hợp lệ với loại nhân viên
+private static String NhapCaLam(Scanner sc, boolean fullTime) {
+    while (true) {
+        System.out.println("Nhập ca làm");
+        String ca = sc.nextLine().trim();
+        boolean hopLe = fullTime ? LoaiCaLamFullTime.NhanDien(ca) != null
+                                 : LoaiCaLamPartTime.NhanDien(ca) != null;
+        if (hopLe) return ca;
+        System.out.println("Ca làm không hợp lệ, vui lòng nhập lại");
+    }
+}
+
+// Tạo đúng class con của NhanVien (NhanVien là abstract)
+private static NhanVien TaoNhanVien(String maNV, UngVien uv, String maQL,
+                                    String caLam, boolean fullTime) {
+    if (fullTime) {
+        return new NhanVienFullTime(maNV, uv.getCCCD(), uv.getHoTen(), uv.getSDT(), maQL,
+                uv.getNgayThangNamSinh(), caLam);
+    }
+    return new NhanVienPartTime(maNV, uv.getCCCD(), uv.getHoTen(), uv.getSDT(), maQL,
+            uv.getNgayThangNamSinh(), caLam);
+}
+
+public static HopDong KyHopDong(Scanner sc, ViTri vt, LocalDate ngayKy) {
+    LOAI_HOP_DONG loai;
+    if (!vt.isFullTime()) {
+        loai = LOAI_HOP_DONG.PART_TIME;
+        System.out.println("Loại hợp đồng: " + loai.getMoTa());
+    } else {
+        while (true) {
+            System.out.println("Chọn loại hợp đồng:\n1." + LOAI_HOP_DONG.CHINH_THUC_NGAN_HAN.getMoTa()
+                    + "\n2." + LOAI_HOP_DONG.CHINH_THUC_DAI_HAN.getMoTa());
+            String chon = sc.nextLine().trim();
+            if (chon.equals("1")) { loai = LOAI_HOP_DONG.CHINH_THUC_NGAN_HAN; break; }
+            if (chon.equals("2")) { loai = LOAI_HOP_DONG.CHINH_THUC_DAI_HAN; break; }
+            System.out.println("Vui lòng nhập 1 hoặc 2");
+        }
+    }
+
+    LocalDate ngayBatDau;
+    while (true) {
+        ngayBatDau = NhapNgay(sc, "Nhập ngày bắt đầu hợp đồng");
+        if (!ngayBatDau.isBefore(ngayKy)) break;
+        System.out.println("Ngày bắt đầu không được trước ngày ký");
+    }
+    LocalDate ngayHetHan;
+    while (true) {
+        ngayHetHan = NhapNgay(sc, "Nhập ngày hết hạn hợp đồng");
+        if (ngayHetHan.isAfter(ngayBatDau)) break;
+        System.out.println("Ngày hết hạn phải sau ngày bắt đầu");
+    }
+
+    double luongCoBan = 0, luongTheoGio = 0;
+    if (loai == LOAI_HOP_DONG.PART_TIME) {
+        luongTheoGio = NhapSo(sc, "Nhập lương theo giờ");
+    } else {
+        luongCoBan = NhapSo(sc, "Nhập lương cơ bản");
+    }
+    double phuCap = NhapSo(sc, "Nhập phụ cấp");
+
+    System.out.println("Nhập ghi chú (có thể để trống)");
+    String ghiChu = sc.nextLine().trim();
+
+    return new HopDong(null, null, ngayKy, ngayBatDau, ngayHetHan, vt.getMaViTri(),
+            luongCoBan, luongTheoGio, phuCap, loai,
+            TRANG_THAI_HOP_DONG.DANG_CO_HIEU_LUC, ghiChu);
+}
+
+public static void TiepNhanUngVien(Scanner sc, String MaNguoiThucHien, LocalDate date, LocalTime time) {
+    if (HuyTacVu(sc)) return;
+    // 1. Tìm đợt tuyển dụng
+DotTuyenDung dot;
+while (true) {
+    System.out.println("Nhập mã đợt tuyển dụng");
+    dot = DanhSachDotTuyenDung.timKiem(sc.nextLine().trim());
+    if (dot != null) break;
+    System.out.println("Không tìm thấy đợt tuyển dụng");
+}
+if (dot.getTrangThai() != TRANG_THAI_DOT.DANG_TUYEN_DUNG) {
+    System.out.println("Đợt tuyển dụng này chưa được duyệt hoặc đã đóng, không thể tiếp nhận");
+    return;
+}
+
+// 2. Tìm ứng viên (dot.timKiem tự in thông báo nếu không thấy)
+UngVien uv;
+while (true) {
+    System.out.println("Nhập mã ứng viên");
+    uv = dot.timKiem(sc.nextLine().trim());
+    if (uv != null) break;
+}
+
+// 3. Kiểm tra điều kiện
+if (uv.getKq() == null || uv.getKq().getKetQua() != LoaiKetQua.DAT) {
+    System.out.println("Ứng viên chưa đạt hoặc chưa được chấm điểm, không thể tiếp nhận");
+    return;
+}
+if (uv.isDaLaNhanVien()) {
+    System.out.println("Ứng viên này đã được chuyển thành nhân viên rồi");
+    return;
+}
+for (NhanVien n : DanhSachNhanVien.getDsnv()) {
+    if (n.getCCCD() != null && n.getCCCD().equals(uv.getCCCD())) {
+        System.out.println("CCCD này đã tồn tại trong danh sách nhân viên (mã " + n.getMaNV() + ")");
+        return;
+    }
+}
+
+// 4. Quản lý phụ trách và phòng ban lấy từ người mở đợt tuyển dụng
+NhanVien quanLy = DanhSachNhanVien.timKiem(dot.getMaNguoiTuyen());
+if (quanLy == null) {
+    System.out.println("Không tìm thấy quản lý phụ trách của đợt tuyển dụng này");
+    return;
+}
+ViTri vt = dot.getViTri(); // lấy vị trí từ chính đợt tuyển dụng cho chắc chắn khớp
+String caLam = NhapCaLam(sc, vt.isFullTime());
+ // 5. Nhập hợp đồng và xác nhận trước khi tạo nhân viên
+    System.out.println("--- KÝ HỢP ĐỒNG CHO " + uv.getHoTen() + " ---");
+    HopDong hd = KyHopDong(sc, vt, date);
+    System.out.println(hd);
+    while (true) {
+        System.out.println("Xác nhận tiếp nhận và ký hợp đồng?\n0.Không\n1.Có");
+        String c = sc.nextLine().trim();
+        if (c.equals("0")) {
+            System.out.println("Đã hủy, chưa tạo nhân viên");
+            return;
+        }
+        if (c.equals("1")) break;
+        System.out.println("Vui lòng nhập đúng định dạng");
+    }
+
+    // 6. Tạo nhân viên. Sinh mã sau khi đã xác nhận để không bị "đốt" mã
+    String maNV = DanhSachNhanVien.taoMa();
+    NhanVien nv = TaoNhanVien(maNV, uv, quanLy.getMaNV(), caLam, vt.isFullTime());
+
+    hd.setMaNV(maNV);
+    hd.setMaHopDong("HD" + maNV);
+    nv.setHopDong(hd); // gán lương, phụ cấp, ngày vào làm, vị trí, chức vụ, phòng ban, quyền tài khoản
+
+    DanhSachNhanVien.them(nv);
+    // ⚠ 3: nếu tài khoản được lưu ở DanhSachTaiKhoan thì thêm dòng dưới (đổi tên hàm cho đúng)
+    DanhSachTaiKhoan.them(nv.getTaiKhoan());
+    uv.setDaLaNhanVien(true);
+
+    NhatKyHoatDong.them("Người dùng mã " + MaNguoiThucHien + " tiếp nhận ứng viên " + uv.getMaUngVien()
+            + " thành nhân viên " + maNV + " và ký hợp đồng " + hd.getMaHopDong()
+            + " vào " + time + " ngày " + date);
+    System.out.println("Đã tạo nhân viên " + maNV + " và ký hợp đồng " + hd.getMaHopDong());
+    System.out.println("Tài khoản đăng nhập: " + maNV); // ⚠ chỉnh nếu TaiKhoan dùng username/mật khẩu khác
+}
     
     public static void PhanQuyen(TaiKhoan tk, Scanner sc){
         if(tk.getRole()==LoaiVaiTro.HR_ADMIN){
@@ -992,28 +1291,34 @@ public class ThaoTac {
         return Message;
     }
     
-    public static void XuLyKyLuat(LoaiKyLuat kl, LoaiViPham vp, LocalDate date,LocalTime time, NhanVien nv){
-        String Message = ThongBaoKyLuat(kl,vp,date,nv);
-        GuiThongBao("HETHONG" , nv.getMaNV(), date, time, Message);
-        switch(kl){
-            case LoaiKyLuat.KHIEN_TRACH:
-                break;
-            case LoaiKyLuat.KEO_DAI_THOI_HAN_NANG_LUONG:
-                LocalDate Xet = nv.getNgayXetNangLuong();
-                nv.setNgayXetNangLuong(Xet.plusMonths(6));
-                break;
-            case LoaiKyLuat.CACH_CHUC:
-                GuiThongBao("HETHONG", nv.getMaQuanLyPhuTrach(), date, time, " cách chức nhân viên mã " 
-                        + nv.getMaNV() + " và bổ nhiệm nhân viên mới lấp đầy chỗ trống").setRequest(LoaiRequest.BO_NHIEM);
-                break;
-            case LoaiKyLuat.SA_THAI:
-                sdfsaf // khoá tài khoản và xuất lương chưa trả
-                break;
-            default:
-                System.out.println(" Không có trong danh sách hình thức kỷ luật");
-                break;
-        }
+    public static void XuLyKyLuat(LoaiKyLuat kl, LoaiViPham vp, LocalDate date, LocalTime time, NhanVien nv){
+        if(nv.isDaNghiViec()) return;
+        String Message = ThongBaoKyLuat(kl, vp, date, nv);
+        if(Message != null){
+        GuiThongBao("HETHONG", nv.getMaNV(), date, time, Message);
     }
+        switch(kl){
+        case KHIEN_TRACH:
+            break;
+        case KEO_DAI_THOI_HAN_NANG_LUONG:
+            if(nv.getNgayXetNangLuong() != null){
+                nv.setNgayXetNangLuong(nv.getNgayXetNangLuong().plusMonths(6));
+            }
+            break;
+        case CACH_CHUC:
+            // nhân viên thường không có chức để cách, chỉ quản lý và giám đốc mới cần người thay
+            YeuCauBoNhiemThayThe(nv, date, time);
+            break;
+        case SA_THAI:
+            ChamDutNhanVien(nv, date, date, time, "HETHONG", "bị sa thải");
+            break;
+        default:
+            System.out.println(" Không có trong danh sách hình thức kỷ luật");
+            break;
+    }
+        NhatKyHoatDong.them("Hệ thống áp dụng kỷ luật " + kl.getMoTa() + " cho nhân viên mã " + nv.getMaNV()
+            + " vào " + time + " ngày " + date);
+}
     
         public static boolean KiemTraMaViTriTonTai(String MaViTri){
         for(ViTri vt : ViTri.values()){
@@ -1024,23 +1329,104 @@ public class ThaoTac {
         return false;
         }
         
-        public static void BoNhiem(LocalDate date, LocalTime time, String MaNVCachChuc, String MaNVBoNhiem){
-            NhanVien nv1 = DanhSachNhanVien.timKiem(MaNVCachChuc);
-            NhanVien nv2 = DanhSachNhanVien.timKiem(MaNVBoNhiem);
-            if(nv2.getChucVu() == LoaiChucVu.NHAN_VIEN || nv1.getChucVu() == LoaiChucVu.QUAN_LY){
-                
-            nv2.setMaQuanLyPhuTrach(nv1.getMaQuanLyPhuTrach());
-            nv1.setMaQuanLyPhuTrach(nv2.getMaNV());
-            
-            
-            nv2.setChucVu(nv1.getChucVu());
-            nv1.setChucVu(LoaiChucVu.NHAN_VIEN);
-            }
-            else if(nv2.getChucVu() == LoaiChucVu.QUAN_LY && nv1.getChucVu() == LoaiChucVu.GIAM_DOC){
-                //////// đệ quy
-            }
-            
+private static void DoiViTri(NhanVien nv, ViTri vt) {
+    HopDong hd = nv.getHopDong();
+    hd.setLoaiViTri(vt);
+    // Lương theo chức vụ mới. Tính từ vị trí vì ChucVu của nv chỉ đổi sau setHopDong.
+    hd.setMucLuongCoSo(ViTri.XacDinhChucVu(vt.getMaViTri()).getLuongCoBan());
+    nv.setHopDong(hd);
+}
+
+// Hỏi vị trí mới cho người bị cách chức. phongBanBatBuoc = null nghĩa là không ràng buộc phòng ban.
+private static ViTri NhapViTriMoi(Scanner sc, NhanVien nvXuong, String phongBanBatBuoc) {
+    while (true) {
+        System.out.println("Nhập mã vị trí mới cho " + nvXuong.getHoTen() + " sau khi bị cách chức");
+        ViTri vt = ViTri.timKiem(sc.nextLine().trim());
+        if (vt == null) {
+            System.out.println("Không tìm thấy vị trí");
+            continue;
         }
+        if (!vt.isFullTime() || ViTri.XacDinhChucVu(vt.getMaViTri()) != LoaiChucVu.NHAN_VIEN) {
+            System.out.println("Phải là vị trí nhân viên full-time ");
+            continue;
+        }
+        if (phongBanBatBuoc != null && !vt.getPhongBan().equalsIgnoreCase(phongBanBatBuoc)) {
+            System.out.println("Vị trí phải thuộc phòng ban " + phongBanBatBuoc);
+            continue;
+        }
+        return vt;
+    }
+}
+
+private static ViTri LayViTriMoi(Scanner sc, NhanVien nvXuong, String phongBanBatBuoc){
+    if(!nvXuong.isDaNghiViec()){
+        return NhapViTriMoi(sc, nvXuong, phongBanBatBuoc);
+    }
+    for(ViTri vt : ViTri.values()){
+        if(vt.isFullTime() && ViTri.XacDinhChucVu(vt.getMaViTri()) == LoaiChucVu.NHAN_VIEN
+                && vt.getPhongBan() != null && vt.getPhongBan().equalsIgnoreCase(nvXuong.getMaPhongBan())){
+            return vt;
+        }
+    }
+    return ViTri.NHAN_VIEN_KINH_DOANH; // giám đốc không thuộc phòng ban nào
+}
+
+public static void ThayChuc(NhanVien nvXuong, NhanVien nvLen, ViTri viTriMoiCuaNvXuong) {
+    ViTri viTriNvLenNhan = nvXuong.getHopDong().getLoaiViTri(); // vị trí nvLen sẽ nhận
+
+    // 1. Đổi cấp báo cáo (thứ tự giữ như code cũ)
+    nvLen.setMaQuanLyPhuTrach(nvXuong.getMaQuanLyPhuTrach());
+    nvXuong.setMaQuanLyPhuTrach(nvLen.getMaNV());
+    for (NhanVien n : DanhSachNhanVien.timKiemTheoMaQuanLyPhuTrach(nvXuong.getMaNV())) {
+        n.setMaQuanLyPhuTrach(nvLen.getMaNV());
+    }
+
+    // 2. Đổi vị trí (chức vụ, phòng ban, quyền, lương tự cập nhật)
+    DoiViTri(nvLen, viTriNvLenNhan);
+    DoiViTri(nvXuong, viTriMoiCuaNvXuong);
+}
+
+    public static void BoNhiem(LocalDate date, LocalTime time, String MaNVCachChuc, String MaNVBoNhiem, Scanner sc, NhanVien nv) {
+    NhanVien nvXuong = DanhSachNhanVien.timKiem(MaNVCachChuc);
+    NhanVien nvLen = DanhSachNhanVien.timKiem(MaNVBoNhiem);
+    if (nvXuong == null || nvLen == null) {
+        System.out.println("Không tìm thấy nhân viên");
+        return;
+    }
+    if (nvXuong == nvLen) {
+        System.out.println("Không thể bổ nhiệm chính người bị cách chức");
+        return;
+    }
+    if (nvLen instanceof NhanVienPartTime) {
+        System.out.println("Không thể bổ nhiệm người làm part-time");
+        return;
+    }
+
+    if (nvLen.getChucVu() == LoaiChucVu.NHAN_VIEN && nvXuong.getChucVu() == LoaiChucVu.QUAN_LY) {
+        // Vị trí quản lý thuộc về một phòng ban, nên người được bổ nhiệm phải cùng phòng ban
+        if (!nvLen.getMaPhongBan().equalsIgnoreCase(nvXuong.getMaPhongBan())) {
+            System.out.println("Người được bổ nhiệm phải thuộc cùng phòng ban với quản lý bị cách chức");
+            return;
+        }
+        ViTri viTriMoi = LayViTriMoi(sc, nvXuong, nvXuong.getMaPhongBan());
+        ThayChuc(nvXuong, nvLen, viTriMoi);
+        NhatKyHoatDong.them("Người dùng mã " + nv.getMaNV() + " bổ nhiệm nhân viên " + nvLen.getMaNV()
+                + " thay quản lý " + nvXuong.getMaNV() + " vào " + time + " ngày " + date);
+    }
+    else if (nvLen.getChucVu() == LoaiChucVu.QUAN_LY && nvXuong.getChucVu() == LoaiChucVu.GIAM_DOC) {
+        ViTri viTriMoi = LayViTriMoi(sc, nvXuong, null);
+        ThayChuc(nvXuong, nvLen, viTriMoi);
+        NhatKyHoatDong.them("Người dùng mã " + nv.getMaNV() + " bổ nhiệm quản lý " + nvLen.getMaNV()
+                + " lên giám đốc thay " + nvXuong.getMaNV() + " vào " + time + " ngày " + date);
+        // TODO: ghế quản lý của nvLen đang trống, cần chọn người thay thế (xem ghi chú bên dưới)
+        System.out.println("Ghế quản lý phòng ban " + viTriMoi.getPhongBan() + " cũ của "
+                + nvLen.getHoTen() + " đang trống, cần bổ nhiệm người thay thế");
+    }
+    else {
+        System.out.println("Chỉ bổ nhiệm được: nhân viên lên quản lý (thay quản lý) hoặc quản lý lên giám đốc (thay giám đốc)");
+    }
+}
+
         
         public static String NhapMaNV(Scanner sc){
             String input = sc.nextLine();//////////////////////
@@ -1058,11 +1444,11 @@ public class ThaoTac {
         
         public static void ChonRaNguoiThayThe(LocalDate date, LocalTime time, String MaNVCachChuc, Scanner sc, NhanVien nv){
             DanhSachNhanVien.SortTheoThamNien();
-            System.out.println("\n0.Thoát\n1.Bổ nhiệm nội bộ\n2.Tuyển ngoài");
-            int input = sc.nextInt(); //try-catch
-            sc.nextLine();
-            if(input==0){
-                return;
+            System.out.println("Chọn người thay thế cho nhân viên mã "+ MaNVCachChuc);
+            int input = NhapSoNguyen(sc, "\n0.Thoát\n1.Bổ nhiệm nội bộ\n2.Tuyển ngoài", 0, 2);
+            if(input == 0){
+            daHuyTacVu = true; // thoát thì request bổ nhiệm vẫn còn mở
+            return;
             }
             while(input ==-1 || input<1 || input >2 ){
                 System.out.println("Không hơp lệ, nhập lại");
@@ -1075,14 +1461,139 @@ public class ThaoTac {
                 while(nhap==null){
                     nhap = NhapMaNV(sc);
                 }
-                BoNhiem(date, time, MaNVCachChuc, nhap);
+                BoNhiem(date, time, MaNVCachChuc, nhap, sc, nv);
             }
             else{
-                if(!nv.getMaNV().equalsFoldCase("Boss"))
-                TaoDotTuyenDung();
-            }
+                if(!nv.getMaNV().equalsIgnoreCase("Boss"))
+                DangTaiTuyenDung(sc, nv.getMaNV(), nv.getMaQuanLyPhuTrach(), date, time);
+                else {
+                DotTuyenDung dot = TaoDotTuyenDung(sc, nv.getMaNV());
+                if (dot == null) {
+                return; // người dùng chọn thoát
+    }
+                dot.setTrangThai(TRANG_THAI_DOT.DANG_TUYEN_DUNG);
+                DanhSachDotTuyenDung.them(dot);
+                ArrayList<NhanVien> temp = DanhSachNhanVien.timKiemTheoMaQuanLyPhuTrach(MaNVCachChuc);
+                NhanVien nvXuong = DanhSachNhanVien.timKiem(MaNVCachChuc);
+                for (NhanVien NV : temp) {
+                NV.setMaQuanLyPhuTrach(nvXuong.getMaQuanLyPhuTrach());
+                        }
+                    }
+                }
             
         }
+        
+        private static boolean DangTrongHopDong(NhanVien nv, LocalDate date){
+        HopDong hd = nv.getHopDong();
+        if(hd == null) return true; // dữ liệu cũ chưa có hợp đồng thì giữ hành vi cũ
+        if(hd.getNgayBatDauHopDong() != null && date.isBefore(hd.getNgayBatDauHopDong())) return false;
+        if(hd.getNgayHetHan() != null && date.isAfter(hd.getNgayHetHan())) return false;
+        return true;
+}
+        private static void YeuCauBoNhiemThayThe(NhanVien nv, LocalDate date, LocalTime time){
+        if(nv.getChucVu() != LoaiChucVu.QUAN_LY && nv.getChucVu() != LoaiChucVu.GIAM_DOC) return;
+        if(nv.getMaQuanLyPhuTrach() == null) return;
+            GuiYeuCau("HETHONG", nv.getMaQuanLyPhuTrach(), date, time,
+            "Nhân viên mã " + nv.getMaNV() + " mất chức vụ " + nv.getChucVu() + ", cần bổ nhiệm người thay thế",
+            LoaiRequest.BO_NHIEM, nv.getMaNV());
+}
+        // Chấm dứt quan hệ lao động (dùng chung cho sa thải và từ chối gia hạn):
+// xuất phiếu lương cuối, hủy hợp đồng, khóa tài khoản, báo người liên quan.
+// ngayKetThuc: ngày hợp đồng chấm dứt (sa thải = hôm nay, hết hạn = ngày hết hạn cũ)
+        public static void ChamDutNhanVien(NhanVien nv, LocalDate ngayKetThuc, LocalDate date, LocalTime time,
+                                   String MaNguoiThucHien, String lyDo){
+        if(nv.isDaNghiViec()) return;
+
+    // 1. Phiếu lương cuối: chốt bảng chấm công hiện tại rồi tính như cuối kỳ
+        nv.ThemBangChamCong();
+        BangChamCong bang = nv.getBcc();
+        PhieuLuong pl = nv.TaoPhieuLuong(bang.getThang(), bang.getNam());
+        pl.setMaPhieu(nv.getDspl().taoMa());
+        nv.ThemPhieuLuong(pl);
+
+    // 2. Hợp đồng: hủy và chốt ngày kết thúc (DangTrongHopDong tự dừng chấm công sau ngày này)
+        HopDong hd = nv.getHopDong();
+        if(hd != null){
+        hd.setTrangThaiHopDong(TRANG_THAI_HOP_DONG.DA_HUY);
+        hd.setNgayHetHan(ngayKetThuc);
+        String cu = hd.getGhiChu() == null || hd.getGhiChu().isEmpty() ? "" : hd.getGhiChu() + "; ";
+        hd.setGhiChu(cu + "Chấm dứt ngày " + ngayKetThuc + ": " + lyDo);
+    }
+
+    // 3. Khóa tài khoản (giữ lại trong danh sách để còn tra cứu)
+        if(nv.getTaiKhoan() != null){
+        nv.getTaiKhoan().setTrangThai(TaiKhoan.TrangThaiHoatDong.BI_KHOA);
+    }
+        for(TaiKhoan tk : DanhSachTaiKhoan.getDstk()){
+        if(tk.getMaNV() != null && tk.getMaNV().equalsIgnoreCase(nv.getMaNV())){
+            tk.setTrangThai(TaiKhoan.TrangThaiHoatDong.BI_KHOA);
+        }
+    }
+
+    // 4. Báo quản lý và yêu cầu người thay thế nếu người này đang giữ chức
+        if(nv.getMaQuanLyPhuTrach() != null){
+        GuiThongBao("HETHONG", nv.getMaQuanLyPhuTrach(), date, time,
+                "Nhân viên " + nv.getMaNV() + " (" + nv.getHoTen() + ") đã chấm dứt hợp đồng: " + lyDo
+                + ". Phiếu lương cuối đã được xuất.");
+    }
+        YeuCauBoNhiemThayThe(nv, date, time);
+
+        NhatKyHoatDong.them("Người dùng mã " + MaNguoiThucHien + " chấm dứt hợp đồng nhân viên " + nv.getMaNV()
+            + " (" + lyDo + "), phiếu lương cuối " + pl.getMaPhieu() + " vào " + time + " ngày " + date);
+        System.out.println("Đã chấm dứt hợp đồng, xuất phiếu lương cuối và khóa tài khoản của " + nv.getHoTen());
+}
+        
+        
+        public static void DuyetGiaHanHopDong(Scanner sc, String MaNguoiDuyet, String MaNV, LocalDate date, LocalTime time){
+        if(HuyTacVu(sc)) return;
+        NhanVien nv = DanhSachNhanVien.timKiem(MaNV);
+        if(nv == null){
+        System.out.println("Không tìm thấy nhân viên cần gia hạn hợp đồng");
+        return;
+    }
+        HopDong hd = nv.getHopDong();
+        if(hd == null || hd.getTrangThaiHopDong() != TRANG_THAI_HOP_DONG.HET_HAN){
+        System.out.println("Hợp đồng này không còn chờ gia hạn (đã được xử lý rồi)");
+        return;
+    }
+        System.out.println("Nhân viên " + nv.getHoTen() + " (mã " + MaNV + ")");
+        System.out.println(hd);
+
+        int chon = NhapSoNguyen(sc, "Quyết định?\n0.Từ chối gia hạn (chấm dứt hợp đồng)\n1.Gia hạn", 0, 1);
+        if(chon == 0){
+        System.out.println("Nhập lý do: ");
+        String lyDo = sc.nextLine().trim();
+        // ngày chấm dứt là ngày hết hạn cũ, không phải hôm nay
+        ChamDutNhanVien(nv, hd.getNgayHetHan(), date, time, MaNguoiDuyet, "không gia hạn hợp đồng, lý do: " + lyDo);
+        return;
+    }
+
+        LOAI_HOP_DONG loai = hd.getLoaiHopDong();
+        if(loai != LOAI_HOP_DONG.PART_TIME){
+        int c = NhapSoNguyen(sc, "Loại hợp đồng mới:\n1." + LOAI_HOP_DONG.CHINH_THUC_NGAN_HAN.getMoTa()
+                + "\n2." + LOAI_HOP_DONG.CHINH_THUC_DAI_HAN.getMoTa(), 1, 2);
+        loai = (c == 1) ? LOAI_HOP_DONG.CHINH_THUC_NGAN_HAN : LOAI_HOP_DONG.CHINH_THUC_DAI_HAN;
+    }
+        LocalDate ngayHetHanMoi;
+        while(true){
+        ngayHetHanMoi = NhapNgay(sc, "Nhập ngày hết hạn mới của hợp đồng");
+        if(ngayHetHanMoi.isAfter(date)) break;
+        System.out.println("Ngày hết hạn mới phải sau hôm nay (" + date + ")");
+    }
+
+        LocalDate ngayHetHanCu = hd.getNgayHetHan();
+        hd.setLoaiHopDong(loai);
+        hd.setNgayHetHan(ngayHetHanMoi);
+        hd.setTrangThaiHopDong(TRANG_THAI_HOP_DONG.DANG_CO_HIEU_LUC);
+        String cu = hd.getGhiChu() == null || hd.getGhiChu().isEmpty() ? "" : hd.getGhiChu() + "; ";
+        hd.setGhiChu(cu + "Gia hạn ngày " + date + ", hạn cũ " + ngayHetHanCu);
+
+        GuiThongBao(MaNguoiDuyet, MaNV, date, time, "Hợp đồng " + hd.getMaHopDong() + " của bạn đã được gia hạn đến ngày " + ngayHetHanMoi);
+        NhatKyHoatDong.them("Người dùng mã " + MaNguoiDuyet + " gia hạn hợp đồng " + hd.getMaHopDong()
+            + " của nhân viên " + MaNV + " đến " + ngayHetHanMoi + " vào " + time + " ngày " + date);
+        System.out.println("Đã gia hạn hợp đồng đến " + ngayHetHanMoi);
+}
+        
 }
     
     

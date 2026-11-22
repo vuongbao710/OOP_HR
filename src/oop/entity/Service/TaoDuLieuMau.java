@@ -17,7 +17,7 @@ public class TaoDuLieuMau {
             String line;
             while((line = read.readLine())!=null){
                 String[] parts = line.split(",");
-                if(parts.length != 10){
+                if(parts.length != 8){
                     System.out.println("Dòng "+SoDong+" không đủ dữ liệu");
                     continue;
                 }
@@ -26,24 +26,22 @@ public class TaoDuLieuMau {
                 String HoTen = parts[2].trim();
                 String SDT = parts[3].trim();
                 String MaQuanLyPhuTrach = parts[4].trim();
-                String MaPhong = parts[5].trim();
-               LocalDate BirthDate = LocalDate.parse(parts[6].trim());
-               String ChucVu = parts[7].trim();
-               String MaViTri = parts[8].trim();
+               LocalDate BirthDate = LocalDate.parse(parts[5].trim());
+               String MaViTri = parts[6].trim();
                if(!ThaoTac.KiemTraMaViTriTonTai(MaViTri)){
                    System.out.println("mã vị trí nhập vào không tồn tại ở dòng " +SoDong+1);
                    continue;
                }
-               String CaLam = parts[9].trim();
+               String CaLam = parts[7].trim();
                
                HopDong HD = dsHopDong.timKiemTheoMaNV(MaNV);
                if(HD.getLoaiHopDong().equals(LOAI_HOP_DONG.PART_TIME)){
-                   NhanVien nv = new NhanVienPartTime(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, MaPhong, BirthDate, ChucVu, CaLam);
+                   NhanVien nv = new NhanVienPartTime(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, BirthDate, CaLam);
                    nv.setHopDong(HD);
                    DanhSachNhanVien.them(nv);
                }
                else{
-                   NhanVien nv = new NhanVienFullTime(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, MaPhong, BirthDate, ChucVu, CaLam);
+                   NhanVien nv = new NhanVienFullTime(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, BirthDate, CaLam);
                    nv.setHopDong(HD);
                    DanhSachNhanVien.them(nv);
                }

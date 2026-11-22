@@ -16,8 +16,8 @@ public class NhanVienFullTime extends NhanVien {
 
    
 
-    public NhanVienFullTime(String MaNV, String CCCD, String HoTen, String SDT, String MaQuanLyPhuTrach, String MaPhongBan, LocalDate BirthDate, String ChucVu, String CaLam) {
-        super(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, MaPhongBan, BirthDate, ChucVu, CaLam);
+    public NhanVienFullTime(String MaNV, String CCCD, String HoTen, String SDT, String MaQuanLyPhuTrach, LocalDate BirthDate, String CaLam) {
+        super(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, BirthDate, CaLam);
         this.Ca=LoaiCaLamFullTime.NhanDien(CaLam);
         this.dskpi = new DanhSachDanhGiaKPI();
     }

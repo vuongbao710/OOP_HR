@@ -2,14 +2,16 @@
 package oop.entity.Enum;
 
 public enum LoaiChucVu {
-    GIAM_DOC("Giám đốc"),
-    QUAN_LY("Quản lý"),
-    NHAN_VIEN("Nhân viên");
+    GIAM_DOC("Giám đốc", 20000000),
+    QUAN_LY("Quản lý", 10000000),
+    NHAN_VIEN("Nhân viên", 5000000);
     
     private String MoTa;
+    private double luongCoBan;
 
-    private LoaiChucVu(String MoTa) {
+    private LoaiChucVu(String MoTa, double luongCoBan) {
         this.MoTa = MoTa;
+        this.luongCoBan = luongCoBan;
     }
 
     public String getMoTa() {
@@ -27,6 +29,13 @@ public enum LoaiChucVu {
             }
         }
         return null;
+    }
+    public double getLuongCoBan() {
+        return luongCoBan;
+    }
+
+    public void setLuongCoBan(double luongCoBan) {
+        this.luongCoBan = luongCoBan;
     }
     
 }

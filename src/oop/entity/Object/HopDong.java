@@ -61,6 +61,7 @@ public class HopDong {
 
     public void setLoaiViTri(ViTri loaiViTri) {
         this.loaiViTri = loaiViTri;
+        setViTriLamViec(loaiViTri.getMoTa());
     }
 
     
@@ -108,7 +109,7 @@ public class HopDong {
         return ViTriLamViec;
     }
 
-    public void setViTriLamViec(String ViTriLamViec) {
+    private void setViTriLamViec(String ViTriLamViec) {
         this.ViTriLamViec = ViTriLamViec;
     }
 

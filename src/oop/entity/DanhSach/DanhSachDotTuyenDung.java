@@ -1,49 +1,41 @@
-
 package oop.entity.DanhSach;
 
+import java.util.ArrayList;
 import oop.entity.Object.DotTuyenDung;
 
 public class DanhSachDotTuyenDung {
-    private static DotTuyenDung[] dsDot = new DotTuyenDung[10];
+    private static ArrayList<DotTuyenDung> dsDot = new ArrayList<>();
     private static int dem = 0;
-    
+
     public static void them(DotTuyenDung dot){
         dot.setMaDotTuyenDung(taoMa());
-        dsDot[dem]=dot;
-        dem++;
+        dsDot.add(dot);
     }
+
     public static void xoa(String MaDot){
-        boolean flag = false;
-        for(int i = 0 ; i<dem ; i++){
-            if(dsDot[i].getMaDotTuyenDung().equalsIgnoreCase(MaDot)){
-                for(int j = i; j<dem; j++){
-                    dsDot[j]=dsDot[j+1];
-                }
-                dsDot[dem-1] = null;
-                dem--;
-                flag = true;
-                break;
-            }
-        }
-        if(flag==false){
+        DotTuyenDung dot = timKiem(MaDot);
+        if(dot == null){
             System.out.println("không tìm thấy đợt tuyển dụng bạn cần xoá");
+            return;
         }
-        else{
-            System.out.println("Xoá thành công");
-        }
+        dsDot.remove(dot);
+        System.out.println("Xoá thành công");
     }
-    
+
     public static DotTuyenDung timKiem(String MaDot){
+        if(MaDot == null) return null;
         for(DotTuyenDung dot : dsDot){
-            if(dot.getMaDotTuyenDung().equalsIgnoreCase(MaDot)){
+            if(dot.getMaDotTuyenDung().equalsIgnoreCase(MaDot.trim())){
                 return dot;
             }
         }
         return null;
     }
-    
+
+    public static ArrayList<DotTuyenDung> getDsDot(){ return dsDot; }
+
     public static void xuat(){
-        if(dsDot == null){
+        if(dsDot.isEmpty()){
             System.out.println("danh sách đợt rỗng");
             return;
         }
@@ -51,7 +43,9 @@ public class DanhSachDotTuyenDung {
             System.out.println(dot);
         }
     }
+
     public static String taoMa(){
+        dem++; 
         return String.format("DOT%03d", dem);
     }
 }

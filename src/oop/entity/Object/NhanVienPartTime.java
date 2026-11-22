@@ -9,8 +9,8 @@ public class NhanVienPartTime extends NhanVien{
     private LoaiCaLamPartTime Ca;
     private final int SO_GIO_CONG=4;
 
-    public NhanVienPartTime(String MaNV, String CCCD, String HoTen, String SDT, String MaQuanLyPhuTrach, String MaPhongBan, LocalDate BirthDate, String ChucVu, String CaLam) {
-        super(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, MaPhongBan, BirthDate, ChucVu, CaLam);
+    public NhanVienPartTime(String MaNV, String CCCD, String HoTen, String SDT, String MaQuanLyPhuTrach, LocalDate BirthDate, String CaLam) {
+        super(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, BirthDate, CaLam);
         this.Ca=LoaiCaLamPartTime.NhanDien(CaLam);
     }
 

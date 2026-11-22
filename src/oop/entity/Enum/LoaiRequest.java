@@ -12,6 +12,7 @@ public enum LoaiRequest {
     DANG_TAI_DOT_TUYEN_DUNG("đăng tải đợt tuyển dụng "),
     CHAM_DIEM_DAO_TAO("chấm điểm đào tạo"),
     XEM_XET_TANG_LUONG("xem xét tăng lương"),
+    GIA_HAN_HOP_DONG("gia hạn hợp đồng"),
     BO_NHIEM("bổ nhiệm");
     
     private String MoTa;

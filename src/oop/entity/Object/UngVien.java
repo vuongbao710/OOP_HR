@@ -14,6 +14,9 @@ public class UngVien {
     private DotTuyenDung Dot;
     private KhoaDaoTao Khoa;
     private KetQuaDaoTao kq;
+    private boolean daLaNhanVien = false;
+
+
     public UngVien(String CCCD, String HoTen, String SDT, LocalDate NgayThangNamSinh, String MaDotTuyenDung, String ViTriUngTuyen, String MaKhoaDaoTao) {
         
         this.CCCD = CCCD;
@@ -105,6 +108,8 @@ public class UngVien {
     public void setKq(KetQuaDaoTao kq) {
         this.kq = kq;
     }
+    public boolean isDaLaNhanVien() { return daLaNhanVien; }
+public void setDaLaNhanVien(boolean daLaNhanVien) { this.daLaNhanVien = daLaNhanVien; }
 
     @Override
     public String toString() {

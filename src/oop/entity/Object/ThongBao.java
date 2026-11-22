@@ -16,6 +16,7 @@ public class ThongBao {
     private LoaiRequest Request;
     private LocalDate NgayDangKy; //chỉ có tác dụng vs làm OT
     private LocalDate NgayHetHan;
+    private String MaLienQuan;
 
     public ThongBao(String MaNguoiGui, LocalDate date, LocalTime time, String Message) {
         this.MaNguoiGui = MaNguoiGui;
@@ -103,7 +104,8 @@ public class ThongBao {
     public void setNgayDangKy(LocalDate NgayDangKy) {
         this.NgayDangKy = NgayDangKy;
     }
-    
+    public String getMaLienQuan() { return MaLienQuan; }
+    public void setMaLienQuan(String MaLienQuan) { this.MaLienQuan = MaLienQuan; }
 
     @Override
     public String toString() {
@@ -138,7 +140,8 @@ public class ThongBao {
                 + MaThongBao + " từ " + MaNguoiGui 
                + " được gửi vào ngày " + date + " " + time + " có nội dung là " + Message;
         }
-        return "phạm vi ngoài" + Request.getMoTa();
+        return "Bạn nhận được yêu cầu " + Request.getMoTa() + " có mã " + MaThongBao + " từ " + MaNguoiGui
+        + " được gửi vào ngày " + date + " " + time + " với nội dung: " + Message;
     }
     
     

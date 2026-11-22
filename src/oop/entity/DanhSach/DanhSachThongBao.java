@@ -11,8 +11,6 @@ import oop.entity.Object.ThongBao;
 public class DanhSachThongBao implements DanhSach<ThongBao>{
     private ArrayList<ThongBao> dsThongBao;
     private int dem=0;
-    private int mocTBXetChuaGiaiQuyet=0;
-    private int mocTBXetHetHan=0;
     public DanhSachThongBao() {
         this.dsThongBao = new ArrayList<>();
     }
@@ -62,29 +60,28 @@ public class DanhSachThongBao implements DanhSach<ThongBao>{
         this.dem = dem;
     }
     
-    public ArrayList<ThongBao> timKiemChuaGiaiQuyet(LocalDate date){
-        ArrayList<ThongBao> temp = new ArrayList<>();
-        for(int i = this.mocTBXetChuaGiaiQuyet ; i<dsThongBao.size() ; i++){
-            ThongBao tb = dsThongBao.get(i);
-            if(tb!= null && tb.getRequest() != LoaiRequest.THONG_BAO && date.plusDays(1).equals(tb.getNgayHetHan()) 
-                    && !(tb.getTrangThai().equals(TrangThaiDocThongBao.DA_GIAI_QUYET))){
-                temp.add(tb);
-            }
+public ArrayList<ThongBao> timKiemChuaGiaiQuyet(LocalDate date){
+    ArrayList<ThongBao> temp = new ArrayList<>();
+    for(ThongBao tb : dsThongBao){
+        if(tb != null && tb.getRequest() != LoaiRequest.THONG_BAO
+                && date.plusDays(1).equals(tb.getNgayHetHan())
+                && tb.getTrangThai() != TrangThaiDocThongBao.DA_GIAI_QUYET
+                && tb.getTrangThai() != TrangThaiDocThongBao.HET_HAN){
+            temp.add(tb);
         }
-        this.mocTBXetChuaGiaiQuyet = dsThongBao.size();
-        return temp;
     }
-    
-    public void chuyenQuaTrangThaiHetHan(LocalDate date){
-        for(int i = this.mocTBXetHetHan ; i<dsThongBao.size() ; i++){
-            ThongBao tb = dsThongBao.get(i);
-            if(tb!= null && tb.getRequest() != LoaiRequest.THONG_BAO && date.equals(tb.getNgayHetHan())
-                    && !(tb.getTrangThai().equals(TrangThaiDocThongBao.DA_GIAI_QUYET))){
-                tb.setTrangThai(TrangThaiDocThongBao.HET_HAN);
-                
-            }
+    return temp;
+}
+
+public void chuyenQuaTrangThaiHetHan(LocalDate date){
+    for(ThongBao tb : dsThongBao){
+        if(tb != null && tb.getRequest() != LoaiRequest.THONG_BAO && tb.getNgayHetHan() != null
+                && !date.isBefore(tb.getNgayHetHan())
+                && tb.getTrangThai() != TrangThaiDocThongBao.DA_GIAI_QUYET
+                && tb.getTrangThai() != TrangThaiDocThongBao.HET_HAN){
+            tb.setTrangThai(TrangThaiDocThongBao.HET_HAN);
         }
-        mocTBXetHetHan = dsThongBao.size();
     }
+}
     
 }
