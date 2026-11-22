@@ -19,6 +19,8 @@ public class ChiTietChamCong {
     private boolean KiemTraCheckIn;
     private boolean KiemTraCheckOut;
     private boolean isDangKyOT = false;
+    private LocalTime GioXongOT;
+    private double SoGioLamOT = 0;
 
     public ChiTietChamCong(String MaChiTietChamCong, LoaiTrangThaiChamCong TrangThai, LocalDate Date, String MaNVduocChamCong, LocalTime GioVao, LocalTime GioRa, LocalTime GioVaoCuaNV, LocalTime GioRaCuaNV) {
         this.MaChiTietChamCong = MaChiTietChamCong;
@@ -154,6 +156,23 @@ public class ChiTietChamCong {
     public void setIsDangKyOT(boolean isDangKyOT) {
         this.isDangKyOT = isDangKyOT;
     }
+
+    public LocalTime getGioXongOT() {
+        return GioXongOT;
+    }
+
+    public void setGioXongOT(LocalTime GioXongOT) {
+        this.GioXongOT = GioXongOT;
+    }
+
+    public double getSoGioLamOT() {
+        return SoGioLamOT;
+    }
+
+    public void setSoGioLamOT(double SoGioLamOT) {
+        this.SoGioLamOT = SoGioLamOT;
+    }
+    
     
 
     @Override
@@ -167,39 +186,29 @@ public class ChiTietChamCong {
     
     
     public boolean isGioLam(LocalTime time, String CaLam){
+        LocalTime gioRa = isDangKyOT ? GioXongOT : GioRa;
         if(CaLam.equalsIgnoreCase("Tối")){
-            return !time.isBefore(GioVao.minusMinutes(30)) || !time.isAfter(GioRa.plusMinutes(30));
+            return !time.isBefore(GioVao.minusMinutes(30)) || !time.isAfter(gioRa.plusMinutes(30));
         }
-        return !time.isBefore(GioVao.minusMinutes(30)) && !time.isAfter(GioRa.plusMinutes(30));
-        //return time.isAfter(GioVao)&& time.isBefore(GioRa);      sai
+            return !time.isBefore(GioVao.minusMinutes(30)) && !time.isAfter(gioRa.plusMinutes(30));
     }
    
 
     public long checkGioVao(LocalTime time){
-        long SoPhutTre;
-        if(time.isAfter(GioVao.plusMinutes(5))){
-            setTrangThai(LoaiTrangThaiChamCong.DI_TRE);
-            Duration tgian = Duration.between(time, GioVao.plusMinutes(5));
-            SoPhutTre = tgian.toMinutes();
-            return SoPhutTre;
-        }
-        else{
-            return 0;
-        }
+    if(time.isAfter(GioVao.plusMinutes(5))){
+        setTrangThai(LoaiTrangThaiChamCong.DI_TRE);
+        return Duration.between(GioVao, time).toMinutes();
     }
+    return 0;
+}
     
     public long checkGioRa(LocalTime time){
-        long SoPhutVeSom;
-        if(time.isBefore(GioRa.minusMinutes(5))){
-            setTrangThai(LoaiTrangThaiChamCong.VE_SOM);
-            Duration tgian = Duration.between(time, GioRa);
-            SoPhutVeSom = tgian.toMinutes();
-            return SoPhutVeSom;
-        }
-        else{
-            return 0;
-        }
+    if(time.isBefore(GioRa.minusMinutes(5))){
+        setTrangThai(LoaiTrangThaiChamCong.VE_SOM);
+        return Duration.between(time, GioRa).toMinutes();
     }
+    return 0;
+}
     
     public KyLuat taoKyLuatChamCong(LocalDate date, NhanVien nv ){
         String MaNV = nv.getMaNV();
@@ -237,6 +246,7 @@ public class ChiTietChamCong {
         else if(this.KiemTraCheckOut==false){
             long SoPhutTanSom = checkGioRa(time);
             setGioRaCuaNV(time);
+            tinhGioOT();
             this.KiemTraCheckOut=true;
             setTrangThai(LoaiTrangThaiChamCong.DUNG_GIO);
             if(SoPhutTanSom!=0){
@@ -253,10 +263,26 @@ public class ChiTietChamCong {
         
     }
     
-    public void LamOT(){
-        this.GioRa = GioRa.plusHours(2);
-        this.isDangKyOT = true;
+    public void LamOT(LocalTime gioRaCa){
+    this.isDangKyOT = true;
+    this.GioXongOT = gioRaCa.plusHours(2);
     }
-    
+    public void tinhGioOT(){
+    if(!isDangKyOT || GioRaCuaNV == null){
+        return;
+    }
+    long phut = Duration.between(GioRa, GioRaCuaNV).toMinutes();
+    if(phut < -720){          // ra sau nửa đêm (ca tối)
+        phut = phut + 1440;
+    }
+    else if(phut > 720){      // về sớm trước nửa đêm trong khi giờ ra của ca nằm sau nửa đêm
+        phut = phut - 1440;
+    }
+    if(phut <= 0){            // về đúng giờ ca hoặc sớm hơn: trốn OT
+        this.SoGioLamOT = 0;
+    } else {
+        this.SoGioLamOT = Math.min(phut, 120) / 60.0;
+    }
+}
     
 }

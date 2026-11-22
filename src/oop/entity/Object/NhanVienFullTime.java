@@ -23,16 +23,32 @@ public class NhanVienFullTime extends NhanVien {
     }
 
     public double TinhLuongThucTe(){
-        double LuongMotGio = TinhLuongMotGio();
-        double TienTacDongKhenPhat = super.getDsktkl().getTienTacDong(super.getBcc().getNgayBatDauBang(), super.getBcc().getNgayKetThucBang(), this);
-        double LuongMotThang = TinhTienLamOT() + TinhLuongMotNgay()*super.getBcc().getSoNgayCong()+ super.getPhuCap()+ TienTacDongKhenPhat;
-        double LuongChiuThue = LuongMotThang - 0.105*LuongMotThang; //trừ bảo hiểm
-        double ThueTNCN = TinhThue(LuongChiuThue);
-        return LuongChiuThue - ThueTNCN;
+    double luongTheoNgayCong = TinhLuongMotNgay() * super.getBcc().getSoNgayCong();
+    return TinhLuongThucNhan(luongTheoNgayCong);
+}
+    
+    public double TinhHeSoKPI(){
+        int thang = super.getBcc().getThang();
+        int nam = super.getBcc().getNam();
+        int quyHienTai = (thang - 1) / 3 + 1;
+        int quyTruoc;
+        int namQuyTruoc;
+        if(quyHienTai == 1){
+        quyTruoc = 4;
+        namQuyTruoc = nam - 1;
+    } else {
+        quyTruoc = quyHienTai - 1;
+        namQuyTruoc = nam;
     }
-   
-    
-    
+        double heSo = 1.0;
+        for(DanhGiaKPI kpi : dskpi.getDskpi()){
+        int quyCuaKPI = (kpi.getThang() - 1) / 3 + 1;
+        if(kpi.getNam() == namQuyTruoc && quyCuaKPI == quyTruoc){
+            heSo = kpi.getHeSoKPI();
+        }
+    }
+        return heSo;
+    }
 
     @Override
     public String toString() {

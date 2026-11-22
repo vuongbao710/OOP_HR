@@ -10,6 +10,7 @@ import oop.entity.DanhSach.DanhSachThongBao;
 import oop.entity.DanhSach.DanhSachViPham;
 import oop.entity.Enum.LOAI_HOP_DONG;
 import oop.entity.Enum.LoaiChucVu;
+import oop.entity.Enum.LoaiVaiTro;
 import oop.entity.Enum.TRANG_THAI_HOP_DONG;
 import oop.entity.Service.HeThong;
 
@@ -44,6 +45,8 @@ public abstract class NhanVien {
     private double LuongCoSo;
     private double PhuCap;
     private int SoNgayNghiPhepNam =12;
+    private static final double TY_LE_BAO_HIEM = 0.105;
+    private static final double GIAM_TRU_BAN_THAN = 11000000;
     
     
 
@@ -77,6 +80,7 @@ public abstract class NhanVien {
         LocalDate KyTruoc = NgayTraLuongDinhKy.minusMonths(1);
         this.bcc = new BangChamCong(MaNV, KyTruoc.getMonthValue(), KyTruoc.getYear());
         this.HopDong = new HopDong();
+        this.TaiKhoan = new TaiKhoan(MaNV, SDT,LoaiVaiTro.NHAN_VIEN, MaNV);
         this.dsDon = new DanhSachDonXinPhep();
 
     }
@@ -99,6 +103,7 @@ public abstract class NhanVien {
         LocalDate KyTruoc = NgayTraLuongDinhKy.minusMonths(1);
         this.bcc = new BangChamCong(MaNV, KyTruoc.getMonthValue(), KyTruoc.getYear());
         this.HopDong = new HopDong();
+        this.TaiKhoan = new TaiKhoan(MaNV, SDT,LoaiVaiTro.NHAN_VIEN, MaNV);
         this.dsDon = new DanhSachDonXinPhep();
 
     }
@@ -111,6 +116,10 @@ public abstract class NhanVien {
 
     public void setMaNV(String MaNV) {
         this.MaNV = MaNV;
+        if(this.TaiKhoan != null){
+        this.TaiKhoan.setMaNV(MaNV);
+        this.TaiKhoan.setTenDangNhap(MaNV);
+        }
     }
 
     public String getHoTen() {
@@ -138,6 +147,9 @@ public abstract class NhanVien {
      public double TinhTienLamOT(){
         double LuongTangCaMotGio = TinhLuongMotPhut()*60*1.5;
         return LuongTangCaMotGio*bcc.getSoGioLamOT();
+    }
+     public double TinhHeSoKPI(){
+        return 1.0;
     }
      
      public double TinhThue(double LuongChiuThue){
@@ -192,6 +204,28 @@ public abstract class NhanVien {
         
     
     }
+     
+    protected double TinhLuongThucNhan(double luongTheoNgayCong){
+        double luongSauKPI = luongTheoNgayCong * TinhHeSoKPI();  
+        double tienOT = TinhTienLamOT();
+        double khenPhat = dsktkl.getTienTacDong(bcc.getNgayBatDauBang(), bcc.getNgayKetThucBang(), this);
+
+        double tongThuNhap = luongSauKPI + tienOT + PhuCap + khenPhat;
+        double baoHiem = TY_LE_BAO_HIEM * luongTheoNgayCong;     
+
+   
+        double thuNhapChiuThue = tongThuNhap - baoHiem - GIAM_TRU_BAN_THAN;
+        if(thuNhapChiuThue < 0){       
+        thuNhapChiuThue = 0;
+    }
+        double thue = TinhThue(thuNhapChiuThue);
+
+        double luongThucNhan = tongThuNhap - baoHiem - thue;
+        if(luongThucNhan < 0){        
+        luongThucNhan = 0;
+    }
+        return luongThucNhan;
+}
 
     public String getMaQuanLyPhuTrach() {
         return MaQuanLyPhuTrach;
@@ -351,7 +385,7 @@ public abstract class NhanVien {
     public void setHopDong(HopDong HopDong) {
         this.HopDong = HopDong;
         if(this.NgayVaoLam == null) setNgayVaoLam(HopDong.getNgayBatDauHopDong());
-if(this.NgayXetNangLuong == null) setNgayXetNangLuong(this.NgayVaoLam.plusYears(1));
+        if(this.NgayXetNangLuong == null) setNgayXetNangLuong(this.NgayVaoLam.plusYears(1));
         setLuongCoSo(HopDong.getMucLuongCoSo());
         if(HopDong.getLoaiHopDong().equals(LOAI_HOP_DONG.PART_TIME)){
             setHinhThucDiLam("Part-time");
@@ -364,9 +398,9 @@ if(this.NgayXetNangLuong == null) setNgayXetNangLuong(this.NgayVaoLam.plusYears(
         setPhuCap(HopDong.getPhuCap());
         setMaViTri(HopDong.getLoaiViTri().getMaViTri());
         setChucVu(ViTri.XacDinhChucVu(MaViTri));
-        TaiKhoan tk = getTaiKhoan();
-        tk.setRole(ViTri.XacDinhQuyen(MaViTri));
-        setTaiKhoan(tk);
+        if(this.TaiKhoan != null){
+        this.TaiKhoan.setRole(ViTri.XacDinhQuyen(MaViTri));
+        }
         setMaPhongBan(HopDong.getLoaiViTri().getPhongBan()); 
     }
 

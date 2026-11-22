@@ -184,15 +184,7 @@ public class BangChamCong implements DanhSach<ChiTietChamCong>{
         dem++;
         return String.format("CC%02d", dem);
     }
-    
-    /*
-    public int TongSoGioOT(){
-        int TongSoGioOT=0;
-        for(ChiTietChamCong cc : bcc){
-            TongSoGioOT=TongSoGioOT + cc.getSoGioOTNgay();
-        }
-        return TongSoGioOT;
-    }*/
+
     
      public boolean KiemTraTonTai(LocalDate date){
          for(ChiTietChamCong cc : bcc){
@@ -202,17 +194,14 @@ public class BangChamCong implements DanhSach<ChiTietChamCong>{
          }
          return false;
      }
-     
-     public boolean checkGioiHanGioOT(){
-         if(this.SoGioLamOT>40){
-             return false;
-         }
-         return true;
-     }
-     
-     public void CongGioOT(){
-         this.SoGioLamOT = this.SoGioLamOT+2;
-     }
+
+    public double getSoGioOT(){
+        double tong = 0;
+        for(ChiTietChamCong cc : bcc){
+        tong = tong + cc.getSoGioLamOT();
+        }
+        return tong;
+    }
      
      
     }

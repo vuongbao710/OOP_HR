@@ -18,16 +18,11 @@ public class NhanVienPartTime extends NhanVien{
     }
     
        public double TinhLuongThucTe(){
-        double LuongMotGio = super.getLuongCoSo();
-        double TienTacDongKhenPhat = super.getDsktkl().getTienTacDong(super.getBcc().getNgayBatDauBang(), super.getBcc().getNgayKetThucBang(), this);
-        double LuongMotThang = TinhTienLamOT() + LuongMotGio*SO_GIO_CONG*super.getBcc().getSoNgayCong()+ super.getPhuCap() + TienTacDongKhenPhat;
-        double LuongChiuThue = LuongMotThang - 0.105*LuongMotThang; //trừ bảo hiểm
-        double ThueTNCN = TinhThue(LuongChiuThue);
-        return LuongChiuThue - ThueTNCN;
+        double luongTheoNgayCong = super.getLuongCoSo() * SO_GIO_CONG * super.getBcc().getSoNgayCong();
+        return TinhLuongThucNhan(luongTheoNgayCong);
     }
-
     public double TinhLuongMotPhut() {
-    return super.getLuongCoSo() / 60;
+        return super.getLuongCoSo() / 60;
     }
     
     public double TinhLuongMotGio(){

@@ -12,83 +12,66 @@ import java.time.LocalTime;
 public class TaoDuLieuMau {
     
     public static void TaoDanhSachNhanVien(DanhSachHopDong dsHopDong){
-        int SoDong=0;
-        try(BufferedReader read = new BufferedReader(new FileReader("NhanVien.txt"))){
-            String line;
-            while((line = read.readLine())!=null){
-                String[] parts = line.split(",");
-                if(parts.length != 8){
-                    System.out.println("Dòng "+SoDong+" không đủ dữ liệu");
-                    continue;
-                }
+    int SoDong = 0;
+    try(BufferedReader read = new BufferedReader(new FileReader("NhanVien.txt"))){
+        String line;
+        while((line = read.readLine()) != null){
+            SoDong++;
+            if(line.trim().isEmpty()){
+                continue;
+            }
+            String[] parts = line.split(",");
+            if(parts.length != 8){
+                System.out.println("Dòng " + SoDong + " không đủ dữ liệu");
+                continue;
+            }
+            try{
                 String MaNV = parts[0].trim();
                 String CCCD = parts[1].trim();
                 String HoTen = parts[2].trim();
                 String SDT = parts[3].trim();
                 String MaQuanLyPhuTrach = parts[4].trim();
-               LocalDate BirthDate = LocalDate.parse(parts[5].trim());
-               String MaViTri = parts[6].trim();
-               if(!ThaoTac.KiemTraMaViTriTonTai(MaViTri)){
-                   System.out.println("mã vị trí nhập vào không tồn tại ở dòng " +SoDong+1);
-                   continue;
-               }
-               String CaLam = parts[7].trim();
-               
-               HopDong HD = dsHopDong.timKiemTheoMaNV(MaNV);
-               if(HD.getLoaiHopDong().equals(LOAI_HOP_DONG.PART_TIME)){
-                   NhanVien nv = new NhanVienPartTime(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, BirthDate, CaLam);
-                   nv.setHopDong(HD);
-                   DanhSachNhanVien.them(nv);
-               }
-               else{
-                   NhanVien nv = new NhanVienFullTime(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, BirthDate, CaLam);
-                   nv.setHopDong(HD);
-                   DanhSachNhanVien.them(nv);
-               }
-               
-               SoDong++;
+                String MaViTri = parts[6].trim();
+                String CaLam = parts[7].trim();
+
+                KiemTraLoi.KiemTraCCCD(CCCD);
+                KiemTraLoi.KiemTraHoTen(HoTen);
+                KiemTraLoi.KiemTraDinhDangSDT(SDT);
+                LocalDate BirthDate = KiemTraLoi.KiemTraNgay(parts[5], "yyyy-MM-dd");
+
+                if(!ThaoTac.KiemTraMaViTriTonTai(MaViTri)){
+                    throw new Exception("Mã vị trí " + MaViTri + " không tồn tại");
+                }
+                HopDong HD = DanhSachHopDong.timKiemTheoMaNV(MaNV);
+                if(HD == null){
+                    throw new Exception("Nhân viên " + MaNV + " chưa có hợp đồng");
+                }
+
+                NhanVien nv;
+                if(HD.getLoaiHopDong().equals(LOAI_HOP_DONG.PART_TIME)){
+                    nv = new NhanVienPartTime(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, BirthDate, CaLam);
+                }
+                else{
+                    nv = new NhanVienFullTime(MaNV, CCCD, HoTen, SDT, MaQuanLyPhuTrach, BirthDate, CaLam);
+                }
+                nv.setHopDong(HD);
+                DanhSachNhanVien.them(nv);
+            }catch(Exception e){
+                System.out.println("Dòng " + SoDong + " bị lỗi: " + e.getMessage());
             }
-            
-        }catch (IOException e){
-            System.err.println("Lỗi phần dữ liệu mẫu danh sách nhân viên ở dòng "+ (SoDong+1) + e.getMessage());
         }
+    }catch (IOException e){
+        System.err.println("Lỗi đọc file NhanVien.txt ở dòng " + (SoDong + 1) + ": " + e.getMessage());
     }
-    private static TaiKhoan TaoTaiKhoanHoiDongQuanTri(){
-        String MaTK = "TK000";
-        String TenDangNhap = MaTK;
-        String MatKhau = "0918554647tuki@A";
-        LoaiVaiTro Role = LoaiVaiTro.BOSS;
-        TaiKhoan tk = new TaiKhoan(MaTK, TenDangNhap, MatKhau, Role);
-        return tk;
+}
+    public static void TaoTaiKhoanBoss(){
+    TaiKhoan tk = new TaiKhoan("TK000", "TK000", "0918554647tuki@A", LoaiVaiTro.BOSS);
+    tk.setMaNV(Boss.MA);
+    Boss.setTk(tk);
+    DanhSachTaiKhoan.them(tk);
     }
     
-    public static void TaoDanhSachTaiKhoan(){
-        int SoDong = 0;
-        try(BufferedReader read = new BufferedReader(new FileReader("NhanVien.txt"))){
-            String line;
-            while((line = read.readLine())!=null){
-                String[] parts = line.split(",");
-                if(parts.length != 2){
-                    System.out.println("Dòng "+SoDong+" không đủ hoặc thừa dữ liệu cho phép");
-                    continue;
-                }
-                String MatKhau = parts[0].trim();
-                String MaNV = parts[1].trim();
-                NhanVien nv = DanhSachNhanVien.timKiem(MaNV);
-                String TenDangNhap = MaNV;
-                String MaVitri = nv.getMaViTri();
-                LoaiVaiTro role = ViTri.XacDinhQuyen(MaVitri);
-                
-                TaiKhoan tk = new TaiKhoan(TenDangNhap, MatKhau, role, MaNV);
-                DanhSachTaiKhoan.them(tk);
-            }
-            
-        }catch(IOException e){
-            System.out.println("Lỗi tạo danh sách tài khoản ");
-        }
-        DanhSachTaiKhoan.them(TaoTaiKhoanHoiDongQuanTri());
-        
-    }
+    
     public static DanhSachPhongBan TaoDanhSachPhongBan(){
         DanhSachPhongBan dspb = new DanhSachPhongBan();
         for(LoaiPhongBan pb : LoaiPhongBan.values()){

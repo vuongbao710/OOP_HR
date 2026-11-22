@@ -1,16 +1,21 @@
-
 package oop.entity.Service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Scanner;
+import oop.entity.DanhSach.DanhSachNhanVien;
+import oop.entity.Object.Boss;
 import oop.entity.Object.NhanVien;
 
 public class PhanQuyen {
-    
-    public static void NHAN_VIEN(Scanner sc, NhanVien nv){
-        int input=-1;
-        while(input!=0){
+
+    // ---------- Phần dùng chung cho mọi nhân viên (chức năng 1 đến 7) ----------
+    private static void InMenuChung(NhanVien nv){
+        System.out.println("\n===== " + nv.getHoTen() + " (" + nv.getMaNV() + ") - " + HeThong.date + " =====");
+        int chuaDoc = ThaoTac.DemSoLuongInbox(nv.getMaNV());
+        if(chuaDoc > 0){
+            System.out.println("Bạn có " + chuaDoc + " thông báo chưa đọc");
+        }
         System.out.println("0. Đăng xuất");
         System.out.println("1. Chấm công");
         System.out.println("2. Gửi đơn xin nghỉ phép");
@@ -18,124 +23,190 @@ public class PhanQuyen {
         System.out.println("4. Xem phiếu lương");
         System.out.println("5. Xem thông tin cá nhân");
         System.out.println("6. Đăng ký làm Over time");
-        input = sc.nextInt();
-        sc.nextLine();
+        System.out.println("7. Xem hòm thư");
+        System.out.println("8. Đổi mật khẩu");
+    }
+    
+    private static boolean ChucNangChung(int input, Scanner sc, NhanVien nv){
         switch(input){
-            case 0:
-                break;
             case 1:
                 ThaoTac.ChamCong(HeThong.time, HeThong.date, nv);
-                break;
+                return true;
             case 2:
                 ThaoTac.XinNghiPhep(HeThong.date, HeThong.time, nv, sc);
-                break;
+                return true;
             case 3:
                 nv.getBcc().xuat();
-                break;
-                
-            default:
-                System.out.println("Nằm ngoài phạm vi");
-                break;
-                
-        }
-        }
-    }
-    
-    public static void QUAN_LY(Scanner sc, NhanVien nv){
-        int input=-1;
-        while(input!=0){
-        System.out.println("0. Đăng xuất");
-        System.out.println("1. Chấm công");
-        System.out.println("2. Gửi đơn xin nghỉ phép");
-        System.out.println("3. Xem tình trạng bảng chấm công");
-        System.out.println("4. Xem phiếu lương");
-        System.out.println("5. Xem thông tin cá nhân");
-        System.out.println("6. Đăng ký làm Over time");
-        System.out.println("7. Xử lý request");
-        System.out.println("8. Nộp đợt tuyển dụng");
-        System.out.println("9. Xem danh sách nhân viên cấp dưới");
-        System.out.println("10. Thưởng sáng kiến");
-        input = sc.nextInt();
-        
-        switch(input){
-            case 0:
-                break;
-            case 1:
-                ThaoTac.ChamCong(HeThong.time, HeThong.date, nv);
-                break;
-            case 2:
-                ThaoTac.XinNghiPhep(HeThong.date, HeThong.time, nv, sc);
-                break;
-            case 3:
-                nv.getBcc().xuat();/////////////
-                break;
+                return true;
             case 4:
-                nv.getDspl();//////////////// viết thêm trong thao tác
-                break;
+                nv.getDspl().xuat();  
+                return true;
             case 5:
                 System.out.println(nv);
-                break;
+                return true;
             case 6:
                 ThaoTac.DangKyLamOT(nv, HeThong.date, HeThong.time, sc);
-                break;
+                return true;
             case 7:
-                ThaoTac.checkChuaGiaiQuyet(nv.getMaNV(), sc);
-                break;
+                ThaoTac.checkInbox(nv.getMaNV(), sc, HeThong.date, HeThong.time, nv.getDsThongBao());
+                return true;
             case 8:
-                ThaoTac.DangTaiTuyenDung(sc, nv.getMaNV(), nv.getMaQuanLyPhuTrach(), HeThong.date, HeThong.time);////////
-                break;
-            case 9:
-                
-            case 10:
-                ThaoTac.ThuongSangKien(sc, HeThong.date, HeThong.time, nv.getMaNV());
-                break;
+            nv.getTaiKhoan().DoiMatKhau(sc, false);
+            return true;
             default:
-                System.out.println("Nằm ngoài phạm vi");
-                break;
-                
+                return false;
         }
+    }
+    public static void NHAN_VIEN(Scanner sc, NhanVien nv){
+        int input = -1;
+        while(input != 0 && nv.getTaiKhoan().KiemTraTrangThaiHoatDong()){
+        InMenuChung(nv);
+        input = ThaoTac.NhapSoNguyen(sc, "Chọn chức năng:", 0, 8);
+        ChucNangChung(input, sc, nv);
+}
+    }
+    private static void MenuCapQuanLy(Scanner sc, NhanVien nv){
+        int input = -1;
+        while(input != 0 && nv.getTaiKhoan().KiemTraTrangThaiHoatDong()){
+        InMenuChung(nv);
+        System.out.println("9. Xử lý request");
+        System.out.println("10. Nộp đợt tuyển dụng");
+        System.out.println("11. Xem danh sách nhân viên cấp dưới");
+        System.out.println("12. Thưởng sáng kiến");
+        input = ThaoTac.NhapSoNguyen(sc, "Chọn chức năng:", 0, 12);
+
+            if(ChucNangChung(input, sc, nv)){
+                continue;
+            }
+            switch(input){
+                case 8:
+                    ThaoTac.checkChuaGiaiQuyet(nv.getMaNV(), sc);
+                    break;
+                case 9:
+                    ThaoTac.DangTaiTuyenDung(sc, nv.getMaNV(), nv.getMaQuanLyPhuTrach(), HeThong.date, HeThong.time);
+                    break;
+                case 10:
+                    ArrayList<NhanVien> capDuoi = DanhSachNhanVien.timKiemTheoMaQuanLyPhuTrach(nv.getMaNV());
+                    if(capDuoi.isEmpty()){
+                        System.out.println("Bạn chưa có nhân viên cấp dưới");
+                    } else {
+                        DanhSachNhanVien.xuat(capDuoi);
+                    }
+                    break;
+                case 11:
+                    ThaoTac.ThuongSangKien(sc, HeThong.date, HeThong.time, nv.getMaNV());
+                    break;
+                default:
+                    break; 
+            }
+        }
+    }
+    public static void QUAN_LY(Scanner sc, NhanVien nv){
+        MenuCapQuanLy(sc, nv);
+    }
+
+    public static void DIRECTOR(Scanner sc, NhanVien nv){
+        MenuCapQuanLy(sc, nv);
+    }
+    public static void ADMIN(Scanner sc, NhanVien nv){
+        int input = -1;
+        while(input != 0 && nv.getTaiKhoan().KiemTraTrangThaiHoatDong()){
+        InMenuChung(nv);
+        System.out.println("9. Xử lý request");
+        System.out.println("10. Tạo khóa đào tạo");
+        System.out.println("11. Thêm ứng viên vào đợt tuyển dụng");
+        System.out.println("12. Tiếp nhận ứng viên (chuyển thành nhân viên và ký hợp đồng)");
+        System.out.println("13. Xem danh sách nhân viên");
+        System.out.println("14. Xem nhật ký hoạt động");
+        System.out.println("15. Giả lập hệ thống (qua ngày)");
+        input = ThaoTac.NhapSoNguyen(sc, "Chọn chức năng:", 0, 15);
+            if(ChucNangChung(input, sc, nv)){
+                continue;
+            }
+            switch(input){
+                case 8:
+                    ThaoTac.checkChuaGiaiQuyet(nv.getMaNV(), sc);
+                    break;
+                case 9:
+                    ThaoTac.TaoKhoaDaoTao(sc, nv.getMaNV(), HeThong.date, HeThong.time);
+                    break;
+                case 10:
+                    ThaoTac.ThemUngVienVaoDanhSach(sc, nv.getMaNV());
+                    break;
+                case 11:
+                    ThaoTac.TiepNhanUngVien(sc, nv.getMaNV(), HeThong.date, HeThong.time);
+                    break;
+                case 12:
+                    XemDanhSachNhanVien(sc);
+                    break;
+                case 13:
+                    NhatKyHoatDong.LuaChonCachXem(sc);
+                    break;
+                case 14:
+                    GiaLapHeThong(sc);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     
-    public static void ADMIN(Scanner sc, String MaADMIN){
-        int input =-1;
-        LocalDate NgayKetThuc;
+    public static void BOSS(Scanner sc){
+        int input = -1;
         while(input != 0){
-        System.out.println(HeThong.date + " " + HeThong.time);
-        System.out.println("0. Đăng xuất");
-        System.out.println("1. Giả lập hệ thống");
-        System.out.println("2. Duyệt request");
-        System.out.println("3. Xem nhật ký hoạt động");
-        input = sc.nextInt();
-        sc.nextLine();
-        switch(input){
-            case 0:
-                break;
-            case 1: {
-                System.out.println("Chọn ngày kết thúc");
-                while(true){
-                NgayKetThuc = ThaoTac.isValidDate(sc.nextLine(), "dd/MM/yyyy", HeThong.date);
-                if(NgayKetThuc!=null){
+            System.out.println("\n===== BOSS - " + HeThong.date + " =====");
+            int chuaDoc = ThaoTac.DemSoLuongInbox(Boss.MA);
+            if(chuaDoc > 0){
+                System.out.println("Bạn có " + chuaDoc + " thông báo chưa đọc");
+            }
+            System.out.println("0. Đăng xuất");
+            System.out.println("1. Xem hòm thư");
+            System.out.println("2. Xử lý request");
+            System.out.println("3. Xem danh sách nhân viên");
+            System.out.println("4. Xem nhật ký hoạt động");
+            System.out.println("5. Đổi mật khẩu");
+            input = ThaoTac.NhapSoNguyen(sc, "Chọn chức năng:", 0, 5);
+            switch(input){
+                case 1:
+                    ThaoTac.checkInbox(Boss.MA, sc, HeThong.date, HeThong.time, Boss.getDsThongBao());
                     break;
-                }
-                }
-                ThaoTac.KiemTraVanHanhLuongNhanSu(HeThong.date, HeThong.time, "HETHONG", NgayKetThuc);
-                HeThong.date = NgayKetThuc;
-                break;
+                case 2:
+                    ThaoTac.checkChuaGiaiQuyet(Boss.MA, sc);
+                    break;
+                case 3:
+                    XemDanhSachNhanVien(sc);
+                    break;
+                case 4:
+                    NhatKyHoatDong.LuaChonCachXem(sc);
+                    break;
+                case 5:
+                    Boss.getTk().DoiMatKhau(sc, false);
+                    break;
+                default:
+                    break;
             }
-            case 2: {
-                ThaoTac.checkChuaGiaiQuyet(MaADMIN, sc);
-                break;
-            }
-            case 3: {
-                NhatKyHoatDong.LuaChonCachXem(sc);
-                break;
-            }
-            default:
-                System.out.println("Nằm ngoài phạm vi");
-                break;
-                
         }
+    }
+    private static void XemDanhSachNhanVien(Scanner sc){
+        System.out.println("1. Theo thứ tự thêm vào\n2. Sắp xếp theo họ tên\n3. Sắp xếp theo phòng ban\n4. Sắp xếp theo thâm niên");
+        int c = ThaoTac.NhapSoNguyen(sc, "Chọn cách xem:", 1, 4);
+        if(c == 1) DanhSachNhanVien.xuat();
+        else if(c == 2) DanhSachNhanVien.SortTheoHoTen();
+        else if(c == 3) DanhSachNhanVien.SortTheoMaPhongBan();
+        else DanhSachNhanVien.SortTheoThamNien();
+    }
+    
+    private static void GiaLapHeThong(Scanner sc){
+        System.out.println("Hôm nay là " + HeThong.date + ". Nhập ngày kết thúc (dd/MM/yyyy)");
+        LocalDate ngayKetThuc;
+        while(true){
+            ngayKetThuc = ThaoTac.isValidDate(sc.nextLine(), "dd/MM/yyyy", HeThong.date);
+            if(ngayKetThuc != null){
+                break;
+            }
+            System.out.println("Ngày không hợp lệ hoặc trước hôm nay, nhập lại");
         }
+        ThaoTac.KiemTraVanHanhLuongNhanSu(HeThong.date, HeThong.time, "HETHONG", ngayKetThuc.minusDays(1));
+        HeThong.date = ngayKetThuc;
     }
 }

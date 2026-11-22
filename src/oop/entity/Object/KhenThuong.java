@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class KhenThuong extends KhenThuongKyLuat {
     private LoaiKhenThuong Type;
 
-    public KhenThuong(LoaiKhenThuong Type, LocalDate NgayBanHanh, double SoTienTacDong, String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh, String LoaiQuyetDinh) {
+    public KhenThuong(LoaiKhenThuong Type, LocalDate NgayBanHanh, double SoTienTacDong, String MaNhanVienRaQuyetDinh, String MaNhanVienNhanQuyetDinh) {
         super(NgayBanHanh, MaNhanVienRaQuyetDinh, MaNhanVienNhanQuyetDinh);
         super.LoaiQuyetDinh = "Khen thưởng";
         this.Type = Type;

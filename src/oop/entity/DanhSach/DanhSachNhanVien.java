@@ -54,9 +54,18 @@ public class DanhSachNhanVien{
         dsnv.remove(nv);
     }
     public static void them(NhanVien nv){
-        if(nv.getMaNV()==null)
-        nv.setMaNV(taoMa());
+        if(nv.getMaNV()==null){
+        nv.setMaNV(taoMa());}
+        else {
+        try{
+            int so = Integer.parseInt(nv.getMaNV().substring(2));
+            if(so > dem) dem = so;
+        }catch(Exception e){ }
+    }
         dsnv.add(nv);
+        if(nv.getTaiKhoan() != null){
+        DanhSachTaiKhoan.them(nv.getTaiKhoan());
+    }
     }
             
    
