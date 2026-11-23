@@ -15,20 +15,20 @@ public class DanhSachNhanVien{
     private static int dem=0;
    private static final Collator collator = Collator.getInstance(Locale.forLanguageTag("vi"));
     public static void xuat(){
-        System.out.println("========= Danh sach nhan vien ==========");
-        for(NhanVien nv : dsnv){
-            System.out.println(nv);
-        }
-        
+    System.out.println("========= Danh sach nhan vien ==========");
+    for(NhanVien nv : dsnv){
+        if(nv.isDaNghiViec()) continue; 
+        System.out.println(nv);
     }
-    
-    public static void xuat(ArrayList<NhanVien> ds){
-        System.out.println("========= Danh sach nhan vien ==========");
-        for(NhanVien nv : ds){
-            System.out.println(nv);
-        }
-        
+}
+
+public static void xuat(ArrayList<NhanVien> ds){
+    System.out.println("========= Danh sach nhan vien ==========");
+    for(NhanVien nv : ds){
+        if(nv.isDaNghiViec()) continue;
+        System.out.println(nv);
     }
+}
     
     
     public static NhanVien timKiem (String MaNV){
@@ -118,7 +118,6 @@ public class DanhSachNhanVien{
         return HoTen.substring(viTri + 1);
     }
 
-    // Lấy ngày bắt đầu hợp đồng, chưa có hợp đồng thì trả về null
     private static LocalDate layNgayBatDauHopDong(NhanVien nv){
         if(nv.getHopDong() == null){
             return null;
@@ -126,24 +125,19 @@ public class DanhSachNhanVien{
         return nv.getHopDong().getNgayBatDauHopDong();
     }
 
-    // So sánh Mã NV, dùng làm tiêu chí phụ khi trùng
     private static int soSanhMaNV(NhanVien a, NhanVien b){
         return a.getMaNV().compareToIgnoreCase(b.getMaNV());
     }
 
-    // Trả về > 0 nếu a phải đứng sau b
     private static int soSanhHoTen(NhanVien a, NhanVien b){
-        // Xếp theo tên (từ cuối) trước
         int kq = collator.compare(layTen(a), layTen(b));
         if(kq != 0){
             return kq;
         }
-        // Trùng tên thì xếp theo họ tên đầy đủ
         kq = collator.compare(a.getHoTen(), b.getHoTen());
         if(kq != 0){
             return kq;
         }
-        // Vẫn trùng thì xếp theo Mã NV
         return soSanhMaNV(a, b);
     }
 
@@ -155,12 +149,10 @@ public class DanhSachNhanVien{
         return soSanhMaNV(a, b);
     }
 
-    // Thâm niên cao nhất (ngày bắt đầu hợp đồng sớm nhất) đứng trước
     private static int soSanhThamNien(NhanVien a, NhanVien b){
         LocalDate ngayA = layNgayBatDauHopDong(a);
         LocalDate ngayB = layNgayBatDauHopDong(b);
 
-        // Nhân viên chưa có hợp đồng thì xếp cuối
         if(ngayA == null && ngayB != null){
             return 1;
         }
@@ -175,8 +167,6 @@ public class DanhSachNhanVien{
         }
         return soSanhMaNV(a, b);
     }
-
-    // Sort trên bản sao rồi in ra, không làm thay đổi dsnv
     public static void SortTheoHoTen(){
         ArrayList<NhanVien> temp = new ArrayList<>(dsnv);
         for(int i = 0; i < temp.size() - 1; i++){

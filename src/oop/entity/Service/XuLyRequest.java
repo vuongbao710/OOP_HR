@@ -7,9 +7,7 @@ import oop.entity.DanhSach.*;
 import oop.entity.Enum.*;
 import oop.entity.Object.*;
 
-// Xử lý (duyệt/từ chối) các request mà người dùng nhận được trong hòm thư
 public class XuLyRequest {
-    // true khi người dùng thoát giữa chừng, request vẫn còn mở
     public static boolean daHuyTacVu = false;
 
     public static void DuyetDonXinPhep(String MaNguoiDuyetDon, String MaNguoiGuiDon, ThongBao tb, Scanner sc){
@@ -35,7 +33,6 @@ public class XuLyRequest {
         LocalDate homNay = HeThong.date;
         LocalTime bayGio = LocalTime.now();
 
-    // Ngày phép có thể đã bị dùng bởi đơn khác từ lúc nộp đơn
         boolean khongDuPhep = chon == 1 && don.getLoaiNghi() == LoaiNghiPhep.NGHI_PHEP_NAM
             && nv.getSoNgayNghiPhepNam() < khoangTgian;
         if(chon == 0 || khongDuPhep){
@@ -57,14 +54,12 @@ public class XuLyRequest {
         don.setTrangThai(LoaiTrangThaiCuaDon.DUYET);
         if(don.getLoaiNghi() == LoaiNghiPhep.NGHI_PHEP_NAM){
         nv.setSoNgayNghiPhepNam(nv.getSoNgayNghiPhepNam() - khoangTgian);
-        // chỉ lập chấm công cho đúng nhân viên này (code cũ lập cho cả công ty)
         for(LocalDate d = ngayBatDau; !d.isAfter(ngayKetThuc); d = d.plusDays(1)){
             ChucNang.LapDayChamCong(nv, d);
         }
         }   else{
         ChucNang.LapDayNghiPhep(ngayBatDau, ngayKetThuc, nv);
     }
-    // đơn đã nằm trong dsDon từ lúc nộp, không them() lần hai
         HomThu.GuiThongBao(MaNguoiDuyetDon, MaNguoiGuiDon, homNay, bayGio, "đã duyệt đơn nghỉ phép có mã " + don.getMaDon());
         NhatKyHoatDong.them("Nhân viên mã " + MaNguoiDuyetDon + " duyệt đơn nghỉ phép vào " + bayGio + " ngày " + homNay
             + " cho nhân viên mã " + MaNguoiGuiDon);
@@ -80,7 +75,6 @@ public class XuLyRequest {
             DanhGiaKhenThuong.DanhGiaKPINhanVienPhuTrach(sc, date, time, MaNguoiNhan);
             break;
         case XEM_XET_TANG_LUONG:
-            // MaNguoiGui ở đây là admin, nhân viên cần xét lương nằm trong MaLienQuan
             XemXetTangLuong(sc, tb.getMaLienQuan(), MaNguoiNhan, date, time);
             break;
         case DANG_KY_LAM_OT:
@@ -95,7 +89,7 @@ public class XuLyRequest {
         daHuyTacVu = true;
         break;
         }
-        NhanSu.ChonRaNguoiThayThe(date, time, tb.getMaLienQuan(), sc, MaNguoiNhan);   // MaNguoiNhan có thể là BOSS
+        NhanSu.ChonRaNguoiThayThe(date, time, tb.getMaLienQuan(), sc, MaNguoiNhan);  
         break;
         case CHAM_DIEM_DAO_TAO:
             do{
@@ -103,7 +97,7 @@ public class XuLyRequest {
             }while(!daHuyTacVu && KiemTraLoi.NhapSoNguyen(sc, "Chấm điểm ứng viên khác không?\n0.Không\n1.Có", 0, 1) == 1);
             break;
         case KHIEN_TRACH_CHAM_CONG:
-            break; // chỉ cần xác nhận đã xem
+            break; 
         case GIA_HAN_HOP_DONG:
             DuyetGiaHanHopDong(sc, MaNguoiNhan, tb.getMaLienQuan(), date, time);
             break;
@@ -246,7 +240,6 @@ public class XuLyRequest {
         if(chon == 0){
         System.out.println("Nhập lý do: ");
         String lyDo = sc.nextLine().trim();
-        // ngày chấm dứt là ngày hết hạn cũ, không phải hôm nay
         NhanSu.ChamDutNhanVien(nv, hd.getNgayHetHan(), date, time, MaNguoiDuyet, "không gia hạn hợp đồng, lý do: " + lyDo);
         return;
     }

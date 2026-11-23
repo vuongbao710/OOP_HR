@@ -8,7 +8,6 @@ import oop.entity.DanhSach.*;
 import oop.entity.Enum.*;
 import oop.entity.Object.*;
 
-// Hòm thư: gửi thông báo, gửi request, xem inbox và request chưa giải quyết
 public class HomThu {
     public static ThongBao GuiYeuCau(String gui, String nhan, LocalDate date, LocalTime time,
                                  String msg, LoaiRequest loai, String maLienQuan){
@@ -40,7 +39,6 @@ public class HomThu {
         }
     }
 
-//Thông báo làm OT
     public static ThongBao GuiThongBao (String MaNguoiGui, String MaNguoiNhan, LocalDate date, LocalTime time, String Message, LocalDate NgayDangKy){
         if(MaNguoiNhan.equalsIgnoreCase("BOSS")){
             ThongBao tb = new ThongBao(MaNguoiGui, date, time, Message);
@@ -58,7 +56,6 @@ public class HomThu {
         return ThongBao;
     }
 
-//////////////////////////////////////////
     public static void checkInbox(String MaNVCheckInbox, Scanner sc, LocalDate date, LocalTime time, DanhSachThongBao dsThongBao){
     int soLuong = DemSoLuongInbox(MaNVCheckInbox);
     if(soLuong == 0) return;

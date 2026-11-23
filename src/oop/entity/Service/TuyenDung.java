@@ -7,7 +7,6 @@ import oop.entity.DanhSach.*;
 import oop.entity.Enum.*;
 import oop.entity.Object.*;
 
-// Tuyển dụng và đào tạo: đợt tuyển dụng, ứng viên, khóa đào tạo, ký hợp đồng, tiếp nhận nhân viên
 public class TuyenDung {
 //=================================Tuyển dụng=====================================
     public static DotTuyenDung TaoDotTuyenDung(Scanner sc, String MaNguoiTuyen){
@@ -87,18 +86,16 @@ public class TuyenDung {
         System.out.println("Mã đợt tuyển dụng không tồn tại! Vui lòng nhập lại.");
     }
     
-    // Nhập và kiểm tra Vị trí ứng tuyển
     String ViTriUngTuyen = "";
     while (true) {
         System.out.print("Nhập vị trí ứng tuyển: ");
         ViTriUngTuyen = sc.nextLine().trim();
-        if (ViTri.timKiem(ViTriUngTuyen) != null) { // Thay 'ViTri' bằng tên lớp quản lý vị trí thực tế của bạn nếu cần
+        if (ViTri.timKiem(ViTriUngTuyen) != null) {
             break;
         }
         System.out.println("Vị trí tuyển dụng không tồn tại! Vui lòng nhập lại.");
     }
     
-    // Nhập và kiểm tra Mã khóa đào tạo
     String MaKhoaDaoTao = "";
     while (true) {
         System.out.print("Nhập mã khóa đào tạo: ");
@@ -135,7 +132,6 @@ public class TuyenDung {
     System.out.println("Nhập tên khóa đào tạo");
     String ten = sc.nextLine().trim();
 
-    // Vị trí tuyển dụng mà khóa này đào tạo cho
     ViTri vt;
     NhanVien quanLy;
     while (true) {
@@ -149,7 +145,6 @@ public class TuyenDung {
             System.out.println("Vị trí này không thuộc phòng ban nào, không thể mở khóa đào tạo");
             continue;
         }
-        // Người đào tạo là quản lý của phòng ban chứa vị trí đó
         quanLy = DanhSachNhanVien.TimQuanLyTheoViTri(vt);
         if (quanLy == null) {
             System.out.println("Phòng ban " + vt.getPhongBan() + " chưa có quản lý, hãy chọn vị trí khác");
@@ -174,7 +169,6 @@ public class TuyenDung {
     }
 
     KhoaDaoTao khoa = new KhoaDaoTao(ten, ngayBatDau, ngayKetThuc, vt, quanLy.getMaNV());
-    // ⚠ Nếu DanhSachKhoaDaoTao.them không tự sinh mã thì phải gọi khoa.setMaKhoaHoc(...) trước dòng này
     DanhSachKhoaDaoTao.them(khoa);
 
     NhatKyHoatDong.them("Người dùng mã " + MaNguoiTao + " tạo khóa đào tạo " + khoa.getMaKhoaHoc()
@@ -189,7 +183,7 @@ public class TuyenDung {
     if(KiemTraLoi.HuyTacVu(sc)){
         return;
     }
-        final int DIEM_DAT = 50; //từ 50 điểm trở lên là đạt, muốn đổi thì sửa ở đây
+        final int DIEM_DAT = 50;
         
         DotTuyenDung dot;
         while(true){
@@ -206,7 +200,7 @@ public class TuyenDung {
         while(true){
             System.out.println("Nhập mã ứng viên");
             String MaUngVien = sc.nextLine();
-            uv = dot.timKiem(MaUngVien); //nếu không thấy thì hàm này tự in thông báo
+            uv = dot.timKiem(MaUngVien);
             if(uv != null){
                 break;
             }
@@ -233,7 +227,6 @@ public class TuyenDung {
                 + " vào " + time + " ngày " + date + " kết quả " + kq.getKetQua().getMoTa());
     }
 
-// Tạo đúng class con của NhanVien (NhanVien là abstract)
     private static NhanVien TaoNhanVien(String maNV, UngVien uv, String maQL,
                                     String caLam, boolean fullTime) {
     if (fullTime) {
@@ -244,7 +237,6 @@ public class TuyenDung {
             uv.getNgayThangNamSinh(), caLam);
 }
 
-// Nhập trực tiếp 1 nhân viên mới từ bàn phím (không qua tuyển dụng)
     public static NhanVien NhapNhanVien(Scanner sc) {
     String CCCD = KiemTraLoi.NhapCCCD(sc);
     String HoTen = KiemTraLoi.NhapHoTen(sc);
@@ -317,7 +309,6 @@ public class TuyenDung {
 
     public static void TiepNhanUngVien(Scanner sc, String MaNguoiThucHien, LocalDate date, LocalTime time) {
     if (KiemTraLoi.HuyTacVu(sc)) return;
-    // 1. Tìm đợt tuyển dụng
 DotTuyenDung dot;
 while (true) {
     System.out.println("Nhập mã đợt tuyển dụng");
@@ -330,7 +321,6 @@ if (dot.getTrangThai() != TRANG_THAI_DOT.DANG_TUYEN_DUNG) {
     return;
 }
 
-// 2. Tìm ứng viên (dot.timKiem tự in thông báo nếu không thấy)
 UngVien uv;
 while (true) {
     System.out.println("Nhập mã ứng viên");
@@ -338,7 +328,6 @@ while (true) {
     if (uv != null) break;
 }
 
-// 3. Kiểm tra điều kiện
 if (uv.getKq() == null || uv.getKq().getKetQua() != LoaiKetQua.DAT) {
     System.out.println("Ứng viên chưa đạt hoặc chưa được chấm điểm, không thể tiếp nhận");
     return;
@@ -354,15 +343,13 @@ for (NhanVien n : DanhSachNhanVien.getDsnv()) {
     }
 }
 
-// 4. Quản lý phụ trách và phòng ban lấy từ người mở đợt tuyển dụng
 NhanVien quanLy = DanhSachNhanVien.timKiem(dot.getMaNguoiTuyen());
 if (quanLy == null) {
     System.out.println("Không tìm thấy quản lý phụ trách của đợt tuyển dụng này");
     return;
 }
-ViTri vt = dot.getViTri(); // lấy vị trí từ chính đợt tuyển dụng cho chắc chắn khớp
+ViTri vt = dot.getViTri();
 String caLam = KiemTraLoi.NhapCaLam(sc, vt.isFullTime());
- // 5. Nhập hợp đồng và xác nhận trước khi tạo nhân viên
     System.out.println("--- KÝ HỢP ĐỒNG CHO " + uv.getHoTen() + " ---");
     HopDong hd = KyHopDong(sc, vt, date);
     System.out.println(hd);
@@ -376,16 +363,14 @@ String caLam = KiemTraLoi.NhapCaLam(sc, vt.isFullTime());
         if (c.equals("1")) break;
         System.out.println("Vui lòng nhập đúng định dạng");
     }
-
-    // 6. Tạo nhân viên. Sinh mã sau khi đã xác nhận để không bị "đốt" mã
     String maNV = DanhSachNhanVien.taoMa();
     NhanVien nv = TaoNhanVien(maNV, uv, quanLy.getMaNV(), caLam, vt.isFullTime());
 
     hd.setMaNV(maNV);
     hd.setMaHopDong("HD" + maNV);
-    nv.setHopDong(hd); // gán lương, phụ cấp, ngày vào làm, vị trí, chức vụ, phòng ban, quyền tài khoản
+    nv.setHopDong(hd); 
 
-    DanhSachNhanVien.them(nv); // hàm them đã tự thêm tài khoản vào DanhSachTaiKhoan
+    DanhSachNhanVien.them(nv);
     uv.setDaLaNhanVien(true);
 
     NhatKyHoatDong.them("Người dùng mã " + MaNguoiThucHien + " tiếp nhận ứng viên " + uv.getMaUngVien()

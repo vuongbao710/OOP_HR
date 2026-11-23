@@ -17,7 +17,6 @@ public class KiemTraLoi {
     private static final int TUOI_TOI_THIEU = 15;
     private static final int TUOI_TOI_DA = 70;
 
-    // ===================== CÁC HÀM KIỂM TRA (sai thì ném Exception) =====================
 
     public static void KiemTraDinhDangSDT(String SDT) throws Exception {
         if(SDT == null || SDT.trim().isEmpty()){
@@ -46,7 +45,6 @@ public class KiemTraLoi {
         }
     }
 
-    // Kiểm tra CCCD chưa có nhân viên nào dùng
     public static void KiemTraCCCDTrung(String CCCD) throws Exception {
         for(NhanVien nv : DanhSachNhanVien.getDsnv()){
             if(nv.getCCCD() != null && nv.getCCCD().equals(CCCD)){
@@ -59,7 +57,6 @@ public class KiemTraLoi {
         if(HoTen == null || HoTen.trim().isEmpty()){
             throw new Exception("Họ tên không được để trống");
         }
-        // \p{L} là mọi chữ cái (kể cả có dấu tiếng Việt)
         if(!HoTen.trim().matches("\\p{L}+( \\p{L}+)*")){
             throw new Exception("Họ tên chỉ được chứa chữ cái và dấu cách");
         }
@@ -74,7 +71,6 @@ public class KiemTraLoi {
         }
     }
 
-    // Mã quản lý phụ trách: là BOSS hoặc mã của một nhân viên đã có
     public static void KiemTraMaQuanLy(String Ma) throws Exception {
         if(Ma == null || Ma.trim().isEmpty()){
             throw new Exception("Mã quản lý không được để trống");
@@ -94,13 +90,11 @@ public class KiemTraLoi {
         }
     }
 
-    // Đổi chuỗi thành ngày, sai định dạng hoặc ngày không có thật (30/02) thì ném lỗi
     public static LocalDate KiemTraNgay(String input, String pattern) throws Exception {
         if(input == null || input.trim().isEmpty()){
             throw new Exception("Ngày không được để trống");
         }
         try{
-            // STRICT + uuuu để ngày không có thật (30/02) bị từ chối thay vì tự đổi thành 29/02
             DateTimeFormatter f = DateTimeFormatter.ofPattern(pattern.replace("yyyy", "uuuu")).withResolverStyle(ResolverStyle.STRICT);
             return LocalDate.parse(input.trim(), f);
         }catch(DateTimeParseException e){
@@ -150,7 +144,6 @@ public class KiemTraLoi {
         return so;
     }
 
-    // ===================== CÁC HÀM NHẬP (lặp đến khi đúng) =====================
 
     public static String NhapSDT(Scanner sc){
         while(true){

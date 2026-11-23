@@ -8,10 +8,7 @@ import oop.entity.DanhSach.*;
 import oop.entity.Enum.*;
 import oop.entity.Object.*;
 
-// Đánh giá và khen thưởng: thưởng sáng kiến, đánh giá KPI
 public class DanhGiaKhenThuong {
-//quản lý
-    
     public static void ThuongSangKien(Scanner sc, LocalDate date, LocalTime time, String MaQuanLy){
         if(KiemTraLoi.HuyTacVu(sc)) return;
         NhanVien nv;
@@ -64,7 +61,7 @@ public class DanhGiaKhenThuong {
 
     public static void DanhGiaKPINhanVienPhuTrach(Scanner sc, LocalDate date, LocalTime time, String MaNVDanhGia){
     ArrayList<NhanVien> ds = DanhSachNhanVien.timKiemTheoMaQuanLyPhuTrachVaFullTime(MaNVDanhGia);
-    if(ds.isEmpty()){ // code cũ kiểm tra == null nên không bao giờ chạy
+    if(ds.isEmpty()){
         System.out.println("Danh sách nhân viên full-time cấp dưới trống");
         return;
     }

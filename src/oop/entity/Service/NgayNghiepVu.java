@@ -6,7 +6,7 @@ import java.time.LocalDate;
 public class NgayNghiepVu {
 
     public static LocalDate ngayKetThucQuy(LocalDate date) {
-        int quy = (date.getMonthValue() - 1) / 3; // 0..3
+        int quy = (date.getMonthValue() - 1) / 3;
         return LocalDate.of(date.getYear(), quy * 3 + 1, 1)
                 .plusMonths(3).minusDays(1);
     }
@@ -21,7 +21,6 @@ public class NgayNghiepVu {
         return null;
     }
 
-    // ===== Tính khoảng ngày =====
     public static int TinhNgay(LocalDate NgayBatDau, LocalDate NgayKetThuc){
         int dem = 0;
         for(LocalDate date = NgayBatDau ; !date.isAfter(NgayKetThuc) ; date = date.plusDays(1)){

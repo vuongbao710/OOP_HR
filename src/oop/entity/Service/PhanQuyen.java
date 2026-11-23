@@ -108,7 +108,8 @@ public class PhanQuyen {
         System.out.println("10. Nộp đợt tuyển dụng");
         System.out.println("11. Xem danh sách nhân viên cấp dưới");
         System.out.println("12. Thưởng sáng kiến");
-        input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 12);
+        System.out.println("13. Kỷ luật nhân viên");
+        input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 13);
 
             if(ChucNangChung(input, sc, nv)){
                 continue;
@@ -130,6 +131,9 @@ public class PhanQuyen {
                     break;
                 case 12:
                     DanhGiaKhenThuong.ThuongSangKien(sc, HeThong.date, HeThong.time, nv.getMaNV());
+                    break;
+                case 13:
+                    NhanSu.KyLuatNhanVien(sc, HeThong.date, HeThong.time, nv.getMaNV());
                     break;
                 default:
                     break; 
@@ -155,7 +159,7 @@ public class PhanQuyen {
         System.out.println("14. Xem nhật ký hoạt động");
         System.out.println("15. Giả lập hệ thống (qua ngày)");
         System.out.println("16. Giả lập thời gian (đổi giờ hệ thống)");
-        input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 15);
+        input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 16);
             if(ChucNangChung(input, sc, nv)){
                 continue;
             }
@@ -204,7 +208,8 @@ public class PhanQuyen {
             System.out.println("3. Xem danh sách nhân viên");
             System.out.println("4. Xem nhật ký hoạt động");
             System.out.println("5. Đổi mật khẩu");
-            input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 5);
+            System.out.println("6. Kỷ luật nhân viên");
+            input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 6);
             switch(input){
                 case 1:
                     HomThu.checkInbox(Boss.MA, sc, HeThong.date, HeThong.time, Boss.getDsThongBao());
@@ -220,6 +225,9 @@ public class PhanQuyen {
                     break;
                 case 5:
                     Boss.getTk().DoiMatKhau(sc, false);
+                    break;
+                case 6:
+                NhanSu.KyLuatNhanVien(sc, HeThong.date, HeThong.time, Boss.MA);
                     break;
                 default:
                     break;

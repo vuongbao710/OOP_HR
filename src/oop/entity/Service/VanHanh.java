@@ -7,22 +7,18 @@ import oop.entity.DanhSach.*;
 import oop.entity.Enum.*;
 import oop.entity.Object.*;
 
-// Vận hành hệ thống theo ngày: kiểm tra tới ngày thưởng, tổng kết lương, hết hạn hợp đồng
 public class VanHanh {
-//////////admin
     
     public static void KiemTraToiNgay(NhanVien nv, LocalDate date, LocalTime time, String MaADMIN){
         if(nv.isDaNghiViec()) return;
         String maQL = nv.getMaQuanLyPhuTrach();
         
-    // 1. Request sắp hết hạn (ngày mai) thì nhắc, tới hạn thì chuyển HET_HAN
         for(ThongBao tb : nv.getDsThongBao().timKiemChuaGiaiQuyet(date)){
         HomThu.GuiThongBao(MaADMIN, nv.getMaNV(), date, time, "Request mã " + tb.getMaThongBao()
                 + " (" + tb.getRequest().getMoTa() + ") sẽ hết hạn vào ngày mai, vui lòng giải quyết");
     }
         nv.getDsThongBao().chuyenQuaTrangThaiHetHan(date);
 
-    // 2. Hợp đồng hết hạn
         HopDong hd = nv.getHopDong();
         if(hd != null && hd.getNgayHetHan() != null && date.isAfter(hd.getNgayHetHan())
         && hd.getTrangThaiHopDong() == TRANG_THAI_HOP_DONG.DANG_CO_HIEU_LUC){
@@ -35,19 +31,16 @@ public class VanHanh {
     }
 }
 
-    // 3. Tổng kết kỳ lương
         if(nv.ToiNgayTongKetDinhKy(date)){
         nv.ResetQuyTrinhChamCong(date);
         HomThu.GuiThongBao(MaADMIN, nv.getMaNV(), date, time, "Đã reset bảng chấm công, chuyển qua tính theo tháng mới");
     }
 
-    // 4. Tới ngày xét nâng lương: gửi request cho quản lý, kèm mã nhân viên
         if(nv.ToiNgayXetNangLuong(date) && maQL != null && DangTrongHopDong(nv, date)){
         HomThu.GuiYeuCau(MaADMIN, maQL, date, time, "Tới ngày xét nâng lương của nhân viên có mã " + nv.getMaNV(),
                 LoaiRequest.XEM_XET_TANG_LUONG, nv.getMaNV());
     }
 
-    // 5. Đầu năm: reset phép năm, thưởng tết cho full-time
         if(date.getMonthValue() == 1 && date.getDayOfMonth() == 1){
         nv.setSoNgayNghiPhepNam(12);
         if(nv.getHinhThucDiLam() != null && nv.getHinhThucDiLam().equalsIgnoreCase("Full-time")
@@ -71,16 +64,14 @@ public class VanHanh {
             }
         }
     }
-    // Đợt tuyển dụng quá hạn thì tự đóng
     for(DotTuyenDung dot : new ArrayList<>(DanhSachDotTuyenDung.getDsDot())){
         if(dot.getTrangThai() == TRANG_THAI_DOT.DANG_TUYEN_DUNG && date.isAfter(dot.getNgayHetHan())){
-            dot.setTrangThai(TRANG_THAI_DOT.KET_THUC); // ⚠ 2
+            dot.setTrangThai(TRANG_THAI_DOT.KET_THUC); 
             HomThu.GuiThongBao(MaADMIN, dot.getMaNguoiTuyen(), date, time,
                     "Đợt tuyển dụng " + dot.getMaDotTuyenDung() + " đã quá hạn và được đóng tự động");
         }
     }
-    // Khóa đào tạo kết thúc hôm qua thì báo người phụ trách chấm điểm
-    for(KhoaDaoTao khoa : DanhSachKhoaDaoTao.getDskdt()){ // ⚠ 3
+    for(KhoaDaoTao khoa : DanhSachKhoaDaoTao.getDskdt()){ 
         if(khoa.getNgayKetThuc() != null && date.isEqual(khoa.getNgayKetThuc().plusDays(1))){
             HomThu.GuiYeuCau(MaADMIN, khoa.getMaNVDaoTao(), date, time,
                     "Khóa đào tạo " + khoa.getMaKhoaHoc() + " đã kết thúc, vui lòng chấm điểm ứng viên",
@@ -103,7 +94,7 @@ public class VanHanh {
 
     private static boolean DangTrongHopDong(NhanVien nv, LocalDate date){
         HopDong hd = nv.getHopDong();
-        if(hd == null) return true; // dữ liệu cũ chưa có hợp đồng thì giữ hành vi cũ
+        if(hd == null) return true; 
         if(hd.getNgayBatDauHopDong() != null && date.isBefore(hd.getNgayBatDauHopDong())) return false;
         if(hd.getNgayHetHan() != null && date.isAfter(hd.getNgayHetHan())) return false;
         return true;
