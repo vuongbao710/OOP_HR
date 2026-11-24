@@ -2,6 +2,7 @@ package oop.entity.DanhSach;
 
 import java.util.ArrayList;
 import oop.entity.Object.DotTuyenDung;
+import oop.entity.Object.UngVien;
 
 public class DanhSachDotTuyenDung {
     private static ArrayList<DotTuyenDung> dsDot = new ArrayList<>();
@@ -48,4 +49,16 @@ public class DanhSachDotTuyenDung {
         dem++; 
         return String.format("DOT%03d", dem);
     }
+    
+    public static UngVien timUngVien(String maUngVien){
+    if(maUngVien == null) return null;
+    for(DotTuyenDung dot : dsDot){
+        for(UngVien uv : dot.getDsUV().getDsuv()){
+            if(uv.getMaUngVien() != null && uv.getMaUngVien().equalsIgnoreCase(maUngVien.trim())){
+                return uv;
+            }
+        }
+    }
+    return null;
+}
 }

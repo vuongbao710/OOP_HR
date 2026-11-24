@@ -296,7 +296,7 @@ public class NhanSu {
         System.out.println("Đã kỷ luật " + nv.getHoTen() + ": " + kl.getMoTa());
     }
 
-    private static NhanVien ChonNhanVienDeQuanLy(Scanner sc, String hanhDong) {
+    public static NhanVien ChonNhanVienDeQuanLy(Scanner sc, String hanhDong) {
         System.out.println("Nhập mã nhân viên cần " + hanhDong + " (nhập 'thoát' để hủy):");
         String ma = sc.nextLine().trim();
         if (ma.equalsIgnoreCase("thoát")) {
@@ -310,77 +310,7 @@ public class NhanSu {
         return nv;
     }
 
-    public static void SuaNhanVien(Scanner sc, LocalDate date, LocalTime time, String maNguoiThucHien) {
-        NhanVien nv = ChonNhanVienDeQuanLy(sc, "sửa thông tin");
-        if (nv == null) {
-            return;
-        }
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        int input = -1;
-        while (input != 0) {
-            System.out.println("\n--- Sửa thông tin nhân viên " + nv.getMaNV() + " ---");
-            System.out.println("1. Họ tên: " + nv.getHoTen());
-            System.out.println("2. Số điện thoại: " + nv.getSDT());
-            System.out.println("3. CCCD: " + nv.getCCCD());
-            System.out.println("4. Ngày sinh: " + (nv.getBirthDate() == null ? "" : nv.getBirthDate().format(fmt)));
-            System.out.println("5. Ca làm: " + nv.getCaLam());
-            System.out.println("0. Hoàn tất");
-            input = KiemTraLoi.NhapSoNguyen(sc, "Chọn thông tin cần sửa:", 0, 5);
-            String thayDoi = null;
-            switch (input) {
-                case 1: {
-                    String cu = nv.getHoTen();
-                    String moi = KiemTraLoi.NhapHoTen(sc);
-                    nv.setHoTen(moi);
-                    thayDoi = "họ tên từ " + cu + " thành " + moi;
-                    break;
-                }
-                case 2: {
-                    String cu = nv.getSDT();
-                    String moi = KiemTraLoi.NhapSDT(sc);
-                    nv.setSDT(moi);
-                    thayDoi = "số điện thoại từ " + cu + " thành " + moi;
-                    break;
-                }
-                case 3: {
-                    String moi = KiemTraLoi.NhapCCCD(sc, nv);
-                    nv.setCCCD(moi);
-                    thayDoi = "CCCD";
-                    break;
-                }
-                case 4: {
-                    LocalDate moi = KiemTraLoi.NhapNgaySinh(sc);
-                    String cu = nv.getBirthDate() == null ? "" : nv.getBirthDate().format(fmt);
-                    nv.setBirthDate(moi);
-                    thayDoi = "ngày sinh từ " + cu + " thành " + moi.format(fmt);
-                    break;
-                }
-                case 5: {
-                    boolean fullTime = KiemTraLoi.KiemTraIsFullTime(nv);
-                    String cu = nv.getCaLam();
-                    String moi = KiemTraLoi.NhapCaLam(sc, fullTime);
-                    nv.setCaLam(moi);
-                    if (nv instanceof NhanVienFullTime) {
-                        ((NhanVienFullTime) nv).setCa(LoaiCaLamFullTime.NhanDien(moi));
-                    } else if (nv instanceof NhanVienPartTime) {
-                        ((NhanVienPartTime) nv).setCa(LoaiCaLamPartTime.NhanDien(moi));
-                    }
-                    thayDoi = "ca làm từ " + cu + " thành " + moi;
-                    break;
-                }
-                default:
-                    break;
-            }
-            if (thayDoi != null) {
-                System.out.println("Đã cập nhật " + thayDoi);
-                NhatKyHoatDong.them("Người dùng mã " + maNguoiThucHien + " sửa " + thayDoi
-                        + " của nhân viên " + nv.getMaNV() + " vào " + time + " ngày " + date);
-                HomThu.GuiThongBao("HETHONG", nv.getMaNV(), date, time,
-                        "Admin vừa cập nhật thông tin cá nhân của bạn: " + thayDoi);
-            }
-        }
-    }
-
+   
     public static void XoaNhanVien(Scanner sc, LocalDate date, LocalTime time, String maNguoiThucHien) {
         NhanVien nv = ChonNhanVienDeQuanLy(sc, "xóa");
         if (nv == null) {

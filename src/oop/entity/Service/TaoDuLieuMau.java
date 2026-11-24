@@ -7,8 +7,169 @@ import java.time.LocalDate;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Random;
 
 public class TaoDuLieuMau {
+
+    private static Random random = new Random();
+
+    private static String[] HO = {"Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Huỳnh", "Phan", "Vũ", "Võ", "Đặng", "Bùi", "Đỗ"};
+    private static String[] TEN_DEM = {"Văn", "Thị", "Minh", "Quốc", "Thanh", "Ngọc", "Hoàng", "Gia"};
+    private static String[] TEN = {"An", "Bình", "Cường", "Dũng", "Hà", "Hải", "Hùng", "Khoa", "Lan", "Linh", "Mai", "Nam", "Phúc", "Quân", "Trang", "Tuấn", "Vy"};
+    private static String[] CA_LAM = {"Sáng", "Chiều", "Tối"};
+
+// Vị trí quản lý / giám đốc đã có người đang làm thì không được thêm nữa
+    private static boolean ViTriQuanLyDaCoNguoi(ViTri vt) {
+        if (ViTri.XacDinhChucVu(vt.getMaViTri()) == LoaiChucVu.NHAN_VIEN) {
+            return false;
+        }
+        for (NhanVien nv : DanhSachNhanVien.getDsnv()) {
+            if (!nv.isDaNghiViec() && vt.getMaViTri().equalsIgnoreCase(nv.getMaViTri())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+// Tìm mã giám đốc đang làm, không có thì trả về mã BOSS
+    private static String TimMaGiamDoc() {
+        for (NhanVien nv : DanhSachNhanVien.getDsnv()) {
+            if (!nv.isDaNghiViec() && nv.getChucVu() == LoaiChucVu.GIAM_DOC) {
+                return nv.getMaNV();
+            }
+        }
+        return Boss.MA;
+    }
+
+// Xác định quản lý phụ trách giống NhanSu.ThemNhanVien
+    private static String TimMaQuanLyPhuTrach(ViTri vt) {
+        LoaiChucVu chucVu = ViTri.XacDinhChucVu(vt.getMaViTri());
+        if (chucVu == LoaiChucVu.GIAM_DOC) {
+            return Boss.MA;
+        }
+        if (chucVu == LoaiChucVu.QUAN_LY) {
+            return TimMaGiamDoc();
+        }
+        for (NhanVien nv : DanhSachNhanVien.getDsnv()) {
+            if (!nv.isDaNghiViec() && nv.getChucVu() == LoaiChucVu.QUAN_LY
+                    && vt.getPhongBan().equalsIgnoreCase(nv.getMaPhongBan())) {
+                return nv.getMaNV();
+            }
+        }
+        return TimMaGiamDoc();   // phòng chưa có quản lý thì giám đốc phụ trách
+    }
+
+    private static String TaoCCCDMoi() {
+        while (true) {
+            String CCCD = "079";
+            for (int i = 0; i < 9; i++) {
+                CCCD = CCCD + random.nextInt(10);
+            }
+            boolean trung = false;
+            for (NhanVien nv : DanhSachNhanVien.getDsnv()) {
+                if (CCCD.equals(nv.getCCCD())) {
+                    trung = true;
+                }
+            }
+            if (!trung) {
+                return CCCD;
+            }
+        }
+    }
+
+    private static String TaoSDTMoi() {
+        String SDT = "09";
+        for (int i = 0; i < 8; i++) {
+            SDT = SDT + random.nextInt(10);
+        }
+        return SDT;
+    }
+
+// Tạo hợp đồng ngẫu nhiên phù hợp với vị trí
+    private static HopDong TaoHopDongNgauNhien(ViTri vt, LocalDate date) {
+        LoaiChucVu chucVu = ViTri.XacDinhChucVu(vt.getMaViTri());
+        LOAI_HOP_DONG loai;
+        LocalDate ngayHetHan;
+        double luongCoBan = 0;
+        double luongTheoGio = 0;
+        double phuCap = 0;
+
+        if (!vt.isFullTime()) {
+            loai = LOAI_HOP_DONG.PART_TIME;
+            ngayHetHan = date.plusMonths(6);
+            luongTheoGio = (random.nextInt(4) + 5) * 5000;       // 25.000 đến 40.000
+        } else if (chucVu == LoaiChucVu.GIAM_DOC) {
+            loai = LOAI_HOP_DONG.CHINH_THUC_DAI_HAN;
+            ngayHetHan = date.plusYears(3);
+            luongCoBan = 35000000;
+            phuCap = 3000000;
+        } else if (chucVu == LoaiChucVu.QUAN_LY) {
+            loai = LOAI_HOP_DONG.CHINH_THUC_DAI_HAN;
+            ngayHetHan = date.plusYears(3);
+            luongCoBan = 22000000;
+            phuCap = 2000000;
+        } else {
+            if (random.nextBoolean()) {
+                loai = LOAI_HOP_DONG.CHINH_THUC_DAI_HAN;
+                ngayHetHan = date.plusYears(3);
+            } else {
+                loai = LOAI_HOP_DONG.CHINH_THUC_NGAN_HAN;
+                ngayHetHan = date.plusYears(1);
+            }
+            luongCoBan = (random.nextInt(8) + 8) * 1000000;      // 8 đến 15 triệu
+            phuCap = 1000000;
+        }
+
+        // MaHD và MaNV để null, sẽ gán sau khi có mã nhân viên
+        return new HopDong(null, null, date, date, ngayHetHan, vt.getMaViTri(),
+                luongCoBan, luongTheoGio, phuCap, loai,
+                TRANG_THAI_HOP_DONG.DANG_CO_HIEU_LUC, "Hop dong tao ngau nhien");
+    }
+
+// Tạo thêm soLuong nhân viên ngẫu nhiên (gọi sau khi đã load dữ liệu mẫu)
+    public static void TaoNhanVienNgauNhien(int soLuong, LocalDate date) {
+        for (int i = 0; i < soLuong; i++) {
+
+            // 1. Random vị trí, bỏ qua vị trí quản lý đã có người
+            ViTri vt;
+            do {
+                vt = ViTri.values()[random.nextInt(ViTri.values().length)];
+            } while (ViTriQuanLyDaCoNguoi(vt));
+
+            // 2. Random thông tin cá nhân
+            String HoTen = HO[random.nextInt(HO.length)] + " "
+                    + TEN_DEM[random.nextInt(TEN_DEM.length)] + " "
+                    + TEN[random.nextInt(TEN.length)];
+            String CCCD = TaoCCCDMoi();
+            String SDT = TaoSDTMoi();
+            int tuoi = 20 + random.nextInt(26);                  // 20 đến 45 tuổi
+            LocalDate ngaySinh = LocalDate.of(date.getYear() - tuoi, random.nextInt(12) + 1, random.nextInt(28) + 1);
+
+            // 3. Quản lý phụ trách và ca làm
+            String maQuanLy = TimMaQuanLyPhuTrach(vt);
+            String caLam = "Sáng";
+            if (ViTri.XacDinhChucVu(vt.getMaViTri()) == LoaiChucVu.NHAN_VIEN) {
+                caLam = CA_LAM[random.nextInt(CA_LAM.length)];
+            }
+
+            // 4. Tạo nhân viên và hợp đồng
+            String maNV = DanhSachNhanVien.taoMa();
+            NhanVien nv;
+            if (vt.isFullTime()) {
+                nv = new NhanVienFullTime(maNV, CCCD, HoTen, SDT, maQuanLy, ngaySinh, caLam);
+            } else {
+                nv = new NhanVienPartTime(maNV, CCCD, HoTen, SDT, maQuanLy, ngaySinh, caLam);
+            }
+            HopDong hd = TaoHopDongNgauNhien(vt, date);
+            hd.setMaNV(maNV);
+            hd.setMaHopDong("HD" + maNV);
+            nv.setHopDong(hd);
+
+            DanhSachHopDong.them(hd);
+            DanhSachNhanVien.them(nv);
+        }
+        System.out.println("Đã tạo thêm " + soLuong + " nhân viên ngẫu nhiên");
+    }
 
     public static void TaoDanhSachNhanVien(DanhSachHopDong dsHopDong) {
         int SoDong = 0;
@@ -77,7 +238,7 @@ public class TaoDuLieuMau {
             while ((line = read.readLine()) != null) {
                 SoDong++;
                 if (SoDong == 1 && line.startsWith("\uFEFF")) {
-                    line = line.substring(1); 
+                    line = line.substring(1);
                 }
                 if (line.trim().isEmpty()) {
                     continue;

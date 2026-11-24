@@ -20,6 +20,7 @@ public class OOP {
     TaoDuLieuMau.TaoDanhSachPhongBan();
     DanhSachHopDong dsHopDong = TaoDuLieuMau.TaoDanhSachHopDong();
     TaoDuLieuMau.TaoDanhSachNhanVien(dsHopDong);
+    TaoDuLieuMau.TaoNhanVienNgauNhien(20, HeThong.date);
     TaoDuLieuMau.TaoTaiKhoanBoss();
 
     Scanner sc = new Scanner(System.in);

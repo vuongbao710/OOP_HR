@@ -84,6 +84,14 @@ public class DotTuyenDung {
         this.ViTri = ViTri;
     }
 
+    public DanhSachUngVien getDsUV() {
+        return dsUV;
+    }
+
+    public void setDsUV(DanhSachUngVien dsUV) {
+        this.dsUV = dsUV;
+    }
+
 
     @Override
     public String toString() {

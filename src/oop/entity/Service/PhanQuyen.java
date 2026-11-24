@@ -164,8 +164,8 @@ public class PhanQuyen {
         System.out.println("15. Xem nhật ký hoạt động");
         System.out.println("16. Giả lập hệ thống (qua ngày)");
         System.out.println("17. Giả lập thời gian (đổi giờ hệ thống)");
-        System.out.println("18. Sửa thông tin nhân viên");
-        System.out.println("19. Xóa nhân viên (chấm dứt hợp đồng)");
+        System.out.println("18. Sửa thông tin");
+        System.out.println("19. Xóa (nhân viên / ứng viên / phòng ban)");
         System.out.println("20. Thêm nhân viên");
         System.out.println("21. Tìm kiếm gần đúng");
         System.out.println("22. Thống kê phòng ban");
@@ -199,10 +199,10 @@ public class PhanQuyen {
                     GiaLapThoiGian(sc);
                     break;
                 case 18:
-                    NhanSu.SuaNhanVien(sc, HeThong.date, HeThong.time, nv.getMaNV());
+                    Sua.SuaThongTin(sc, HeThong.date, HeThong.time, nv.getMaNV());
                     break;
                 case 19:
-                    NhanSu.XoaNhanVien(sc, HeThong.date, HeThong.time, nv.getMaNV());
+                    Xoa.XoaThongTin(sc, HeThong.date, HeThong.time, nv.getMaNV());
                     break;
                 case 20:
                     NhanSu.ThemNhanVien(sc, HeThong.date, HeThong.time, nv.getMaNV());
