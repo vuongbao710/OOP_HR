@@ -77,7 +77,7 @@ public enum ViTri {
     QUAN_LY_CSKH("VT55", "Quản lý chăm sóc khách hàng", "PB04", true),
     QUAN_LY_MARKETING("VT56", "Quản lý marketing", "PB05", true),
     QUAN_LY_KE_TOAN("VT57", "Quản lý kế toán", "PB06", true),
-    GIAM_DOC_DIEU_HANH("VT59", "Giám đốc điều hành", "null", true);
+    GIAM_DOC_DIEU_HANH("VT59", "Giám đốc điều hành", "BGD", true);
 
     private String MaViTri;
     private String MoTa;

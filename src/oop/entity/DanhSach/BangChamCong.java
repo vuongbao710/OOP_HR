@@ -10,7 +10,7 @@ public class BangChamCong implements DanhSach<ChiTietChamCong>{
     private String MaBangChamCong;
     private String MaNVDuocChamCong;
     private int SoNgayCong;
-    private int SoGioLamOT=0;
+    private double SoGioLamOT=0;
     private int thang;
     private int nam;
     private int dem=0;
@@ -73,9 +73,10 @@ public class BangChamCong implements DanhSach<ChiTietChamCong>{
     public int getSoNgayCong(){
         int SoNgayChamCong = 0;
         for(ChiTietChamCong cc : bcc){
-            if(cc.getTrangThai().equals(LoaiTrangThaiChamCong.DUNG_GIO)){
-                SoNgayChamCong++;
-            }
+            LoaiTrangThaiChamCong tt = cc.getTrangThai();
+        if(tt != LoaiTrangThaiChamCong.NGHI_PHEP && tt != LoaiTrangThaiChamCong.KHONG_CHAM_CONG){
+            SoNgayChamCong++;
+        }
         }
         setSoNgayCong(SoNgayChamCong);
         return SoNgayChamCong;
@@ -85,11 +86,11 @@ public class BangChamCong implements DanhSach<ChiTietChamCong>{
         this.SoNgayCong = SoNgayCong;
     }
 
-    public int getSoGioLamOT() {
+    public double getSoGioLamOT() {
         return SoGioLamOT;
     }
 
-    public void setSoGioLamOT(int SoGioLamOT) {
+    public void setSoGioLamOT(double SoGioLamOT) {
         this.SoGioLamOT = SoGioLamOT;
     }
 
@@ -200,6 +201,7 @@ public class BangChamCong implements DanhSach<ChiTietChamCong>{
         for(ChiTietChamCong cc : bcc){
         tong = tong + cc.getSoGioLamOT();
         }
+        this.SoGioLamOT = tong;
         return tong;
     }
      

@@ -1,0 +1,8 @@
+BGD,Ban giám đốc
+PB01,Kinh doanh
+PB02,Sản xuất
+PB03,Nhân sự
+PB04,Chăm sóc khách hàng
+PB05,Marketing
+PB06,Kế toán
+PB07,Logistics

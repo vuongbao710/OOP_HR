@@ -7,6 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import oop.entity.DanhSach.DanhSachNhanVien;
+import oop.entity.DanhSach.DanhSachPhongBan;
 import oop.entity.Enum.LoaiVaiTro;
 import static oop.entity.Enum.LoaiVaiTro.DIRECTOR;
 import static oop.entity.Enum.LoaiVaiTro.HR_ADMIN;
@@ -60,6 +61,7 @@ public class PhanQuyen {
         System.out.println("6. Đăng ký làm Over time");
         System.out.println("7. Xem hòm thư");
         System.out.println("8. Đổi mật khẩu");
+        System.out.println("9. Xin nghỉ việc");
     }
     
     private static boolean ChucNangChung(int input, Scanner sc, NhanVien nv){
@@ -88,6 +90,9 @@ public class PhanQuyen {
             case 8:
             nv.getTaiKhoan().DoiMatKhau(sc, false);
             return true;
+            case 9:
+                ChucNang.XinNghiViec(HeThong.date, HeThong.time, nv, sc);
+                return true;
             default:
                 return false;
         }
@@ -96,7 +101,7 @@ public class PhanQuyen {
         int input = -1;
         while(input != 0 && nv.getTaiKhoan().KiemTraTrangThaiHoatDong()){
         InMenuChung(nv);
-        input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 8);
+        input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 9);
         ChucNangChung(input, sc, nv);
 }
     }
@@ -104,24 +109,24 @@ public class PhanQuyen {
         int input = -1;
         while(input != 0 && nv.getTaiKhoan().KiemTraTrangThaiHoatDong()){
         InMenuChung(nv);
-        System.out.println("9. Xử lý request");
-        System.out.println("10. Nộp đợt tuyển dụng");
-        System.out.println("11. Xem danh sách nhân viên cấp dưới");
-        System.out.println("12. Thưởng sáng kiến");
-        System.out.println("13. Kỷ luật nhân viên");
-        input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 13);
+        System.out.println("10. Xử lý request");
+        System.out.println("11. Nộp đợt tuyển dụng");
+        System.out.println("12. Xem danh sách nhân viên cấp dưới");
+        System.out.println("13. Thưởng sáng kiến");
+        System.out.println("14. Kỷ luật nhân viên");
+        input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 14);
 
             if(ChucNangChung(input, sc, nv)){
                 continue;
             }
             switch(input){
-                case 9:
+                case 10:
                     HomThu.checkChuaGiaiQuyet(nv.getMaNV(), sc);
                     break;
-                case 10:
+                case 11:
                     TuyenDung.DangTaiTuyenDung(sc, nv.getMaNV(), nv.getMaQuanLyPhuTrach(), HeThong.date, HeThong.time);
                     break;
-                case 11:
+                case 12:
                     ArrayList<NhanVien> capDuoi = DanhSachNhanVien.timKiemTheoMaQuanLyPhuTrach(nv.getMaNV());
                     if(capDuoi.isEmpty()){
                         System.out.println("Bạn chưa có nhân viên cấp dưới");
@@ -129,10 +134,10 @@ public class PhanQuyen {
                         DanhSachNhanVien.xuat(capDuoi);
                     }
                     break;
-                case 12:
+                case 13:
                     DanhGiaKhenThuong.ThuongSangKien(sc, HeThong.date, HeThong.time, nv.getMaNV());
                     break;
-                case 13:
+                case 14:
                     NhanSu.KyLuatNhanVien(sc, HeThong.date, HeThong.time, nv.getMaNV());
                     break;
                 default:
@@ -151,43 +156,63 @@ public class PhanQuyen {
         int input = -1;
         while(input != 0 && nv.getTaiKhoan().KiemTraTrangThaiHoatDong()){
         InMenuChung(nv);
-        System.out.println("9. Xử lý request");
-        System.out.println("10. Tạo khóa đào tạo");
-        System.out.println("11. Thêm ứng viên vào đợt tuyển dụng");
-        System.out.println("12. Tiếp nhận ứng viên (chuyển thành nhân viên và ký hợp đồng)");
-        System.out.println("13. Xem danh sách nhân viên");
-        System.out.println("14. Xem nhật ký hoạt động");
-        System.out.println("15. Giả lập hệ thống (qua ngày)");
-        System.out.println("16. Giả lập thời gian (đổi giờ hệ thống)");
-        input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 16);
+        System.out.println("10. Xử lý request");
+        System.out.println("11. Tạo khóa đào tạo");
+        System.out.println("12. Thêm ứng viên vào đợt tuyển dụng");
+        System.out.println("13. Tiếp nhận ứng viên (chuyển thành nhân viên và ký hợp đồng)");
+        System.out.println("14. Xem danh sách nhân viên");
+        System.out.println("15. Xem nhật ký hoạt động");
+        System.out.println("16. Giả lập hệ thống (qua ngày)");
+        System.out.println("17. Giả lập thời gian (đổi giờ hệ thống)");
+        System.out.println("18. Sửa thông tin nhân viên");
+        System.out.println("19. Xóa nhân viên (chấm dứt hợp đồng)");
+        System.out.println("20. Thêm nhân viên");
+        System.out.println("21. Tìm kiếm gần đúng");
+        System.out.println("22. Thống kê phòng ban");
+        input = KiemTraLoi.NhapSoNguyen(sc, "Chọn chức năng:", 0, 22);
             if(ChucNangChung(input, sc, nv)){
                 continue;
             }
             switch(input){
-                case 9:
+                case 10:
                     HomThu.checkChuaGiaiQuyet(nv.getMaNV(), sc);
                     break;
-                case 10:
+                case 11:
                     TuyenDung.TaoKhoaDaoTao(sc, nv.getMaNV(), HeThong.date, HeThong.time);
                     break;
-                case 11:
+                case 12:
                     TuyenDung.ThemUngVienVaoDanhSach(sc, nv.getMaNV());
                     break;
-                case 12:
+                case 13:
                     TuyenDung.TiepNhanUngVien(sc, nv.getMaNV(), HeThong.date, HeThong.time);
                     break;
-                case 13:
+                case 14:
                     XemDanhSachNhanVien(sc);
                     break;
-                case 14:
+                case 15:
                     NhatKyHoatDong.LuaChonCachXem(sc);
                     break;
-                case 15:
+                case 16:
                     GiaLapHeThong(sc);
                     break;
-                case 16:
+                case 17:
                     GiaLapThoiGian(sc);
                     break;
+                case 18:
+                    NhanSu.SuaNhanVien(sc, HeThong.date, HeThong.time, nv.getMaNV());
+                    break;
+                case 19:
+                    NhanSu.XoaNhanVien(sc, HeThong.date, HeThong.time, nv.getMaNV());
+                    break;
+                case 20:
+                    NhanSu.ThemNhanVien(sc, HeThong.date, HeThong.time, nv.getMaNV());
+                    break;
+                case 21:
+                    DanhSachNhanVien.ChayTimKiem(sc);
+                    break;
+                case 22:
+                    ThongKe.ChayThongKe(sc);
+                    break; 
                 default:
                     break;
             }

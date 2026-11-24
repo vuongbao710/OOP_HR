@@ -49,9 +49,13 @@ public class KyLuat extends KhenThuongKyLuat{
             return SoTienTacDong;
         }
         if(this.loaiViPham==LoaiViPham.NGHI_KHONG_PHEP){
-            SoTienTacDong =  -1*nv.TinhLuongMotGio();
+            SoTienTacDong =  -1*nv.TinhLuongMotNgay();
             return SoTienTacDong;
         }
+        if (this.loaiViPham == LoaiViPham.DANG_KY_OT_MA_KHONG_LAM) {
+        SoTienTacDong = 0;
+        return SoTienTacDong;
+    }
         return 0;
     }
 

@@ -3,6 +3,7 @@ package oop.entity.Enum;
 
 public enum LoaiTrangThaiChamCong {
     NGHI_PHEP("nghỉ phép", false),
+    NGHI_PHEP_NAM("nghỉ phép năm", false),
     DUNG_GIO("dung gio",true),
     DI_TRE("di tre", false),
     VE_SOM("ve som", false),

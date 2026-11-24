@@ -17,87 +17,86 @@ public class KiemTraLoi {
     private static final int TUOI_TOI_THIEU = 15;
     private static final int TUOI_TOI_DA = 70;
 
-
     public static void KiemTraDinhDangSDT(String SDT) throws Exception {
-        if(SDT == null || SDT.trim().isEmpty()){
+        if (SDT == null || SDT.trim().isEmpty()) {
             throw new Exception("Số điện thoại không được để trống");
         }
-        if(!SDT.matches("\\d+")){
+        if (!SDT.matches("\\d+")) {
             throw new Exception("Số điện thoại chỉ được chứa chữ số");
         }
-        if(SDT.length() != 10){
+        if (SDT.length() != 10) {
             throw new Exception("Số điện thoại phải đủ 10 số (đang có " + SDT.length() + " số)");
         }
-        if(SDT.charAt(0) != '0'){
+        if (SDT.charAt(0) != '0') {
             throw new Exception("Số điện thoại phải bắt đầu bằng số 0");
         }
     }
 
     public static void KiemTraCCCD(String CCCD) throws Exception {
-        if(CCCD == null || CCCD.trim().isEmpty()){
+        if (CCCD == null || CCCD.trim().isEmpty()) {
             throw new Exception("CCCD không được để trống");
         }
-        if(!CCCD.matches("\\d+")){
+        if (!CCCD.matches("\\d+")) {
             throw new Exception("CCCD chỉ được chứa chữ số");
         }
-        if(CCCD.length() != 12){
+        if (CCCD.length() != 12) {
             throw new Exception("CCCD phải đủ 12 số (đang có " + CCCD.length() + " số)");
         }
     }
 
     public static void KiemTraCCCDTrung(String CCCD) throws Exception {
-        for(NhanVien nv : DanhSachNhanVien.getDsnv()){
-            if(nv.getCCCD() != null && nv.getCCCD().equals(CCCD)){
+        for (NhanVien nv : DanhSachNhanVien.getDsnv()) {
+            if (nv.getCCCD() != null && nv.getCCCD().equals(CCCD)) {
                 throw new Exception("CCCD này đã thuộc về nhân viên " + nv.getMaNV());
             }
         }
     }
 
     public static void KiemTraHoTen(String HoTen) throws Exception {
-        if(HoTen == null || HoTen.trim().isEmpty()){
+        if (HoTen == null || HoTen.trim().isEmpty()) {
             throw new Exception("Họ tên không được để trống");
         }
-        if(!HoTen.trim().matches("\\p{L}+( \\p{L}+)*")){
+        if (!HoTen.trim().matches("\\p{L}+( \\p{L}+)*")) {
             throw new Exception("Họ tên chỉ được chứa chữ cái và dấu cách");
         }
     }
 
     public static void KiemTraMaNV(String MaNV) throws Exception {
-        if(MaNV == null || !MaNV.trim().matches("(?i)NV\\d{3}")){
+        if (MaNV == null || !MaNV.trim().matches("(?i)NV\\d{3}")) {
             throw new Exception("Mã nhân viên phải có dạng NV + 3 chữ số (ví dụ NV001)");
         }
-        if(DanhSachNhanVien.timKiem(MaNV.trim()) == null){
+        if (DanhSachNhanVien.timKiem(MaNV.trim()) == null) {
             throw new Exception("Không tìm thấy nhân viên mã " + MaNV);
         }
     }
 
     public static void KiemTraMaQuanLy(String Ma) throws Exception {
-        if(Ma == null || Ma.trim().isEmpty()){
+        if (Ma == null || Ma.trim().isEmpty()) {
             throw new Exception("Mã quản lý không được để trống");
         }
-        if(Ma.trim().equalsIgnoreCase(Boss.MA)){
+        if (Ma.trim().equalsIgnoreCase(Boss.MA)) {
             return;
         }
         KiemTraMaNV(Ma);
     }
 
     public static void KiemTraMatKhau(String MatKhau) throws Exception {
-        if(MatKhau == null || MatKhau.length() < 8){
+        if (MatKhau == null || MatKhau.length() < 8) {
             throw new Exception("Mật khẩu phải có ít nhất 8 ký tự");
         }
-        if(MatKhau.contains(" ")){
+        if (MatKhau.contains(" ")) {
             throw new Exception("Mật khẩu không được chứa dấu cách");
         }
     }
 
     public static LocalDate KiemTraNgay(String input, String pattern) throws Exception {
-        if(input == null || input.trim().isEmpty()){
+        if (input == null || input.trim().isEmpty()) {
             throw new Exception("Ngày không được để trống");
         }
-        try{
+        try {
             DateTimeFormatter f = DateTimeFormatter.ofPattern(pattern.replace("yyyy", "uuuu")).withResolverStyle(ResolverStyle.STRICT);
             return LocalDate.parse(input.trim(), f);
-        }catch(DateTimeParseException e){
+        } catch (DateTimeParseException e) {
             throw new Exception("Ngày không hợp lệ, phải đúng dạng " + pattern);
         }
     }
@@ -105,14 +104,14 @@ public class KiemTraLoi {
     public static LocalDate KiemTraNgaySinh(String input, String pattern) throws Exception {
         LocalDate ngaySinh = KiemTraNgay(input, pattern);
         LocalDate homNay = HeThong.date;
-        if(ngaySinh.isAfter(homNay)){
+        if (ngaySinh.isAfter(homNay)) {
             throw new Exception("Ngày sinh không được ở tương lai");
         }
         int tuoi = homNay.getYear() - ngaySinh.getYear();
-        if(tuoi < TUOI_TOI_THIEU){
+        if (tuoi < TUOI_TOI_THIEU) {
             throw new Exception("Chưa đủ " + TUOI_TOI_THIEU + " tuổi để làm việc");
         }
-        if(tuoi > TUOI_TOI_DA){
+        if (tuoi > TUOI_TOI_DA) {
             throw new Exception("Tuổi vượt quá " + TUOI_TOI_DA + ", vui lòng kiểm tra lại");
         }
         return ngaySinh;
@@ -120,12 +119,12 @@ public class KiemTraLoi {
 
     public static int KiemTraSoNguyen(String input, int min, int max) throws Exception {
         int so;
-        try{
+        try {
             so = Integer.parseInt(input.trim());
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             throw new Exception("Đây không phải số nguyên");
         }
-        if(so < min || so > max){
+        if (so < min || so > max) {
             throw new Exception("Vui lòng nhập số từ " + min + " đến " + max);
         }
         return so;
@@ -133,203 +132,235 @@ public class KiemTraLoi {
 
     public static double KiemTraSoThuc(String input, double min) throws Exception {
         double so;
-        try{
+        try {
             so = Double.parseDouble(input.trim());
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             throw new Exception("Đây không phải số hợp lệ");
         }
-        if(so < min){
+        if (so < min) {
             throw new Exception("Giá trị phải từ " + min + " trở lên");
         }
         return so;
     }
 
-
-    public static String NhapSDT(Scanner sc){
-        while(true){
+    public static String NhapSDT(Scanner sc) {
+        while (true) {
             System.out.println("Nhập số điện thoại");
             String SDT = sc.nextLine().trim();
-            try{
+            try {
                 KiemTraDinhDangSDT(SDT);
                 return SDT;
-            }catch(Exception e){
+            } catch (Exception e) {
                 System.out.println("Lỗi: " + e.getMessage());
             }
         }
     }
 
-    public static String NhapCCCD(Scanner sc){
-        while(true){
+    public static String NhapCCCD(Scanner sc) {
+        while (true) {
             System.out.println("Nhập CCCD");
             String CCCD = sc.nextLine().trim();
-            try{
+            try {
                 KiemTraCCCD(CCCD);
                 KiemTraCCCDTrung(CCCD);
                 return CCCD;
-            }catch(Exception e){
+            } catch (Exception e) {
                 System.out.println("Lỗi: " + e.getMessage());
             }
         }
     }
 
-    public static String NhapHoTen(Scanner sc){
-        while(true){
+    public static String NhapHoTen(Scanner sc) {
+        while (true) {
             System.out.println("Nhập họ tên");
             String HoTen = sc.nextLine().trim();
-            try{
+            try {
                 KiemTraHoTen(HoTen);
                 return HoTen;
-            }catch(Exception e){
+            } catch (Exception e) {
                 System.out.println("Lỗi: " + e.getMessage());
             }
         }
     }
 
-    public static LocalDate NhapNgaySinh(Scanner sc){
-        while(true){
+    public static LocalDate NhapNgaySinh(Scanner sc) {
+        while (true) {
             System.out.println("Nhập ngày sinh (dd/MM/yyyy)");
-            try{
+            try {
                 return KiemTraNgaySinh(sc.nextLine(), "dd/MM/yyyy");
-            }catch(Exception e){
+            } catch (Exception e) {
                 System.out.println("Lỗi: " + e.getMessage());
             }
         }
     }
 
-    public static String NhapMaQuanLy(Scanner sc){
-        while(true){
+    public static String NhapMaQuanLy(Scanner sc) {
+        while (true) {
             System.out.println("Nhập mã quản lý phụ trách (BOSS hoặc mã nhân viên)");
             String Ma = sc.nextLine().trim();
-            try{
+            try {
                 KiemTraMaQuanLy(Ma);
                 return Ma.toUpperCase();
-            }catch(Exception e){
+            } catch (Exception e) {
                 System.out.println("Lỗi: " + e.getMessage());
             }
         }
     }
 
-    // ===== Nhập liệu và kiểm tra dùng chung (chuyển từ lớp cũ) =====
-// Đọc số nguyên trong [min, max], nhập sai thì hỏi lại (thay cho nextInt)
-    public static int NhapSoNguyen(Scanner sc, String thongBao, int min, int max){
-    while(true){
-        System.out.println(thongBao);
-        try{
-            int v = Integer.parseInt(sc.nextLine().trim());
-            if(v >= min && v <= max) return v;
-        }catch(NumberFormatException e){ }
-        System.out.println("Vui lòng nhập số từ " + min + " đến " + max);
+    public static int NhapSoNguyen(Scanner sc, String thongBao, int min, int max) {
+        while (true) {
+            System.out.println(thongBao);
+            try {
+                int v = Integer.parseInt(sc.nextLine().trim());
+                if (v >= min && v <= max) {
+                    return v;
+                }
+            } catch (NumberFormatException e) {
+            }
+            System.out.println("Vui lòng nhập số từ " + min + " đến " + max);
+        }
     }
-}
 
     public static LocalDate isValidDate(String dateStr, String pattern) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
             LocalDate Date = LocalDate.parse(dateStr, formatter);
-            return Date; // Hợp lệ
+            return Date;
         } catch (DateTimeParseException e) {
             System.out.println("Khong hop le");
-            return null; // Không hợp lệ hoặc sai định dạng
+            return null;
         }
     }
 
-    public static LocalDate isValidDate(String dateStr, String pattern,LocalDate Moc) {
+    public static LocalDate isValidDate(String dateStr, String pattern, LocalDate Moc) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
             LocalDate Date = LocalDate.parse(dateStr, formatter);
-            if(Date.isBefore(Moc)){
+            if (Date.isBefore(Moc)) {
                 return null;
             }
-            return Date;          // Hợp lệ
+            return Date;
         } catch (DateTimeParseException e) {
             System.out.println("Khong hop le");
-            return null; // Không hợp lệ hoặc sai định dạng
+            return null;
         }
     }
 
-    public static boolean KiemTraIsFullTime(NhanVien nv){
-        if(nv.getHinhThucDiLam().equalsIgnoreCase("Full-time")){
+    public static boolean KiemTraIsFullTime(NhanVien nv) {
+        if (nv.getHinhThucDiLam().equalsIgnoreCase("Full-time")) {
             return true;
         }
         return false;
     }
 
-    public static boolean HuyTacVu(Scanner sc){
+    public static boolean HuyTacVu(Scanner sc) {
         System.out.println("Chắc chắn chưa? Hay muốn hoàn tác, thoát khỏi quy trình\n Nhập 'thoát' để thoát hoặc nhập bất kỳ để tiếp tục");
         String input = sc.nextLine().trim();
-        if(input.equalsIgnoreCase("thoát")){
+        if (input.equalsIgnoreCase("thoát")) {
             System.out.println("Đã ngắt chương trình");
-        return true;
-    }
-    return false;
+            XuLyRequest.daHuyTacVu = true;
+            return true;
+        }
+        return false;
     }
 
     public static LocalDate NhapNgay(Scanner sc, String thongBao) {
-    while (true) {
-        System.out.println(thongBao + " (dd/MM/yyyy)");
-        LocalDate d = isValidDate(sc.nextLine().trim(), "dd/MM/yyyy");
-        if (d != null) return d;
-        System.out.println("Ngày không hợp lệ, vui lòng nhập lại");
+        while (true) {
+            System.out.println(thongBao + " (dd/MM/yyyy)");
+            LocalDate d = isValidDate(sc.nextLine().trim(), "dd/MM/yyyy");
+            if (d != null) {
+                return d;
+            }
+            System.out.println("Ngày không hợp lệ, vui lòng nhập lại");
+        }
     }
-}
 
-// Đọc số thực >= 0, nhập sai thì hỏi lại
     public static double NhapSo(Scanner sc, String thongBao) {
-    while (true) {
-        System.out.println(thongBao);
-        try {
-            double v = Double.parseDouble(sc.nextLine().trim());
-            if (v >= 0) return v;
-        } catch (NumberFormatException e) { }
-        System.out.println("Vui lòng nhập số hợp lệ (>= 0)");
+        while (true) {
+            System.out.println(thongBao);
+            try {
+                double v = Double.parseDouble(sc.nextLine().trim());
+                if (v >= 0) {
+                    return v;
+                }
+            } catch (NumberFormatException e) {
+            }
+            System.out.println("Vui lòng nhập số hợp lệ (>= 0)");
+        }
     }
-}
 
-// Nhập ca làm, lặp đến khi hợp lệ với loại nhân viên
     public static String NhapCaLam(Scanner sc, boolean fullTime) {
-    while (true) {
-        System.out.println("Nhập ca làm");
-        String ca = sc.nextLine().trim();
-        boolean hopLe = fullTime ? LoaiCaLamFullTime.NhanDien(ca) != null
-                                 : LoaiCaLamPartTime.NhanDien(ca) != null;
-        if (hopLe) return ca;
-        System.out.println("Ca làm không hợp lệ, vui lòng nhập lại");
+        while (true) {
+            System.out.println("Nhập ca làm");
+            String ca = sc.nextLine().trim();
+            boolean hopLe = fullTime ? LoaiCaLamFullTime.NhanDien(ca) != null
+                    : LoaiCaLamPartTime.NhanDien(ca) != null;
+            if (hopLe) {
+                return ca;
+            }
+            System.out.println("Ca làm không hợp lệ, vui lòng nhập lại");
+        }
     }
-}
 
-// Nhập mã vị trí, lặp đến khi tồn tại
     public static ViTri NhapMaViTri(Scanner sc) {
-    while (true) {
-        System.out.println("Nhập mã vị trí (ví dụ VT01)");
-        ViTri vt = ViTri.timKiem(sc.nextLine().trim());
-        if (vt != null) return vt;
-        System.out.println("Mã vị trí không tồn tại, vui lòng nhập lại");
+        while (true) {
+            System.out.println("Nhập mã vị trí (ví dụ VT01)");
+            ViTri vt = ViTri.timKiem(sc.nextLine().trim());
+            if (vt != null) {
+                return vt;
+            }
+            System.out.println("Mã vị trí không tồn tại, vui lòng nhập lại");
+        }
     }
-}
 
-    public static boolean KiemTraMaViTriTonTai(String MaViTri){
-        if(MaViTri == null){
+    public static boolean KiemTraMaViTriTonTai(String MaViTri) {
+        if (MaViTri == null) {
             return false;
         }
-        for(ViTri vt : ViTri.values()){
-            if(MaViTri.equalsIgnoreCase(vt.getMaViTri())){
+        for (ViTri vt : ViTri.values()) {
+            if (MaViTri.equalsIgnoreCase(vt.getMaViTri())) {
                 return true;
             }
         }
         return false;
-        }
+    }
 
-    public static String NhapMaNV(Scanner sc){
-            String input = sc.nextLine();//////////////////////
-            if(input==null){
-                System.out.println("không hợp lệ");
-                return null;
-            }
-            NhanVien nv = DanhSachNhanVien.timKiem(input);
-            if(nv==null){
-                System.out.println("Không tìm thấy nhân viên");
-                return null;
-            }
-            return input;
+    public static String NhapMaNV(Scanner sc) {
+        String input = sc.nextLine();
+        if (input == null) {
+            System.out.println("không hợp lệ");
+            return null;
         }
+        NhanVien nv = DanhSachNhanVien.timKiem(input);
+        if (nv == null) {
+            System.out.println("Không tìm thấy nhân viên");
+            return null;
+        }
+        return input;
+    }
+
+    public static void KiemTraCCCDTrung(String CCCD, NhanVien boQua) throws Exception {
+        for (NhanVien nv : DanhSachNhanVien.getDsnv()) {
+            if (nv == boQua) {
+                continue;
+            }
+            if (nv.getCCCD() != null && nv.getCCCD().equals(CCCD)) {
+                throw new Exception("CCCD này đã thuộc về nhân viên " + nv.getMaNV());
+            }
+        }
+    }
+
+    public static String NhapCCCD(Scanner sc, NhanVien boQua) {
+        while (true) {
+            System.out.println("Nhập CCCD");
+            String CCCD = sc.nextLine().trim();
+            try {
+                KiemTraCCCD(CCCD);
+                KiemTraCCCDTrung(CCCD, boQua);
+                return CCCD;
+            } catch (Exception e) {
+                System.out.println("Lỗi: " + e.getMessage());
+            }
+        }
+    }
 }

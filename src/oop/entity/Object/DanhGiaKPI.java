@@ -4,7 +4,7 @@ package oop.entity.Object;
 
 public class DanhGiaKPI{
     private String MaDanhGia;
-    private int DiemKPI;
+    private double DiemKPI;
     private String XepLoai;
     private int Thang;
     private int Nam;
@@ -12,7 +12,7 @@ public class DanhGiaKPI{
     private String MaNVDanhGia;
     private String MaNVNhanDanhGia;
 
-    public DanhGiaKPI(int DiemKPI, int Thang, int Nam, String MaNVDanhGia, String MaNVNhanDanhGia) {
+    public DanhGiaKPI(double DiemKPI, int Thang, int Nam, String MaNVDanhGia, String MaNVNhanDanhGia) {
         
         this.DiemKPI = DiemKPI;
         this.XepLoai = PhanXepLoai();
@@ -49,11 +49,11 @@ public class DanhGiaKPI{
         this.MaDanhGia = MaDanhGia;
     }
 
-    public float getDiemKPI() {
+    public double getDiemKPI() {
         return DiemKPI;
     }
 
-    public void setDiemKPI(int DiemKPI) {
+    public void setDiemKPI(double DiemKPI) {
         this.DiemKPI = DiemKPI;
     }
 
