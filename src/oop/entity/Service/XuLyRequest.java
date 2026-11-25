@@ -105,6 +105,9 @@ public class XuLyRequest {
             case XIN_NGHI_VIEC:
                 DuyetXinNghiViec(sc, MaNguoiNhan, MaNguoiGui);
                 break;
+            case DANH_GIA_KPI_QUAN_LY:
+                DanhGiaKhenThuong.DanhGiaKPIQuanLy(sc, date, time, MaNguoiNhan, tb.getMaLienQuan());
+                break;
             default:
                 System.out.println("Loại request " + tb.getRequest().getMoTa() + " chưa có chức năng xử lý");
                 return false;

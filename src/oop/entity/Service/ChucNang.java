@@ -144,6 +144,10 @@ public class ChucNang {
                 System.out.println("Chỉ đăng ký OT trong kỳ lương hiện tại (6 đến 5 tháng sau)");
                 continue;
             }
+            if (ct.isNgayNghi()) {
+                System.out.println("Không được đăng ký OT vào chủ nhật hoặc ngày lễ");
+                continue;
+            }
             if (ct.isIsDangKyOT()) {
                 System.out.println("Ngày này bạn đã đăng ký OT rồi");
                 continue;
@@ -185,7 +189,7 @@ public class ChucNang {
         }
         for (LocalDate date = NgayBatDau; !date.isAfter(NgayKetThuc); date = date.plusDays(1)) {
             ChiTietChamCong cc = nv.getBcc().timKiem(date);
-            if (cc == null) {
+            if (cc == null|| cc.isNgayNghi()) {
                 continue;
             }
             cc.setGioVao(gioVaoCa);

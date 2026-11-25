@@ -318,5 +318,49 @@ public class TaoDuLieuMau {
         return SoLuong;
 
     }
+    public static void TaoDanhSachNgayLe(int nam) {
+    NgayLe.them(LocalDate.of(nam, 1, 1));    // Tết Dương lịch
+    NgayLe.them(LocalDate.of(nam, 4, 30));   // Giải phóng miền Nam
+    NgayLe.them(LocalDate.of(nam, 5, 1));    // Quốc tế Lao động
+    NgayLe.them(LocalDate.of(nam, 11, 24));
+    NgayLe.them(LocalDate.of(nam, 7, 27));   // Thương binh Liệt sĩ
+    NgayLe.them(LocalDate.of(nam, 9, 2));    // Quốc khánh
+}
+    public static void TaoKPINgauNhien(LocalDate date, int soQuy) {
+    for (NhanVien nv : DanhSachNhanVien.getDsnv()) {
+        if (nv.isDaNghiViec() || !(nv instanceof NhanVienFullTime)) {
+            continue;
+        }
+        NhanVienFullTime nvFull = (NhanVienFullTime) nv;
+        double nangLuc = 70 + random.nextInt(31);   // 55 đến 95
+
+        for (int i = 1; i <= soQuy; i++) {
+            // Ngày kết thúc của quý thứ i tính ngược từ date (i=1: quý vừa kết thúc gần nhất)
+            LocalDate ngayKetQuy = NgayNghiepVu.ngayKetThucQuy(date.minusMonths(3L * i));
+            if (nv.getNgayVaoLam() != null && ngayKetQuy.isBefore(nv.getNgayVaoLam())) {
+                continue;   // quý này nhân viên chưa vào làm
+            }
+            int thang = ngayKetQuy.getMonthValue();
+            int nam = ngayKetQuy.getYear();
+
+            boolean daCo = false;
+            for (DanhGiaKPI k : nvFull.getDskpi().getDskpi()) {
+                if (k.getThang() == thang && k.getNam() == nam) {
+                    daCo = true;
+                    break;
+                }
+            }
+            if (daCo) {
+                continue;
+            }
+
+            double diem = nangLuc + (random.nextInt(17) - 8);   // dao động -8 đến +8
+            diem = Math.max(0, Math.min(100, diem));
+            diem = Math.round(diem * 10.0) / 10.0;
+
+            nvFull.getDskpi().them(new DanhGiaKPI(diem, thang, nam, nv.getMaQuanLyPhuTrach(), nv.getMaNV()));
+        }
+    }
+}
 
 }

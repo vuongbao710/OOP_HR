@@ -49,6 +49,7 @@ public class BangChamCong implements DanhSach<ChiTietChamCong>{
         for(LocalDate date = NgayBatDau; !date.isAfter(NgayKetThuc);date = date.plusDays(1)){
             String MaCC = taoMa();
             ChiTietChamCong cc = new ChiTietChamCong(MaCC, date, MaNV);
+            cc.capNhatNgayNghi(); 
             them(cc);
         }
     }
@@ -74,7 +75,7 @@ public class BangChamCong implements DanhSach<ChiTietChamCong>{
         int SoNgayChamCong = 0;
         for(ChiTietChamCong cc : bcc){
             LoaiTrangThaiChamCong tt = cc.getTrangThai();
-        if(tt != LoaiTrangThaiChamCong.NGHI_PHEP && tt != LoaiTrangThaiChamCong.KHONG_CHAM_CONG){
+        if(tt != LoaiTrangThaiChamCong.NGHI_PHEP && tt != LoaiTrangThaiChamCong.KHONG_CHAM_CONG && tt != LoaiTrangThaiChamCong.NGAY_NGHI){
             SoNgayChamCong++;
         }
         }

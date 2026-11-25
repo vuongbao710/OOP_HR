@@ -7,6 +7,10 @@ import java.util.Scanner;
 import oop.entity.DanhSach.*;
 import oop.entity.Enum.*;
 import oop.entity.Object.*;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class NhanSu {
 
@@ -126,6 +130,113 @@ public class NhanSu {
         DoiViTri(nvXuong, viTriMoiCuaNvXuong);
     }
 
+    // Ứng viên nội bộ đã qua lọc
+    private static class UngVienNoiBo {
+
+        NhanVien nv;
+        double kpiTB;
+        long soThang;
+        double diemXet;
+    }
+
+// KPI trung bình của tất cả đánh giá đã có, -1 nếu chưa có đánh giá nào
+    private static double KPITrungBinh(NhanVienFullTime nv) {
+        ArrayList<DanhGiaKPI> ds = nv.getDskpi().getDskpi();
+        if (ds.isEmpty()) {
+            return -1;
+        }
+        double tong = 0;
+        for (DanhGiaKPI k : ds) {
+            tong = tong + k.getDiemKPI();
+        }
+        return tong / ds.size();
+    }
+
+// Lọc và xếp hạng ứng viên nội bộ thay cho nvXuong
+    private static ArrayList<UngVienNoiBo> LocUngVienNoiBo(NhanVien nvXuong, LocalDate date) {
+        ArrayList<UngVienNoiBo> ketQua = new ArrayList<>();
+
+        // Quản lý bị cách chức -> xét nhân viên cùng phòng; giám đốc bị cách chức -> xét quản lý
+        LoaiChucVu chucVuXet;
+        if (nvXuong.getChucVu() == LoaiChucVu.QUAN_LY) {
+            chucVuXet = LoaiChucVu.NHAN_VIEN;
+        } else if (nvXuong.getChucVu() == LoaiChucVu.GIAM_DOC) {
+            chucVuXet = LoaiChucVu.QUAN_LY;
+        } else {
+            return ketQua;
+        }
+
+        for (NhanVien n : DanhSachNhanVien.getDsnv()) {
+            if (n == nvXuong || n.isDaNghiViec() || !(n instanceof NhanVienFullTime)) {
+                continue;
+            }
+            if (n.getChucVu() != chucVuXet) {
+                continue;
+            }
+            if (chucVuXet == LoaiChucVu.NHAN_VIEN
+                    && (n.getMaPhongBan() == null || !n.getMaPhongBan().equalsIgnoreCase(nvXuong.getMaPhongBan()))) {
+                continue;
+            }
+            // Điều kiện 1: thâm niên trên 6 tháng
+            if (n.getNgayVaoLam() == null
+                    || !date.isAfter(n.getNgayVaoLam().plusMonths(QuyDinh.THAM_NIEN_TOI_THIEU_THANG))) {
+                continue;
+            }
+            // Điều kiện 2: KPI trung bình từ 80 trở lên
+            double kpiTB = KPITrungBinh((NhanVienFullTime) n);
+            if (kpiTB < QuyDinh.KPI_TRUNG_BINH_TOI_THIEU) {
+                continue;
+            }
+
+            UngVienNoiBo uv = new UngVienNoiBo();
+            uv.nv = n;
+            uv.kpiTB = kpiTB;
+            uv.soThang = ChronoUnit.MONTHS.between(n.getNgayVaoLam(), date);
+            double diemThamNien = Math.min(uv.soThang / (12.0 * QuyDinh.THAM_NIEN_DAY_DIEM_NAM), 1) * 100;
+            uv.diemXet = kpiTB * QuyDinh.TRONG_SO_XET_KPI + diemThamNien * QuyDinh.TRONG_SO_XET_THAM_NIEN;
+            ketQua.add(uv);
+        }
+
+        ketQua.sort(Comparator.comparingDouble((UngVienNoiBo u) -> u.diemXet).reversed()
+                .thenComparing(Comparator.comparingLong((UngVienNoiBo u) -> u.soThang).reversed()));
+        return ketQua;
+    }
+
+    public static boolean BoNhiemNoiBo(LocalDate date, LocalTime time, String MaNVCachChuc, Scanner sc, String MaNguoiThucHien) {
+        NhanVien nvXuong = DanhSachNhanVien.timKiem(MaNVCachChuc);
+        if (nvXuong == null) {
+            System.out.println("Không tìm thấy nhân viên bị cách chức");
+            return true;
+        }
+        ArrayList<UngVienNoiBo> ds = LocUngVienNoiBo(nvXuong, date);
+        if (ds.isEmpty()) {
+            System.out.println("Không có ứng viên nội bộ nào đủ điều kiện (thâm niên trên "
+                    + QuyDinh.THAM_NIEN_TOI_THIEU_THANG + " tháng và KPI trung bình từ "
+                    + (int) QuyDinh.KPI_TRUNG_BINH_TOI_THIEU + " trở lên)");
+            return false;
+        }
+
+        System.out.println("===== DANH SÁCH ỨNG VIÊN NỘI BỘ (xếp theo điểm xét: KPI TB "
+                + (int) (QuyDinh.TRONG_SO_XET_KPI * 100) + "% + thâm niên "
+                + (int) (QuyDinh.TRONG_SO_XET_THAM_NIEN * 100) + "%) =====");
+        for (int i = 0; i < ds.size(); i++) {
+            UngVienNoiBo uv = ds.get(i);
+            Period p = Period.between(uv.nv.getNgayVaoLam(), date);
+            System.out.println((i + 1) + ". " + uv.nv.getMaNV() + " - " + uv.nv.getHoTen()
+                    + " | Thâm niên: " + p.getYears() + " năm " + p.getMonths() + " tháng"
+                    + " | KPI TB: " + Math.round(uv.kpiTB * 10.0) / 10.0
+                    + " | Điểm xét: " + Math.round(uv.diemXet * 10.0) / 10.0);
+        }
+
+        int chon = KiemTraLoi.NhapSoNguyen(sc, "Nhập số thứ tự người được bổ nhiệm (0 để hủy):", 0, ds.size());
+        if (chon == 0) {
+            XuLyRequest.daHuyTacVu = true;
+            return true;
+        }
+        BoNhiem(date, time, MaNVCachChuc, ds.get(chon - 1).nv.getMaNV(), sc, MaNguoiThucHien);
+        return true;
+    }
+
     public static void BoNhiem(LocalDate date, LocalTime time, String MaNVCachChuc, String MaNVBoNhiem, Scanner sc, String MaNguoiThucHien) {
         NhanVien nvXuong = DanhSachNhanVien.timKiem(MaNVCachChuc);
         NhanVien nvLen = DanhSachNhanVien.timKiem(MaNVBoNhiem);
@@ -164,21 +275,21 @@ public class NhanSu {
     }
 
     public static void ChonRaNguoiThayThe(LocalDate date, LocalTime time, String MaNVCachChuc, Scanner sc, String MaNguoiThucHien) {
-        DanhSachNhanVien.SortTheoThamNien();
         System.out.println("Chọn người thay thế cho nhân viên mã " + MaNVCachChuc);
-        int input = KiemTraLoi.NhapSoNguyen(sc, "\n0.Thoát\n1.Bổ nhiệm nội bộ\n2.Tuyển ngoài", 0, 2);
-        if (input == 0) {
-            XuLyRequest.daHuyTacVu = true;
-            return;
-        }
-        if (input == 1) {
-            System.out.println("Nhập mã nhân viên bạn muốn bổ nhiệm");
-            String nhap = KiemTraLoi.NhapMaNV(sc);
-            while (nhap == null) {
-                nhap = KiemTraLoi.NhapMaNV(sc);
+        int input;
+        while (true) {
+            input = KiemTraLoi.NhapSoNguyen(sc, "\n0.Thoát\n1.Bổ nhiệm nội bộ\n2.Tuyển ngoài", 0, 2);
+            if (input == 0) {
+                XuLyRequest.daHuyTacVu = true;
+                return;
             }
-            BoNhiem(date, time, MaNVCachChuc, nhap, sc, MaNguoiThucHien);
-            return;
+            if (input == 1) {
+                if (BoNhiemNoiBo(date, time, MaNVCachChuc, sc, MaNguoiThucHien)) {
+                    return;
+                }
+                continue;   // không có ứng viên đủ điều kiện -> chọn lại
+            }
+            break;          // input == 2: tuyển ngoài
         }
         if (!MaNguoiThucHien.equalsIgnoreCase(Boss.MA)) {
             NhanVien nguoiThucHien = DanhSachNhanVien.timKiem(MaNguoiThucHien);
@@ -309,8 +420,27 @@ public class NhanSu {
         }
         return nv;
     }
+    public static void GanNhanVienChoQuanLyMoi(NhanVien ql) {
+    if (ql.getChucVu() != LoaiChucVu.QUAN_LY || ql.getMaPhongBan() == null) {
+        return;
+    }
+    for (NhanVien n : DanhSachNhanVien.getDsnv()) {
+        if (n == ql || n.isDaNghiViec() || n.getChucVu() != LoaiChucVu.NHAN_VIEN) {
+            continue;
+        }
+        if (!ql.getMaPhongBan().equalsIgnoreCase(n.getMaPhongBan())) {
+            continue;
+        }
+        String maCu = n.getMaQuanLyPhuTrach();
+        NhanVien cu = maCu == null ? null : DanhSachNhanVien.timKiem(maCu);
+        boolean dangDoGiamDoc = maCu == null || maCu.equalsIgnoreCase(Boss.MA)
+                || cu == null || cu.isDaNghiViec() || cu.getChucVu() == LoaiChucVu.GIAM_DOC;
+        if (dangDoGiamDoc) {
+            n.setMaQuanLyPhuTrach(ql.getMaNV());
+        }
+    }
+}
 
-   
     public static void XoaNhanVien(Scanner sc, LocalDate date, LocalTime time, String maNguoiThucHien) {
         NhanVien nv = ChonNhanVienDeQuanLy(sc, "xóa");
         if (nv == null) {
@@ -434,7 +564,7 @@ public class NhanSu {
         hd.setMaHopDong("HD" + maNV);
         nv.setHopDong(hd);
         DanhSachNhanVien.them(nv);
-
+        GanNhanVienChoQuanLyMoi(nv);
         NhatKyHoatDong.them("Người dùng mã " + maNguoiThucHien + " thêm nhân viên " + maNV
                 + " và ký hợp đồng " + hd.getMaHopDong() + " vào " + time + " ngày " + date);
         if (!maQuanLy.equalsIgnoreCase(Boss.MA)) {

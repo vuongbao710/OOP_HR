@@ -66,6 +66,9 @@ public class VanHanh {
                 if (NV.getChucVu() == LoaiChucVu.QUAN_LY && !NV.isDaNghiViec()) {
                     HomThu.GuiYeuCau(MaADMIN, NV.getMaNV(), date, time,
                             "Đã đến thời hạn chấm KPI của nhân viên bạn phụ trách", LoaiRequest.DANH_GIA_KPI, null);
+                    HomThu.GuiYeuCau(MaADMIN, NV.getMaQuanLyPhuTrach(), date, time,
+                            "Đã đến thời hạn chấm KPI của quản lý " + NV.getMaNV(),
+                            LoaiRequest.DANH_GIA_KPI_QUAN_LY, NV.getMaNV());
                 }
             }
         }
@@ -74,6 +77,7 @@ public class VanHanh {
                 dot.setTrangThai(TRANG_THAI_DOT.KET_THUC);
                 HomThu.GuiThongBao(MaADMIN, dot.getMaNguoiTuyen(), date, time,
                         "Đợt tuyển dụng " + dot.getMaDotTuyenDung() + " đã quá hạn và được đóng tự động");
+
             }
         }
         for (KhoaDaoTao khoa : DanhSachKhoaDaoTao.getDskdt()) {
@@ -123,11 +127,7 @@ public class VanHanh {
         NhanSu.XuLyKyLuat(k, loai, date, time, nv);
     }
 
-// Random tình huống cho 1 nhân viên trong 1 ngày
-// Trả về true nếu đã tự chấm công xong, false nếu để hệ thống chấm công bình thường
     public static boolean NgauNhienTinhHuong(NhanVien nv, LocalDate date, LocalTime time) {
-
-        // Đang trong ngày nghỉ phép thì không random nữa
         if (nv.getDsDon().coTrongNgayNghiPhepKhong(date)) {
             return false;
         }
@@ -135,8 +135,11 @@ public class VanHanh {
         if (cc == null) {
             return false;
         }
+        if (cc.isNgayNghi()) {
+            cc.capNhatNgayNghi();
+            return true;     // đã xử lý, không chấm công
+        }
 
-        // Lấy giờ vào, giờ ra của ca
         LocalTime gioVao;
         LocalTime gioRa;
         if (nv instanceof NhanVienFullTime) {
@@ -149,25 +152,25 @@ public class VanHanh {
 
         int r = random.nextInt(100);
 
-        if (r < 4) {                       // 4%: nghỉ phép
+        if (r < 1) {                       // 4%: nghỉ phép
             ChucNang.LapDayNghiPhep(date, date, nv, LoaiTrangThaiChamCong.NGHI_PHEP);
             return true;
         }
-        if (r < 6) {                       // 2%: nghỉ không phép
+        if (r < 2) {                       // 2%: nghỉ không phép
             TaoViPham(nv, LoaiViPham.NGHI_KHONG_PHEP, date, time);
             return true;
         }
-        if (r < 13) {                      // 7%: đi trễ
+        if (r < 3) {                      // 7%: đi trễ
             ChucNang.ChamCong(gioVao.plusMinutes(15), date, nv);
             ChucNang.ChamCong(gioRa, date, nv);
             return true;
         }
-        if (r < 17) {                      // 4%: về sớm
+        if (r < 4) {                      // 4%: về sớm
             ChucNang.ChamCong(gioVao, date, nv);
             ChucNang.ChamCong(gioRa.minusMinutes(20), date, nv);
             return true;
         }
-        if (r < 27) {                      // 10%: làm OT 1 đến 2 giờ
+        if (r < 28) {                      // 10%: làm OT 1 đến 2 giờ
             int soGio = random.nextInt(2) + 1;
             cc.LamOT(gioRa);
             ChucNang.ChamCong(gioVao, date, nv);

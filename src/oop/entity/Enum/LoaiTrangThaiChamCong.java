@@ -7,6 +7,7 @@ public enum LoaiTrangThaiChamCong {
     DUNG_GIO("dung gio",true),
     DI_TRE("di tre", false),
     VE_SOM("ve som", false),
+    NGAY_NGHI("ngày nghỉ (chủ nhật/ngày lễ)", false),
     KHONG_CHAM_CONG("khong cham cong",false); //không chấm công giờ ra - quá 4h từ giờ vào không chấm công - đi làm về sớm mà không có phép
     
     private String MoTa;

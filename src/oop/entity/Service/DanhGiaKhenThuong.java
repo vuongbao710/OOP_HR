@@ -146,4 +146,97 @@ public class DanhGiaKhenThuong {
         }
         return tong;
     }
+
+    public static void DanhGiaKPIQuanLy(Scanner sc, LocalDate date, LocalTime time, String MaGiamDoc, String MaQuanLy) {
+        if (KiemTraLoi.HuyTacVu(sc)) {
+            return;
+        }
+        NhanVien ql = DanhSachNhanVien.timKiem(MaQuanLy);
+        if (ql == null || ql.getChucVu() != LoaiChucVu.QUAN_LY) {
+            System.out.println("Không tìm thấy quản lý mã " + MaQuanLy);
+            return;
+        }
+        if (!(ql instanceof NhanVienFullTime)) {
+            System.out.println("Quản lý " + MaQuanLy + " không phải full-time, không có KPI");
+            return;
+        }
+        NhanVienFullTime qlFull = (NhanVienFullTime) ql;
+
+        // Xác định quý cần đánh giá (giống DanhGiaKPI của nhân viên)
+        LocalDate ngayTinhKPI = NgayNghiepVu.ngayKetThucQuy(date.minusDays(3));
+        LocalDate ngayDauQuy = ngayTinhKPI.minusMonths(2).withDayOfMonth(1);
+        int thang = ngayTinhKPI.getMonthValue();
+        int nam = ngayTinhKPI.getYear();
+
+        // 1. Lấy KPI cấp dưới trong quý
+        int soCapDuoi = 0;
+        int soCapDuoiDat = 0;
+        double tongKPI = 0;
+        for (NhanVien cd : DanhSachNhanVien.timKiemTheoMaQuanLyPhuTrachVaFullTime(MaQuanLy)) {
+            if (cd.isDaNghiViec() || !(cd instanceof NhanVienFullTime)) {
+                continue;
+            }
+            for (DanhGiaKPI k : ((NhanVienFullTime) cd).getDskpi().getDskpi()) {
+                if (k.getThang() == thang && k.getNam() == nam) {
+                    soCapDuoi++;
+                    tongKPI = tongKPI + k.getDiemKPI();
+                    if (k.getDiemKPI() > QuyDinh.DIEM_DAT) {
+                        soCapDuoiDat++;
+                    }
+                    break;
+                }
+            }
+        }
+        if (soCapDuoi == 0) {
+            System.out.println("Quản lý " + MaQuanLy + " chưa đánh giá KPI cấp dưới quý " + thang + "/" + nam
+                    + ", cần đợi quản lý đánh giá xong");
+            return;
+        }
+        double tyLeCapDuoiDat = soCapDuoiDat * 100.0 / soCapDuoi;
+        double kpiTrungBinh = tongKPI / soCapDuoi;
+
+        // 2. Giám đốc nhập % hoàn thành chỉ tiêu phòng ban
+        System.out.println("Đánh giá KPI cho quản lý " + ql.getMaNV());
+        double phanTramPhongBan = KiemTraLoi.NhapSo(sc, "% hoàn thành chỉ tiêu phòng ban là?");
+
+        // 3. Lấy dữ liệu từ hệ thống
+        int soRequestHetHan = DemRequestHetHan(ql, ngayDauQuy, ngayTinhKPI);
+        int soLanQuayRoi = DemViPham(ql, LoaiViPham.QUAY_ROI, ngayDauQuy, ngayTinhKPI);
+        boolean biKyLuatNang = soLanQuayRoi > 0;
+
+        // 4. Tính điểm
+        double diemPhong = QuyDinh.tinhDiemPhongBan(phanTramPhongBan);
+        double diemCapDuoiDat = QuyDinh.tinhDiemCapDuoiDat(tyLeCapDuoiDat);
+        double diemKPITB = QuyDinh.tinhDiemKPITrungBinh(kpiTrungBinh);
+        double diemCong = QuyDinh.tinhDiemCongRequest(soRequestHetHan);
+        double diemTru = QuyDinh.tinhDiemTruRequest(soRequestHetHan);
+
+        // Quản lý không có điểm nền, dùng lại hàm tính tổng (có kẹp 0-100 và làm tròn)
+        double DiemKPI = QuyDinh.tinhTongDiemKPI(0, diemPhong + diemCapDuoiDat + diemKPITB, diemCong, diemTru, biKyLuatNang);
+
+        System.out.println("Phòng ban: " + diemPhong + " | Cấp dưới đạt (" + soCapDuoiDat + "/" + soCapDuoi + "): " + diemCapDuoiDat
+                + " | KPI TB cấp dưới (" + kpiTrungBinh + "): " + diemKPITB
+                + " | Cộng: " + diemCong + " | Trừ: " + diemTru);
+        System.out.println("Điểm KPI: " + DiemKPI + " - Xếp loại: " + QuyDinh.phanXepLoai(DiemKPI));
+
+        DanhGiaKPI kpi = new DanhGiaKPI(DiemKPI, thang, nam, MaGiamDoc, ql.getMaNV());
+        qlFull.getDskpi().them(kpi);
+        HomThu.GuiThongBao(MaGiamDoc, ql.getMaNV(), date, time,
+                "đã có đánh giá kpi có điểm số là " + DiemKPI + " tháng " + thang + " năm " + nam).setRequest(LoaiRequest.THONG_BAO);
+        NhatKyHoatDong.them("Giám đốc mã " + MaGiamDoc + " đã đánh giá kpi quản lý " + DiemKPI + " lúc " + time
+                + " ngày " + date + " cho quản lý mã " + MaQuanLy);
+    }
+
+// Đếm số request (không tính thông báo thường) của quản lý bị hết hạn trong quý
+    public static int DemRequestHetHan(NhanVien ql, LocalDate NgayDau, LocalDate NgayCuoi) {
+        int dem = 0;
+        for (ThongBao tb : ql.getDsThongBao().getDsThongBao()) {
+            if (tb.getRequest() != LoaiRequest.THONG_BAO
+                    && tb.getTrangThai() == TrangThaiDocThongBao.HET_HAN
+                    && !tb.getDate().isBefore(NgayDau) && !tb.getDate().isAfter(NgayCuoi)) {
+                dem++;
+            }
+        }
+        return dem;
+    }
 }

@@ -13,6 +13,7 @@ public enum LoaiRequest {
     CHAM_DIEM_DAO_TAO("chấm điểm đào tạo"),
     XEM_XET_TANG_LUONG("xem xét tăng lương"),
     GIA_HAN_HOP_DONG("gia hạn hợp đồng"),
+    DANH_GIA_KPI_QUAN_LY("đánh giá kpi quản lý"),
     BO_NHIEM("bổ nhiệm");
     
     private String MoTa;

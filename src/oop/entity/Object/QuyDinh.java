@@ -7,7 +7,6 @@ public class QuyDinh {
     // =========================
     public static final double DIEM_NEN = 35;
 
-
     // =========================
     // 2. ĐIỂM KẾT QUẢ CÔNG VIỆC
     // =========================
@@ -29,11 +28,9 @@ public class QuyDinh {
     // Hệ số tăng điểm khi vượt chỉ tiêu
     public static final double HE_SO_VUOT_CHI_TIEU = 0.8;
 
-
     // =========================
     // 3. ĐIỂM CỘNG
     // =========================
-
     // Không đi trễ, không về sớm cả quý
     public static final double DIEM_KHONG_TRE = 3;
 
@@ -46,11 +43,9 @@ public class QuyDinh {
     // Tổng điểm cộng của nhân viên
     public static final double DIEM_CONG_TOI_DA = 12;
 
-
     // =========================
     // 4. ĐIỂM TRỪ
     // =========================
-
     // Đi trễ 3 lần đầu
     public static final double DI_TRE_LAN_1_3 = 1;
 
@@ -75,11 +70,9 @@ public class QuyDinh {
     // Quấy rối: KyLuatNang KPI
     public static final double VETO_QUAY_ROI = 0;
 
-
     // =========================
     // 5. KPI QUẢN LÝ
     // =========================
-
     // Trọng số kết quả phòng ban
     public static final double TRONG_SO_KPI_PHONG = 0.5;
 
@@ -95,23 +88,17 @@ public class QuyDinh {
     // Mốc KPI trung bình cấp dưới
     public static final double MOC_KPI_TRUNG_BINH = 65;
 
-
     // =========================
     // 6. REQUEST QUẢN LÝ
     // =========================
-
-
     // Không có request hết hạn
     public static final double DIEM_KHONG_REQUEST_HET_HAN = 3;
     // Request hết hạn
     public static final double TRU_REQUEST_HET_HAN = 2;
 
-
-
     // =========================
     // 7. XẾP LOẠI KPI
     // =========================
-
     public static final double DIEM_XUAT_SAC = 90;
     public static final double DIEM_TOT = 70;
     public static final double DIEM_DAT = 50;
@@ -121,11 +108,9 @@ public class QuyDinh {
     public static final double HE_SO_DAT = 1.2;
     public static final double HE_SO_KHONG_DAT = 1.0;
 
-
     // =========================
     // 8. HÀM TÍNH ĐIỂM KẾT QUẢ
     // =========================
-
     public static double tinhDiemKetQua(double phanTramDat) {
 
         if (phanTramDat < 100) {
@@ -140,11 +125,9 @@ public class QuyDinh {
         return DIEM_KET_QUA_TOI_DA;
     }
 
-
     // =========================
     // 9. HÀM TÍNH ĐIỂM CỘNG OT
     // =========================
-
     public static double tinhDiemOT(double soGioOT) {
 
         double diemOT = (int) (soGioOT / 10)
@@ -157,11 +140,9 @@ public class QuyDinh {
         return diemOT;
     }
 
-
     // =========================
     // 10. HÀM TÍNH ĐIỂM TRỪ ĐI TRỄ
     // =========================
-
     public static double tinhDiemTruDiTre(int soLanDiTre) {
 
         double diemTru = 0;
@@ -176,11 +157,9 @@ public class QuyDinh {
         return diemTru;
     }
 
-
     // =========================
     // 11. HÀM XẾP LOẠI
     // =========================
-
     public static String phanXepLoai(double diemKPI) {
 
         if (diemKPI > DIEM_XUAT_SAC) {
@@ -194,11 +173,9 @@ public class QuyDinh {
         }
     }
 
-
     // =========================
     // 12. HÀM LẤY HỆ SỐ KPI
     // =========================
-
     public static double tinhHeSoKPI(double diemKPI) {
 
         if (diemKPI > DIEM_XUAT_SAC) {
@@ -212,11 +189,9 @@ public class QuyDinh {
         }
     }
 
-
     // =========================
     // 13. HÀM TÍNH ĐIỂM KPI CUỐI
     // =========================
-
     public static double tinhTongDiemKPI(
             double diemNen,
             double diemKetQua,
@@ -247,4 +222,46 @@ public class QuyDinh {
         // Làm tròn 1 chữ số thập phân
         return Math.round(tongDiem * 10.0) / 10.0;
     }
+    // =========================
+// 14. HÀM TÍNH ĐIỂM KPI QUẢN LÝ
+// =========================
+
+// Điểm kết quả phòng ban (tối đa TRONG_SO_KPI_PHONG * 100 = 50 điểm)
+    public static double tinhDiemPhongBan(double phanTramPhongBan) {
+        double tiLe = Math.min(phanTramPhongBan, MOC_DAT_CHI_TIEU) / MOC_DAT_CHI_TIEU;
+        return TRONG_SO_KPI_PHONG * 100 * tiLe;
+    }
+
+// Điểm tỷ lệ cấp dưới đạt (tối đa 25 điểm), đạt mốc 90% là đủ điểm
+    public static double tinhDiemCapDuoiDat(double tyLeCapDuoiDat) {
+        double tiLe = Math.min(tyLeCapDuoiDat / MOC_CAP_DUOI_DAT, 1);
+        return TRONG_SO_CAP_DUOI_DAT * 100 * tiLe;
+    }
+
+// Điểm KPI trung bình của cấp dưới (tối đa 25 điểm), đạt mốc 65 là đủ điểm
+    public static double tinhDiemKPITrungBinh(double kpiTrungBinh) {
+        double tiLe = Math.min(kpiTrungBinh / MOC_KPI_TRUNG_BINH, 1);
+        return TRONG_SO_KPI_TRUNG_BINH * 100 * tiLe;
+    }
+
+// Điểm cộng / trừ liên quan đến request hết hạn
+    public static double tinhDiemCongRequest(int soRequestHetHan) {
+        return soRequestHetHan == 0 ? DIEM_KHONG_REQUEST_HET_HAN : 0;
+    }
+
+    public static double tinhDiemTruRequest(int soRequestHetHan) {
+        return soRequestHetHan * TRU_REQUEST_HET_HAN;
+    }
+    // =========================
+// 15. XÉT BỔ NHIỆM NỘI BỘ
+// =========================
+
+// Điều kiện cần
+    public static final int THAM_NIEN_TOI_THIEU_THANG = 6;      // phải trên 6 tháng
+    public static final double KPI_TRUNG_BINH_TOI_THIEU = 80;   // từ 80 trở lên
+
+// Điểm xét xếp hạng = KPI TB * 0.7 + điểm thâm niên * 0.3 (thang 100)
+    public static final double TRONG_SO_XET_KPI = 0.7;
+    public static final double TRONG_SO_XET_THAM_NIEN = 0.3;
+    public static final int THAM_NIEN_DAY_DIEM_NAM = 5;         // thâm niên từ 5 năm trở lên được đủ điểm
 }
